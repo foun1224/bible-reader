@@ -1,0 +1,36 @@
+export interface Verse {
+  number: number
+  text: string
+}
+
+export interface Chapter {
+  number: number
+  verses: Verse[]
+}
+
+export interface Book {
+  id: number | string
+  name: string
+  nameEn?: string
+  testament?: string
+  chapters: Chapter[]
+}
+
+export interface BibleData {
+  name: string
+  nameEn: string
+  books: Book[]
+}
+
+export interface JasherData {
+  name: string
+  nameEn: string
+  chapters: Chapter[]
+}
+
+export interface BookMark {
+  sourceId: string    // 'ckjv' | 'jasher'
+  bookId?: number
+  chapter: number
+  verse: number
+}
