@@ -690,83 +690,6 @@ function App() {
               ⋯
             </button>
           </div>
-          {/* 閱讀設定 popover */}
-          {settingsOpen && (
-            <div className="absolute top-full right-0 z-30 mt-1 mr-2 w-60 bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240] rounded-lg shadow-lg p-4 space-y-4">
-              <div>
-                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">文字</div>
-                <div className="flex gap-1">
-                  {([['text-[10px]','小'], ['text-xs','中'], ['text-sm','大']] as const).map(([, label], i) => (
-                    <button
-                      key={i}
-                      onClick={() => setFontSize(i)}
-                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
-                        fontSize === i
-                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
-                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">主題</div>
-                <div className="flex gap-1">
-                  {([['紙白', false], ['夜讀', true]] as [string, boolean][]).map(([label, isDark]) => (
-                    <button
-                      key={label}
-                      onClick={() => setDark(isDark)}
-                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
-                        dark === isDark
-                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
-                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">節號</div>
-                <div className="flex gap-1">
-                  {(['show', 'fade', 'hide'] as const).map(v => (
-                    <button
-                      key={v}
-                      onClick={() => setVerseNumStyle(v)}
-                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
-                        verseNumStyle === v
-                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
-                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
-                      }`}
-                    >
-                      {{ show: '顯示', fade: '淡化', hide: '隱藏' }[v]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">行距</div>
-                <div className="flex gap-1">
-                  {(['comfortable', 'loose'] as const).map(v => (
-                    <button
-                      key={v}
-                      onClick={() => setLineSpacing(v)}
-                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
-                        lineSpacing === v
-                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
-                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
-                      }`}
-                    >
-                      {{ comfortable: '舒適', loose: '寬鬆' }[v]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
           {/* G4: Scroll progress bar inside toolbar */}
           <div
             className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#4F7358] dark:bg-[#7AAF87] pointer-events-none transition-none"
@@ -845,6 +768,87 @@ function App() {
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
       />
+
+      {/* 閱讀設定 popover — fixed to avoid iOS touch-event clipping */}
+      {settingsOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setSettingsOpen(false)} />
+          <div className="fixed top-12 right-2 z-50 w-60 bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240] rounded-lg shadow-xl p-4 space-y-4">
+            <div>
+              <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">文字</div>
+              <div className="flex gap-1">
+                {(['小', '中', '大'] as const).map((label, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setFontSize(i)}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      fontSize === i
+                        ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                        : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">主題</div>
+              <div className="flex gap-1">
+                {([['紙白', false], ['夜讀', true]] as [string, boolean][]).map(([label, isDark]) => (
+                  <button
+                    key={label}
+                    onClick={() => setDark(isDark)}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      dark === isDark
+                        ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                        : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">節號</div>
+              <div className="flex gap-1">
+                {(['show', 'fade', 'hide'] as const).map(v => (
+                  <button
+                    key={v}
+                    onClick={() => setVerseNumStyle(v)}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      verseNumStyle === v
+                        ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                        : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                    }`}
+                  >
+                    {{ show: '顯示', fade: '淡化', hide: '隱藏' }[v]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">行距</div>
+              <div className="flex gap-1">
+                {(['comfortable', 'loose'] as const).map(v => (
+                  <button
+                    key={v}
+                    onClick={() => setLineSpacing(v)}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      lineSpacing === v
+                        ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                        : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                    }`}
+                  >
+                    {{ comfortable: '舒適', loose: '寬鬆' }[v]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Chapter grid (mobile bottom nav tap) */}
       <ChapterGrid
