@@ -169,7 +169,7 @@ export default function Sidebar({
 
       {/* Mobile sidebar overlay */}
       <div
-        className={`sm:hidden fixed top-0 left-0 z-30 h-full w-64 flex flex-col
+        className={`sm:hidden fixed top-0 left-0 z-30 h-dvh w-64 flex flex-col
           border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -246,7 +246,7 @@ function SidebarContent({
           className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
         />
       </div>
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 min-h-0 overflow-y-auto py-2">
         {/* 舊約 group header */}
         {filteredOld.length > 0 && (
           <>
