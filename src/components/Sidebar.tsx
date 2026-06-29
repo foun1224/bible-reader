@@ -127,6 +127,7 @@ export default function Sidebar({
     <div className="flex-1 min-h-0 overflow-hidden">
       {tab === '經文' && (
         <ScriptureContent
+          ckjv={ckjv}
           oldTestament={oldTestament}
           newTestament={newTestament}
           oldExpanded={oldExpanded}
@@ -396,6 +397,7 @@ function AllHighlights({ highlights, ckjv, onJumpTo, onClose }: {
 
 // ── 經文 tab ──────────────────────────────────────────────────────────────────
 interface ScriptureProps {
+  ckjv: BibleData | null
   oldTestament: Book[]
   newTestament: Book[]
   oldExpanded: boolean
@@ -424,6 +426,7 @@ interface ScriptureProps {
 }
 
 function ScriptureContent({
+  ckjv,
   oldTestament, newTestament,
   oldExpanded, setOldExpanded,
   newExpanded, setNewExpanded,
@@ -612,7 +615,7 @@ function ScriptureContent({
             >
               <ChapterHighlights
                 highlights={highlights}
-                ckjv={null}
+                ckjv={ckjv}
                 onJumpTo={onJumpTo}
                 onClose={onClose}
                 currentSource={currentSource}
@@ -624,7 +627,7 @@ function ScriptureContent({
               <Collapsible title="全部劃線" defaultOpen={false} badge={String(highlights.length)}>
                 <AllHighlights
                   highlights={highlights}
-                  ckjv={null}
+                  ckjv={ckjv}
                   onJumpTo={onJumpTo}
                   onClose={onClose}
                 />
