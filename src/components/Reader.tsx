@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Chapter } from '../types'
 
 interface Props {
@@ -18,32 +18,33 @@ interface Props {
   onDismissResumeCTA: () => void
   // Completion overlay
   showCompletionOverlay: boolean
+  // Scroll progress callback (lifted to App)
+  onScrollProgress: (v: number) => void
 }
 
 export default function Reader({
   chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle,
   onMarkComplete, isCompleted,
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
-  showCompletionOverlay,
+  showCompletionOverlay, onScrollProgress,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [scrollProgress, setScrollProgress] = useState(0)
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
-    setScrollProgress(0)
+    onScrollProgress(0)
     scrollRef.current?.scrollTo(0, 0)
   }, [chapter])
 
-  // Track scroll progress
+  // Track scroll progress — report to parent via callback
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
     const onScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = el
       const max = scrollHeight - clientHeight
-      setScrollProgress(max > 0 ? scrollTop / max : 0)
+      onScrollProgress(max > 0 ? scrollTop / max : 0)
     }
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
@@ -87,17 +88,13 @@ export default function Reader({
       {/* Completion full-screen overlay */}
       {showCompletionOverlay && (
         <div className="fixed inset-0 z-50 bg-black/60 flex flex-col items-center justify-center pointer-events-none">
-          <div className="text-8xl mb-4 animate-bounce">✓</div>
+          <div className="text-8xl mb-4 animate-pop-in">✓</div>
           <div className="text-2xl font-bold text-white">{chapterTitle}</div>
           <div className="text-parchment-200 mt-2 text-sm">章節完成</div>
         </div>
       )}
 
-      {/* Scroll progress bar */}
-      <div
-        className="fixed top-[44px] left-0 z-30 h-0.5 bg-[#8B6418] dark:bg-[#C9A84C] transition-none pointer-events-none"
-        style={{ width: `${scrollProgress * 100}%` }}
-      />
+      {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
       <div className="max-w-[680px] mx-auto px-10 pt-8 pb-32 sm:pb-24">
         <div ref={topRef} />

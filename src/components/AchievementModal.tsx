@@ -19,7 +19,7 @@ export default function AchievementModal({ achievementId, onClose }: Props) {
   const label = ACHIEVEMENT_LABELS[achievementId] ?? { icon: '🎉', name: achievementId }
 
   useEffect(() => {
-    const timer = setTimeout(() => { onClose() }, 2000)
+    const timer = setTimeout(() => { onClose() }, 3500)
     return () => clearTimeout(timer)
   }, [onClose])
 
@@ -35,6 +35,7 @@ export default function AchievementModal({ achievementId, onClose }: Props) {
         <div className="text-7xl">{label.icon}</div>
         <div className="text-sm font-medium text-parchment-300 dark:text-[#A8906E]">成就解鎖！</div>
         <div className="text-2xl font-bold text-parchment-500 dark:text-[#EDE0C4]">{label.name}</div>
+        <div className="text-[10px] text-parchment-300 dark:text-[#5A4838] mt-3 opacity-60">點任意處關閉</div>
       </div>
     </div>
   )

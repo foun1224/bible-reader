@@ -106,10 +106,16 @@ function App() {
   const [achievements, setAchievements] = useState<Achievement[]>(() => {
     try { return JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '[]') } catch { return [] }
   })
-  const [pendingAchievement, setPendingAchievement] = useState<string | null>(null)
+  const [achievementQueue, setAchievementQueue] = useState<string[]>([])
 
   // Completion overlay
   const [showCompletionOverlay, setShowCompletionOverlay] = useState(false)
+
+  // Book complete toast
+  const [bookCompleteMessage, setBookCompleteMessage] = useState<string | null>(null)
+
+  // Scroll progress (lifted from Reader)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -189,9 +195,23 @@ function App() {
         next = [...prev, record]
       }
       saveCompletions(next)
+
+      // Check book completion (CKJV only)
+      if (src === 'ckjv' && book && ckjv) {
+        const bookComps = next.filter(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number))
+        if (bookComps.length >= book.chapters.length) {
+          // Was it just completed now? (prev didn't have enough)
+          const prevBookComps = prev.filter(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number))
+          if (prevBookComps.length < book.chapters.length) {
+            setBookCompleteMessage(`🎉 完成《${book.name}》！`)
+            setTimeout(() => setBookCompleteMessage(null), 2000)
+          }
+        }
+      }
+
       return next
     })
-  }, [])
+  }, [ckjv])
 
   // Achievement check effect — runs whenever completions or streak changes
   useEffect(() => {
@@ -240,7 +260,7 @@ function App() {
       const next = [...achievements, ...newlyUnlocked]
       setAchievements(next)
       localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(next))
-      setPendingAchievement(newlyUnlocked[0].id)
+      setAchievementQueue(q => [...q, ...newlyUnlocked.map(a => a.id)])
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, streak.currentStreak, ckjv])
@@ -407,12 +427,19 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-parchment-50 dark:bg-[#1A1410]">
-      {/* Achievement Modal */}
-      {pendingAchievement && (
+      {/* Achievement Modal — queue-based */}
+      {achievementQueue.length > 0 && (
         <AchievementModal
-          achievementId={pendingAchievement}
-          onClose={() => setPendingAchievement(null)}
+          achievementId={achievementQueue[0]}
+          onClose={() => setAchievementQueue(q => q.slice(1))}
         />
+      )}
+
+      {/* Book complete toast */}
+      {bookCompleteMessage && (
+        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#8B6418] dark:bg-[#C9A84C] text-white dark:text-[#1A1410] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
+          {bookCompleteMessage}
+        </div>
       )}
 
       {/* Stats Dashboard */}
@@ -496,7 +523,7 @@ function App() {
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] bg-parchment-50/80 dark:bg-[#1A1410]/80 backdrop-blur-sm shrink-0">
+        <div className="relative flex items-center justify-between px-4 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] bg-parchment-50/80 dark:bg-[#1A1410]/80 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
@@ -517,7 +544,7 @@ function App() {
                 className={`text-sm font-medium select-none ${
                   hasReadToday
                     ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.5)]'
-                    : 'text-parchment-300 dark:text-[#5A4838]'
+                    : 'text-parchment-300 dark:text-[#5A4838] animate-pulse'
                 }`}
                 title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : '今天還沒讀，別讓它斷掉！'}
               >
@@ -534,6 +561,25 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* G1: Today's plan progress */}
+            {readingPlan && (() => {
+              const planChaptersPerDay =
+                readingPlan.planId === 'yearly' ? Math.ceil(1189 / 365)
+                : readingPlan.planId === 'nt90' ? Math.ceil(260 / 90)
+                : (readingPlan.customChaptersPerDay ?? 3)
+              const todayCount = completions.filter(r =>
+                new Date(r.completedAt).toLocaleDateString('sv-SE') === todayStr
+              ).length
+              const done = todayCount >= planChaptersPerDay
+              return (
+                <span className={`text-xs select-none ${done ? 'text-green-500 dark:text-green-400' : 'text-parchment-400 dark:text-[#A8906E]'}`}>
+                  {done
+                    ? '✓ 今日達標'
+                    : <><span className="text-[#8B6418] dark:text-[#C9A84C] font-medium">{todayCount}/{planChaptersPerDay}</span>章</>
+                  }
+                </span>
+              )
+            })()}
             {/* Stats Dashboard button */}
             <button
               onClick={() => setStatsDashboardOpen(o => !o)}
@@ -569,6 +615,11 @@ function App() {
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
           </div>
+          {/* G4: Scroll progress bar inside toolbar */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8B6418]/70 dark:bg-[#C9A84C]/70 pointer-events-none transition-none"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
         </div>
 
         {/* Reader */}
@@ -593,6 +644,7 @@ function App() {
           resumeChapter={resumeChapter}
           onDismissResumeCTA={() => setShowResumeCTA(false)}
           showCompletionOverlay={showCompletionOverlay}
+          onScrollProgress={setScrollProgress}
         />
       </div>
     </div>

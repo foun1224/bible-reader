@@ -21,6 +21,17 @@ export default {
           dark: '#C9A84C',
         },
       },
+      keyframes: {
+        'pop-in': {
+          '0%': { transform: 'scale(0.5)', opacity: '0' },
+          '70%': { transform: 'scale(1.1)' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+      },
+      animation: {
+        'pop-in': 'pop-in 0.4s ease-out forwards',
+        'pulse': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+      },
     },
   },
   plugins: [],

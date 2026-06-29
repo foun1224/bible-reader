@@ -53,6 +53,7 @@ export default function StatsDashboard({
   const [customInput, setCustomInput] = useState<number>(3)
   const [showCustom, setShowCustom] = useState(false)
   const [choosingPlan, setChoosingPlan] = useState(false)
+  const [showFullHeatmap, setShowFullHeatmap] = useState(false)
 
   // --- Computed stats ---
   const ckjvCompletions = completions.filter(r => r.sourceId === 'ckjv')
@@ -180,11 +181,19 @@ export default function StatsDashboard({
 
           {/* 2. Heatmap */}
           <div>
-            <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] mb-2 uppercase tracking-wide">
-              過去 52 週
-            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] uppercase tracking-wide">
+                {showFullHeatmap ? '過去 52 週' : '最近 8 週'}
+              </h3>
+              <button
+                onClick={() => setShowFullHeatmap(v => !v)}
+                className="text-[10px] text-parchment-300 dark:text-[#5A4838] hover:text-parchment-400 dark:hover:text-[#A8906E] transition-colors"
+              >
+                {showFullHeatmap ? '收合 ↑' : '全年 ↓'}
+              </button>
+            </div>
             <div className="flex gap-0.5 overflow-x-auto pb-1">
-              {weeks.map((week, wi) => (
+              {(showFullHeatmap ? weeks : weeks.slice(-8)).map((week, wi) => (
                 <div key={wi} className="flex flex-col gap-0.5">
                   {week.map((active, di) => (
                     <div
