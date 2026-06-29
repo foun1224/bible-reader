@@ -9,9 +9,14 @@ interface Props {
   hasPrev: boolean
   hasNext: boolean
   chapterTitle: string
+  onMarkComplete: () => void
+  isCompleted: boolean
 }
 
-export default function Reader({ chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle }: Props) {
+export default function Reader({
+  chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle,
+  onMarkComplete, isCompleted,
+}: Props) {
   const topRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -25,6 +30,22 @@ export default function Reader({ chapter, fontSize, onPrevChapter, onNextChapter
       </div>
     )
   }
+
+  const completeBtn = (
+    <button
+      onClick={onMarkComplete}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
+        ${isCompleted
+          ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
+          : 'border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E]'
+        }`}
+      title={isCompleted ? '已完成' : '標記本章為完成'}
+      disabled={isCompleted}
+    >
+      <span>{isCompleted ? '✓' : '○'}</span>
+      <span className="hidden sm:inline">{isCompleted ? '已完成' : '完成本章'}</span>
+    </button>
+  )
 
   return (
     <div className="flex-1 overflow-y-auto relative">
@@ -47,7 +68,7 @@ export default function Reader({ chapter, fontSize, onPrevChapter, onNextChapter
           ))}
         </div>
 
-        {/* Chapter navigation */}
+        {/* Chapter navigation + complete button */}
         <div className="flex justify-between items-center mt-16 pt-6 border-t border-parchment-200 dark:border-[#3A3028]">
           <button
             onClick={onPrevChapter}
@@ -61,6 +82,12 @@ export default function Reader({ chapter, fontSize, onPrevChapter, onNextChapter
             <span>←</span>
             <span>上一章</span>
           </button>
+
+          {/* Complete button — desktop center */}
+          <div className="hidden sm:flex">
+            {completeBtn}
+          </div>
+
           <button
             onClick={onNextChapter}
             disabled={!hasNext}
@@ -90,7 +117,10 @@ export default function Reader({ chapter, fontSize, onPrevChapter, onNextChapter
           <span>←</span>
           <span>上一章</span>
         </button>
-        <span className="text-xs text-parchment-400 dark:text-[#A8906E] font-medium">{chapterTitle}</span>
+
+        {/* Complete button — mobile center */}
+        {completeBtn}
+
         <button
           onClick={onNextChapter}
           disabled={!hasNext}

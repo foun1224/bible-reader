@@ -34,3 +34,11 @@ export interface BookMark {
   chapter: number
   verse: number
 }
+
+export interface CompletionRecord {
+  sourceId: 'ckjv' | 'jasher'
+  bookId?: number
+  bookName?: string
+  chapter: number
+  completedAt: string  // ISO 8601 timestamp
+}

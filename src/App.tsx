@@ -1,10 +1,23 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark } from './types'
+import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
+const COMPLETIONS_KEY = 'bible-reader-completions'
+
+function loadCompletions(): CompletionRecord[] {
+  try {
+    return JSON.parse(localStorage.getItem(COMPLETIONS_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveCompletions(records: CompletionRecord[]) {
+  localStorage.setItem(COMPLETIONS_KEY, JSON.stringify(records))
+}
 
 function App() {
   const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -13,10 +26,13 @@ function App() {
   const [jasher, setJasher] = useState<JasherData | null>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
+
+  const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -63,6 +79,38 @@ function App() {
     localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bm))
   }, [])
 
+  // Record completion for the current chapter
+  const recordCompletion = useCallback((
+    src: 'ckjv' | 'jasher',
+    chapter: Chapter,
+    book?: Book | null
+  ) => {
+    setCompletions(prev => {
+      const record: CompletionRecord = {
+        sourceId: src,
+        bookId: book?.id as number | undefined,
+        bookName: book?.name,
+        chapter: chapter.number,
+        completedAt: new Date().toISOString(),
+      }
+      // Update existing or append
+      const idx = prev.findIndex(
+        r => r.sourceId === src &&
+          r.chapter === chapter.number &&
+          (src === 'jasher' ? true : r.bookId === (book?.id as number | undefined))
+      )
+      let next: CompletionRecord[]
+      if (idx >= 0) {
+        next = [...prev]
+        next[idx] = record
+      } else {
+        next = [...prev, record]
+      }
+      saveCompletions(next)
+      return next
+    })
+  }, [])
+
   const selectCkjvChapter = useCallback((book: Book, chapter: Chapter) => {
     setSource('ckjv')
     setActiveBook(book)
@@ -100,6 +148,10 @@ function App() {
   }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
 
   const handleNextChapter = useCallback(() => {
+    // Record completion for current chapter before navigating
+    if (activeChapter) {
+      recordCompletion(source, activeChapter, activeBook)
+    }
     if (source === 'jasher' && jasher && activeChapter) {
       const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
       if (idx < jasher.chapters.length - 1) selectJasherChapter(jasher.chapters[idx + 1])
@@ -116,7 +168,13 @@ function App() {
         }
       }
     }
-  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter, recordCompletion])
+
+  const handleMarkComplete = useCallback(() => {
+    if (activeChapter) {
+      recordCompletion(source, activeChapter, activeBook)
+    }
+  }, [source, activeChapter, activeBook, recordCompletion])
 
   const hasPrev = (() => {
     if (!activeChapter) return false
@@ -148,6 +206,28 @@ function App() {
     return false
   })()
 
+  // Check if current chapter is already completed
+  const isCurrentCompleted = (() => {
+    if (!activeChapter) return false
+    return completions.some(
+      r => r.sourceId === source &&
+        r.chapter === activeChapter.number &&
+        (source === 'jasher' ? true : r.bookId === (activeBook?.id as number | undefined))
+    )
+  })()
+
+  // Format a completion record for display
+  const formatCompletion = (r: CompletionRecord) => {
+    const d = new Date(r.completedAt)
+    const dateStr = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    const bookLabel = r.sourceId === 'jasher' ? '雅煞珥書' : (r.bookName ?? '未知')
+    return { bookLabel, dateStr }
+  }
+
+  const sortedCompletions = [...completions].sort(
+    (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+  )
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-parchment-50 dark:bg-[#1A1410] text-parchment-400 dark:text-[#A8906E]">
@@ -169,6 +249,7 @@ function App() {
         onSelectJasherChapter={selectJasherChapter}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        completions={completions}
       />
 
       {/* Mobile overlay backdrop */}
@@ -177,6 +258,49 @@ function App() {
           className="fixed inset-0 z-20 bg-black/30 sm:hidden"
           onClick={() => setSidebarOpen(false)}
         />
+      )}
+
+      {/* History panel overlay */}
+      {historyOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40"
+          onClick={() => setHistoryOpen(false)}
+        />
+      )}
+      {historyOpen && (
+        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-parchment-200 dark:border-[#3A3028] bg-parchment-50 dark:bg-[#221C17] overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-parchment-200 dark:border-[#3A3028] shrink-0">
+            <span className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4]">已完成章節</span>
+            <button
+              onClick={() => setHistoryOpen(false)}
+              className="p-1 rounded text-parchment-300 dark:text-[#3A3028] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+                <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto py-2">
+            {sortedCompletions.length === 0 ? (
+              <p className="px-4 py-6 text-sm text-parchment-300 dark:text-[#3A3028] text-center">尚無完成記錄</p>
+            ) : (
+              sortedCompletions.map((r, i) => {
+                const { bookLabel, dateStr } = formatCompletion(r)
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between px-4 py-2 hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+                  >
+                    <span className="text-sm text-parchment-500 dark:text-[#EDE0C4]">
+                      {bookLabel} · 第 {r.chapter} 章
+                    </span>
+                    <span className="text-xs text-parchment-300 dark:text-[#5A4838] ml-2 shrink-0">{dateStr}</span>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
       )}
 
       {/* Main area */}
@@ -205,6 +329,19 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* History button */}
+            <button
+              onClick={() => setHistoryOpen(o => !o)}
+              className="relative px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              title="已讀記錄"
+            >
+              📖 已讀
+              {completions.length > 0 && (
+                <span className="ml-1 text-[10px] text-gold dark:text-gold-dark font-medium">
+                  {completions.length}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
               className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
@@ -236,6 +373,8 @@ function App() {
               ? `雅煞珥·第${activeChapter.number}章`
               : ''
           }
+          onMarkComplete={handleMarkComplete}
+          isCompleted={isCurrentCompleted}
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { BibleData, JasherData, Book, Chapter } from '../types'
+import type { BibleData, JasherData, Book, Chapter, CompletionRecord } from '../types'
 
 interface Props {
   ckjv: BibleData | null
@@ -11,12 +11,13 @@ interface Props {
   onSelectJasherChapter: (chapter: Chapter) => void
   isOpen: boolean
   onClose: () => void
+  completions: CompletionRecord[]
 }
 
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
-  isOpen, onClose,
+  isOpen, onClose, completions,
 }: Props) {
   const [expandedBook, setExpandedBook] = useState<number | string | null>(
     activeBook?.id ?? null
@@ -32,6 +33,14 @@ export default function Sidebar({
 
   const oldTestament = ckjv?.books.filter(b => b.testament === '舊約') ?? []
   const newTestament = ckjv?.books.filter(b => b.testament === '新約') ?? []
+
+  // Helper: check if a ckjv chapter is completed
+  const isCkjvCompleted = (book: Book, chNum: number) =>
+    completions.some(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number) && r.chapter === chNum)
+
+  // Helper: check if a jasher chapter is completed
+  const isJasherCompleted = (chNum: number) =>
+    completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
 
   const renderBook = (book: Book) => {
     const isExpanded = expandedBook === book.id
@@ -61,19 +70,28 @@ export default function Sidebar({
         </button>
         {isExpanded && (
           <div className="flex flex-wrap gap-1 px-3 py-1 pb-2">
-            {book.chapters.map(ch => (
-              <button
-                key={ch.number}
-                onClick={() => onSelectCkjvChapter(book, ch)}
-                className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
-                  ${source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
-                    ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
-                    : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
-                  }`}
-              >
-                {ch.number}
-              </button>
-            ))}
+            {book.chapters.map(ch => {
+              const completed = isCkjvCompleted(book, ch.number)
+              const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
+              return (
+                <button
+                  key={ch.number}
+                  onClick={() => onSelectCkjvChapter(book, ch)}
+                  className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                    ${active
+                      ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
+                      : completed
+                      ? 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                      : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
+                    }`}
+                >
+                  {ch.number}
+                  {completed && !active && (
+                    <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
+                  )}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
@@ -96,6 +114,7 @@ export default function Sidebar({
       setShowJasher={setShowJasher}
       setExpandedBook={setExpandedBook}
       onSelectJasherChapter={onSelectJasherChapter}
+      isJasherCompleted={isJasherCompleted}
     />
   )
 
@@ -147,6 +166,7 @@ interface ContentProps {
   setShowJasher: (v: boolean) => void
   setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
+  isJasherCompleted: (chNum: number) => boolean
 }
 
 function SidebarContent({
@@ -156,6 +176,7 @@ function SidebarContent({
   renderBook,
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
+  isJasherCompleted,
 }: ContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -244,19 +265,28 @@ function SidebarContent({
           </button>
           {showJasher && (
             <div className="flex flex-wrap gap-1 px-3 pb-2 pt-1">
-              {jasher.chapters.map(ch => (
-                <button
-                  key={ch.number}
-                  onClick={() => onSelectJasherChapter(ch)}
-                  className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
-                    ${source === 'jasher' && activeChapter?.number === ch.number
-                      ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
-                      : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
-                    }`}
-                >
-                  {ch.number}
-                </button>
-              ))}
+              {jasher.chapters.map(ch => {
+                const completed = isJasherCompleted(ch.number)
+                const active = source === 'jasher' && activeChapter?.number === ch.number
+                return (
+                  <button
+                    key={ch.number}
+                    onClick={() => onSelectJasherChapter(ch)}
+                    className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                      ${active
+                        ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
+                        : completed
+                        ? 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                        : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
+                      }`}
+                  >
+                    {ch.number}
+                    {completed && !active && (
+                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
