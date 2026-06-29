@@ -216,7 +216,7 @@ function SidebarContent({
   }, [q, allFiltered.length])
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Search box */}
       <div className="px-3 py-2 shrink-0">
         <input
