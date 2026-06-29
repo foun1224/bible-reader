@@ -20,8 +20,8 @@ body::before {
 }
 
 .dark body {
-  background-color: #171411;
-  color: #EEE6DC;
+  background-color: #17191E;
+  color: #E4DDD0;
 }
 
 .dark body::before {
@@ -31,4 +31,4 @@ body::before {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D4CEC4; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb { background: #3A332D; }
+.dark ::-webkit-scrollbar-thumb { background: #2E3240; }

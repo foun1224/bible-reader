@@ -538,14 +538,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-[#171411] text-stone-400 dark:text-[#A09890]">
+      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-[#17191E] text-stone-400 dark:text-[#A09890]">
         載入中…
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#171411]">
+    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#17191E]">
       {/* Achievement Modal — queue-based */}
       {achievementQueue.length > 0 && (
         <AchievementModal
@@ -556,7 +556,7 @@ function App() {
 
       {/* Book complete toast */}
       {bookCompleteMessage && (
-        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#171411] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
+        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
           {bookCompleteMessage}
         </div>
       )}
@@ -623,12 +623,12 @@ function App() {
         />
       )}
       {historyOpen && (
-        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-stone-200 dark:border-[#3A332D] bg-stone-50 dark:bg-[#211D19] overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#3A332D] shrink-0">
+        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#22242C] overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
             <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">已完成章節</span>
             <button
               onClick={() => setHistoryOpen(false)}
-              className="p-1 rounded text-stone-300 dark:text-[#3A332D] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="p-1 rounded text-stone-300 dark:text-[#2E3240] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
             >
               <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
                 <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -637,14 +637,14 @@ function App() {
           </div>
           <div className="flex-1 overflow-y-auto py-2">
             {sortedCompletions.length === 0 ? (
-              <p className="px-4 py-6 text-sm text-stone-300 dark:text-[#3A332D] text-center">尚無完成記錄</p>
+              <p className="px-4 py-6 text-sm text-stone-300 dark:text-[#2E3240] text-center">尚無完成記錄</p>
             ) : (
               sortedCompletions.map((r, i) => {
                 const { bookLabel, dateStr } = formatCompletion(r)
                 return (
                   <div
                     key={i}
-                    className="flex items-center justify-between px-4 py-2 hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+                    className="flex items-center justify-between px-4 py-2 hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
                   >
                     <span className="text-sm text-stone-500 dark:text-[#E4DDD0]">
                       {bookLabel} · 第 {r.chapter} 章
@@ -661,12 +661,12 @@ function App() {
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
-        <div className={`relative flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-[#3A332D]/60 bg-stone-50/90 dark:bg-[#171411]/90 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`relative flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-[#2E3240]/60 bg-stone-50/90 dark:bg-[#17191E]/90 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               aria-label="開啟目錄"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -722,7 +722,7 @@ function App() {
             {/* Stats Dashboard button */}
             <button
               onClick={() => setStatsDashboardOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="閱讀統計"
             >
               📊
@@ -730,7 +730,7 @@ function App() {
             {/* History button */}
             <button
               onClick={() => setHistoryOpen(o => !o)}
-              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="已讀記錄"
             >
               📖 已讀
@@ -742,21 +742,21 @@ function App() {
             </button>
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="切換字體大小"
             >
               {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
             <button
               onClick={() => setDark(d => !d)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
             {/* Notes Panel toggle */}
             <button
               onClick={() => setNotesPanelOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="筆記回顧"
               aria-label="開啟筆記回顧"
             >
@@ -765,7 +765,7 @@ function App() {
             {/* Immersive mode toggle */}
             <button
               onClick={() => setIsImmersive(v => !v)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="沈浸閱讀模式（快捷鍵 F）"
               aria-label="進入沈浸閱讀模式"
             >

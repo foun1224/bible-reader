@@ -18,7 +18,7 @@ export default function CompletionBanner({ chapterLabel, bookName, hasNext, onCo
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-      <div className="relative mx-4 w-full max-w-sm rounded-2xl px-6 py-8 text-center shadow-2xl bg-stone-50 dark:bg-[#211D19] border border-stone-200 dark:border-[#3A332D]">
+      <div className="relative mx-4 w-full max-w-sm rounded-2xl px-6 py-8 text-center shadow-2xl bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]">
         {phase === 'celebrate' && (
           <div className="animate-fadeInScale">
             <div className="text-5xl mb-4 animate-bounceOnce">{bookName ? '🎉' : '✅'}</div>
@@ -37,21 +37,21 @@ export default function CompletionBanner({ chapterLabel, bookName, hasNext, onCo
           <div className="animate-slideUp">
             <div className="text-4xl mb-4">{bookName ? '🎉' : '✅'}</div>
             <p className="text-sm text-stone-300 dark:text-[#A09890] mb-1">{chapterLabel}</p>
-            <p className="text-base font-semibold text-stone-500 dark:text-[#EEE6DC] mb-6">
+            <p className="text-base font-semibold text-stone-500 dark:text-[#E4DDD0] mb-6">
               {bookName ? `${bookName} 讀完了！` : '章節完成！'}
             </p>
             <div className="flex flex-col gap-2">
               {hasNext && (
                 <button
                   onClick={onContinue}
-                  className="w-full py-2.5 rounded-lg text-sm font-medium bg-sage dark:bg-sage-dark text-white dark:text-[#171411] hover:opacity-90 transition-opacity"
+                  className="w-full py-2.5 rounded-lg text-sm font-medium bg-sage dark:bg-sage-dark text-white dark:text-[#17191E] hover:opacity-90 transition-opacity"
                 >
                   繼續下一章 →
                 </button>
               )}
               <button
                 onClick={onDismiss}
-                className="w-full py-2.5 rounded-lg text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#3A332D] transition-colors"
+                className="w-full py-2.5 rounded-lg text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
               >
                 留在此章
               </button>

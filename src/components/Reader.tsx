@@ -196,7 +196,7 @@ export default function Reader({
 
   if (!chapter) {
     return (
-      <div className="flex-1 flex items-center justify-center text-stone-300 dark:text-[#3A332D]">
+      <div className="flex-1 flex items-center justify-center text-stone-300 dark:text-[#2E3240]">
         請從左側選擇書卷與章節
       </div>
     )
@@ -212,7 +212,7 @@ export default function Reader({
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
         ${isCompleted
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
-          : 'border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19]'
+          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
         }`}
       title={isCompleted ? '已完成' : '標記本章為完成'}
       disabled={isCompleted}
@@ -250,7 +250,7 @@ export default function Reader({
 
       {/* Highlight Picker Drawer */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-40 bg-stone-50 dark:bg-[#211D19] rounded-t-2xl shadow-2xl transition-transform duration-300 ${picker ? 'translate-y-0' : 'translate-y-full'}`}
+        className={`fixed bottom-0 left-0 right-0 z-40 bg-stone-50 dark:bg-[#22242C] rounded-t-2xl shadow-2xl transition-transform duration-300 ${picker ? 'translate-y-0' : 'translate-y-full'}`}
       >
         {picker && (
           <div className="px-5 pt-4 pb-8 max-w-lg mx-auto">
@@ -261,7 +261,7 @@ export default function Reader({
               </span>
               <button
                 onClick={closePicker}
-                className="p-1.5 rounded-full text-stone-400 hover:bg-stone-100 dark:hover:bg-[#3A332D] transition-colors"
+                className="p-1.5 rounded-full text-stone-400 hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
                 aria-label="關閉"
               >
                 <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
@@ -271,7 +271,7 @@ export default function Reader({
             </div>
 
             {/* Divider */}
-            <div className="border-t border-stone-200 dark:border-[#3A332D] mb-3" />
+            <div className="border-t border-stone-200 dark:border-[#2E3240] mb-3" />
 
             {/* Verse preview */}
             <p className="text-xs text-stone-400 dark:text-[#A09890] mb-4 line-clamp-2 leading-relaxed">
@@ -307,26 +307,26 @@ export default function Reader({
               value={pickerNote}
               onChange={e => setPickerNote(e.target.value)}
               placeholder="寫下你的感動..."
-              className="w-full rounded-lg border border-stone-200 dark:border-[#3A332D] bg-white dark:bg-[#171411] text-stone-500 dark:text-[#E4DDD0] text-sm px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-stone-300 dark:focus:ring-[#4F7358] placeholder-stone-300 dark:placeholder-[#6B6460]"
+              className="w-full rounded-lg border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] text-sm px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-stone-300 dark:focus:ring-[#4F7358] placeholder-stone-300 dark:placeholder-[#6B6460]"
             />
 
             {/* Copy / Share / Save buttons */}
             <div className="flex items-center gap-2 mt-3">
               <button
                 onClick={handleCopy}
-                className="flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#3A332D] transition-colors"
+                className="flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
               >
                 {copied ? '✓ 已複製' : '複製經文'}
               </button>
               <button
                 onClick={handleShare}
-                className={`flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#3A332D] transition-colors ${typeof navigator !== 'undefined' && !navigator.share ? 'hidden' : ''}`}
+                className={`flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors ${typeof navigator !== 'undefined' && !navigator.share ? 'hidden' : ''}`}
               >
                 分享經文
               </button>
               <button
                 onClick={handleSave}
-                className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#171411] font-medium hover:opacity-90 transition-opacity"
+                className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
               >
                 儲存
               </button>
@@ -430,14 +430,14 @@ export default function Reader({
         </div>
 
         {/* Chapter navigation + complete button */}
-        <div className={`flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#3A332D] ${isImmersive ? 'hidden' : ''}`}>
+        <div className={`flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}
             className={`flex items-center gap-1.5 px-4 py-2 rounded text-sm transition-colors
               ${hasPrev
-                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] border border-stone-200 dark:border-[#3A332D]'
-                : 'text-stone-200 dark:text-[#3A332D] cursor-not-allowed'
+                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+                : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
               }`}
           >
             <span>←</span>
@@ -454,8 +454,8 @@ export default function Reader({
             disabled={!hasNext}
             className={`flex items-center gap-1.5 px-4 py-2 rounded text-sm transition-colors
               ${hasNext
-                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] border border-stone-200 dark:border-[#3A332D]'
-                : 'text-stone-200 dark:text-[#3A332D] cursor-not-allowed'
+                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+                : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
               }`}
           >
             <span>下一章</span>
@@ -465,14 +465,14 @@ export default function Reader({
       </div>
 
       {/* Mobile bottom nav bar */}
-      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#171411]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#3A332D]`}>
+      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]`}>
         <button
           onClick={onPrevChapter}
           disabled={!hasPrev}
           className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
             ${hasPrev
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] border border-stone-200 dark:border-[#3A332D]'
-              : 'text-stone-200 dark:text-[#3A332D] cursor-not-allowed'
+              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
             }`}
         >
           <span>←</span>
@@ -487,8 +487,8 @@ export default function Reader({
           disabled={!hasNext}
           className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
             ${hasNext
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] border border-stone-200 dark:border-[#3A332D]'
-              : 'text-stone-200 dark:text-[#3A332D] cursor-not-allowed'
+              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
             }`}
         >
           <span>下一章</span>

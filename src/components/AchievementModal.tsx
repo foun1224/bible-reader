@@ -29,7 +29,7 @@ export default function AchievementModal({ achievementId, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="flex flex-col items-center gap-3 px-10 py-8 rounded-2xl bg-stone-50 dark:bg-[#211D19] shadow-2xl"
+        className="flex flex-col items-center gap-3 px-10 py-8 rounded-2xl bg-stone-50 dark:bg-[#22242C] shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="text-7xl">{label.icon}</div>

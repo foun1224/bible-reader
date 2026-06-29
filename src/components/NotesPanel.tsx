@@ -31,15 +31,15 @@ export default function NotesPanel({ isOpen, onClose, highlights, ckjv, onJumpTo
 
   return (
     <div
-      className={`fixed top-0 right-0 z-50 h-full overflow-y-auto bg-stone-50 dark:bg-[#211D19] border-l border-stone-200 dark:border-[#3A332D] transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`fixed top-0 right-0 z-50 h-full overflow-y-auto bg-stone-50 dark:bg-[#22242C] border-l border-stone-200 dark:border-[#2E3240] transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       style={{ width: 'min(100vw, 420px)' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#3A332D] sticky top-0 bg-stone-50 dark:bg-[#211D19] z-10">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#2E3240] sticky top-0 bg-stone-50 dark:bg-[#22242C] z-10">
         <span className="text-sm font-semibold text-stone-600 dark:text-[#E4DDD0]">📝 我的筆記</span>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-full text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#3A332D] transition-colors"
+          className="p-1.5 rounded-full text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
           aria-label="關閉"
         >
           <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
@@ -63,7 +63,7 @@ export default function NotesPanel({ isOpen, onClose, highlights, ckjv, onJumpTo
             return (
               <div
                 key={h.id}
-                className="rounded-xl border border-stone-200 dark:border-[#3A332D] bg-white dark:bg-[#171411] px-4 py-3 space-y-1.5"
+                className="rounded-xl border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] px-4 py-3 space-y-1.5"
               >
                 {/* Top row */}
                 <div className="flex items-center justify-between gap-2">
