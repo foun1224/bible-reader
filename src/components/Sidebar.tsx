@@ -58,7 +58,7 @@ export default function Sidebar({
             }
           }}
           title={book.name}
-          className={`w-full text-left px-3 py-1.5 text-sm rounded transition-colors truncate
+          className={`w-full text-left px-3 py-1.5 text-sm rounded transition-colors
             ${isActive
               ? 'bg-stone-100 dark:bg-[#22242C] text-sage dark:text-sage-dark font-medium'
               : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
@@ -78,12 +78,11 @@ export default function Sidebar({
                 <button
                   key={ch.number}
                   onClick={() => onSelectCkjvChapter(book, ch)}
-                  className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                  className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
                     ${active
                       ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
-                      : completed
-                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-stone-200/60 dark:ring-stone-600/30'
-                      : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
+                      : 'bg-stone-100 dark:bg-[#22242C] hover:bg-stone-200 dark:hover:bg-[#2E3240] ' +
+                        (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-400 dark:text-[#A09890]')
                     }`}
                 >
                   {ch.number}
