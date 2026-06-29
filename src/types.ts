@@ -29,7 +29,7 @@ export interface JasherData {
 }
 
 export interface BookMark {
-  sourceId: string    // 'ckjv' | 'jasher'
+  sourceId: 'ckjv' | 'jasher'
   bookId?: number
   chapter: number
   verse: number

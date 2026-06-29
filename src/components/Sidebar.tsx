@@ -22,12 +22,12 @@ export default function Sidebar({
     activeBook?.id ?? null
   )
   const [showJasher, setShowJasher] = useState(source === 'jasher')
+  const [search, setSearch] = useState('')
 
   // P1-2: sync expandedBook when bookmark restores a different book
   useEffect(() => {
     if (activeBook?.id != null) setExpandedBook(activeBook.id)
   }, [activeBook?.id])
-  const [search, setSearch] = useState('')
 
   const filteredBooks = ckjv?.books.filter(b =>
     b.name.includes(search) || b.nameEn?.toLowerCase().includes(search.toLowerCase())
@@ -83,26 +83,31 @@ export default function Sidebar({
     )
   }
 
+  const sidebarContent = (
+    <SidebarContent
+      search={search}
+      setSearch={setSearch}
+      oldTestament={oldTestament}
+      newTestament={newTestament}
+      filteredBooks={filteredBooks}
+      renderBook={renderBook}
+      jasher={jasher}
+      source={source}
+      activeChapter={activeChapter}
+      showJasher={showJasher}
+      setShowJasher={setShowJasher}
+      setExpandedBook={setExpandedBook}
+      onSelectJasherChapter={onSelectJasherChapter}
+    />
+  )
+
   // On desktop (sm+): always show as side panel (w-52, relative)
   // On mobile (<sm): show as fixed overlay from left when isOpen
   return (
     <>
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-52 shrink-0 flex-col border-r border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 overflow-hidden">
-        <SidebarContent
-          search={search}
-          setSearch={setSearch}
-          oldTestament={oldTestament}
-          newTestament={newTestament}
-          filteredBooks={filteredBooks}
-          renderBook={renderBook}
-          jasher={jasher}
-          source={source}
-          activeChapter={activeChapter}
-          showJasher={showJasher}
-          setShowJasher={setShowJasher}
-          onSelectJasherChapter={onSelectJasherChapter}
-        />
+        {sidebarContent}
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -125,20 +130,7 @@ export default function Sidebar({
             </svg>
           </button>
         </div>
-        <SidebarContent
-          search={search}
-          setSearch={setSearch}
-          oldTestament={oldTestament}
-          newTestament={newTestament}
-          filteredBooks={filteredBooks}
-          renderBook={renderBook}
-          jasher={jasher}
-          source={source}
-          activeChapter={activeChapter}
-          showJasher={showJasher}
-          setShowJasher={setShowJasher}
-          onSelectJasherChapter={onSelectJasherChapter}
-        />
+        {sidebarContent}
       </div>
     </>
   )
@@ -156,7 +148,8 @@ interface ContentProps {
   source: 'ckjv' | 'jasher'
   activeChapter: Chapter | null
   showJasher: boolean
-  setShowJasher: (fn: (v: boolean) => boolean) => void
+  setShowJasher: (v: boolean) => void
+  setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
 }
 
@@ -165,8 +158,12 @@ function SidebarContent({
   oldTestament, newTestament, filteredBooks,
   renderBook,
   jasher, source, activeChapter,
-  showJasher, setShowJasher, onSelectJasherChapter,
+  showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
 }: ContentProps) {
+  // P2-4: search results grouped by testament; empty groups hidden
+  const searchOld = search ? filteredBooks.filter(b => b.testament === '舊約') : oldTestament
+  const searchNew = search ? filteredBooks.filter(b => b.testament === '新約') : newTestament
+
   return (
     <>
       {/* Search */}
@@ -181,20 +178,20 @@ function SidebarContent({
       </div>
 
       <div className="flex-1 overflow-y-auto py-1">
-        {/* CKJV */}
-        {!search && (
+        {/* P2-4: always show testament group headers; hide empty groups */}
+        {searchOld.length > 0 && (
           <div className="px-3 py-1 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mt-1">
             舊約
           </div>
         )}
-        {(search ? filteredBooks.filter(b => b.testament === '舊約') : oldTestament).map(renderBook)}
+        {searchOld.map(renderBook)}
 
-        {!search && (
+        {searchNew.length > 0 && (
           <div className="px-3 py-1 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mt-3">
             新約
           </div>
         )}
-        {(search ? filteredBooks.filter(b => b.testament === '新約') : newTestament).map(renderBook)}
+        {searchNew.map(renderBook)}
 
         {/* Jasher */}
         {jasher && (

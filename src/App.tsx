@@ -91,7 +91,7 @@ function App() {
   }
 
   return (
-    <div className={`flex h-screen overflow-hidden bg-stone-50 dark:bg-stone-900 ${dark ? 'dark' : ''}`}>
+    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-stone-900">
       {/* Sidebar — desktop: always visible; mobile: overlay */}
       <Sidebar
         ckjv={ckjv}
@@ -132,9 +132,9 @@ function App() {
             </button>
             <span className="text-base font-bold text-stone-700 dark:text-stone-200">
               {source === 'ckjv' && activeBook
-                ? `${activeBook.name} ${activeChapter?.number} 章`
+                ? `${activeBook.name} ${activeChapter?.number} 章${activeChapter ? ` · 共 ${activeChapter.verses.length} 節` : ''}`
                 : source === 'jasher' && activeChapter
-                ? `雅煞珥書 ${activeChapter.number} 章`
+                ? `雅煞珥書 ${activeChapter.number} 章 · 共 ${activeChapter.verses.length} 節`
                 : ''}
             </span>
           </div>
@@ -144,7 +144,7 @@ function App() {
               className="px-2 py-1 text-xs rounded border border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700"
               title="切換字體大小"
             >
-              字{fontSize === 0 ? '小' : fontSize === 1 ? '中' : '大'}
+              {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
             <button
               onClick={() => setDark(d => !d)}
