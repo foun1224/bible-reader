@@ -328,36 +328,6 @@ export default function StatsDashboard({
             )}
           </div>
 
-          {/* 5. Achievements */}
-          <div>
-            <h3 className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">
-              成就
-            </h3>
-            <div className="space-y-2">
-              {ACHIEVEMENT_META.map(({ id, icon, name, desc }) => {
-                const unlocked = unlockedIds.has(id)
-                const date = getUnlockedDate(id)
-                return (
-                  <div
-                    key={id}
-                    className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-opacity
-                      ${unlocked ? 'opacity-100' : 'opacity-40'}
-                      bg-stone-100 dark:bg-[#22242C]
-                    `}
-                  >
-                    <span className={`text-xl shrink-0 ${unlocked ? '' : 'grayscale'}`}>{icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-stone-500 dark:text-[#E4DDD0]">{name}</div>
-                      <div className="text-[10px] text-stone-300 dark:text-[#6B6460]">{desc}</div>
-                    </div>
-                    {unlocked && date && (
-                      <span className="text-[10px] text-[#C17D3A] dark:text-[#D4935C] shrink-0">{date}</span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         </div>
       </div>
     </>

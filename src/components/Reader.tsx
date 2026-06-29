@@ -214,11 +214,11 @@ export default function Reader({
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
           : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
         }`}
-      title={isCompleted ? '已完成' : '標記本章為完成'}
+      title={isCompleted ? '已讀' : '標記已讀'}
       disabled={isCompleted}
     >
       <span>{isCompleted ? '✓' : '○'}</span>
-      <span className="hidden sm:inline">{isCompleted ? '已完成' : '完成本章'}</span>
+      <span className="hidden sm:inline">{isCompleted ? '已讀' : '標記已讀'}</span>
     </button>
   )
 
