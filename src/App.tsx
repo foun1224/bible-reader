@@ -6,7 +6,7 @@ import StatsDashboard from './components/StatsDashboard'
 import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
-import DailyDevotionPanel from './components/DailyDevotionPanel'
+import DailyDevotional from './components/DailyDevotional'
 import SearchModal from './components/SearchModal'
 import MoreMenu from './components/MoreMenu'
 import ChapterGrid from './components/ChapterGrid'
@@ -526,6 +526,14 @@ function App() {
   const todayStr = today()
   const hasReadToday = streak.lastReadDate === todayStr
   const showStreak = streak.currentStreak > 0
+  const todayCount = completions.filter(r =>
+    new Date(r.completedAt).toLocaleDateString('sv-SE') === todayStr
+  ).length
+  const planChaptersPerDay = readingPlan
+    ? readingPlan.planId === 'yearly' ? Math.ceil(1189 / 365)
+    : readingPlan.planId === 'nt90' ? Math.ceil(260 / 90)
+    : (readingPlan.customChaptersPerDay ?? 3)
+    : null
 
   // Bookmark for Resume CTA
   let bookmark: BookMark | null = null
@@ -600,12 +608,15 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
-      {/* Daily Devotion Panel */}
-      <DailyDevotionPanel
+      {/* Daily Devotional Panel */}
+      <DailyDevotional
         isOpen={devotionOpen}
         onClose={() => setDevotionOpen(false)}
         ckjv={ckjv}
-        onJumpTo={handleJumpTo}
+        onNavigate={(book, chapter) => {
+          selectCkjvChapter(book, chapter)
+          setDevotionOpen(false)
+        }}
       />
 
       {/* Search Modal */}
@@ -707,7 +718,7 @@ function App() {
             {/* Streak — minimal */}
             {showStreak && (
               <span
-                className={`text-xs select-none ${hasReadToday ? 'text-orange-400' : 'text-stone-300 dark:text-[#6B6460]'}`}
+                className={`text-xs select-none ${hasReadToday ? 'text-amber-400' : 'text-stone-300 dark:text-[#6B6460]'}`}
                 title={hasReadToday ? `連續 ${streak.currentStreak} 天，最長 ${streak.longestStreak} 天` : '今天還沒讀'}
               >
                 {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}日
@@ -746,6 +757,7 @@ function App() {
             <button
               onClick={() => setDark(d => !d)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title={dark ? '切換淺色模式' : '切換深色模式'}
             >
               {dark ? '☀' : '☽'}
             </button>

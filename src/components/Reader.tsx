@@ -4,21 +4,21 @@ import type { Chapter, Highlight } from '../types'
 type HighlightColor = 'yellow' | 'red' | 'green' | 'blue'
 
 const COLOR_BG: Record<HighlightColor, string> = {
-  yellow: 'bg-yellow-100/70 dark:bg-yellow-900/30',
-  red: 'bg-red-100/70 dark:bg-red-900/30',
-  green: 'bg-green-100/70 dark:bg-green-900/30',
-  blue: 'bg-blue-100/70 dark:bg-blue-900/30',
+  yellow: 'bg-amber-50/90 dark:bg-amber-950/25',
+  red: 'bg-red-50/80 dark:bg-red-950/20',
+  green: 'bg-green-50/80 dark:bg-green-950/20',
+  blue: 'bg-blue-50/80 dark:bg-blue-950/20',
 }
 
 const COLOR_DOT: Record<HighlightColor, string> = {
-  yellow: 'text-yellow-500',
-  red: 'text-red-500',
-  green: 'text-green-500',
-  blue: 'text-blue-500',
+  yellow: 'text-amber-400',
+  red: 'text-red-400',
+  green: 'text-green-400',
+  blue: 'text-blue-400',
 }
 
 const COLOR_SWATCH: Record<HighlightColor, string> = {
-  yellow: 'bg-yellow-400',
+  yellow: 'bg-amber-300',
   red: 'bg-red-400',
   green: 'bg-green-400',
   blue: 'bg-blue-400',
@@ -406,8 +406,8 @@ export default function Reader({
                 }}
               >
                 <sup
-                  className="text-sage dark:text-sage-dark select-none mr-0.5"
-                  style={{ fontSize: '9px', fontWeight: 400, opacity: 0.35, verticalAlign: 'super' }}
+                  className="text-sage dark:text-sage-dark select-none mr-0.5 opacity-35 group-hover:opacity-60 transition-opacity duration-150"
+                  style={{ fontSize: '9px', fontWeight: 400, verticalAlign: 'super' }}
                 >
                   {v.number}
                 </sup>
