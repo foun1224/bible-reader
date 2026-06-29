@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { StreakData, CompletionRecord, BibleData, Achievement, ReadingPlan } from '../types'
+import type { StreakData, CompletionRecord, BibleData, ReadingPlan } from '../types'
 
 interface Props {
   isOpen: boolean
@@ -7,21 +7,10 @@ interface Props {
   streak: StreakData
   completions: CompletionRecord[]
   ckjv: BibleData | null
-  achievements: Achievement[]
   readingPlan: ReadingPlan | null
   onSetPlan: (plan: ReadingPlan) => void
   onClearPlan: () => void
 }
-
-const ACHIEVEMENT_META: { id: string; icon: string; name: string; desc: string }[] = [
-  { id: 'first_chapter', icon: '🌱', name: '第一章',   desc: '讀完第一章' },
-  { id: 'first_book',    icon: '📖', name: '第一本書', desc: '完成第一本書' },
-  { id: 'streak_7',      icon: '🔥', name: '連續7天',  desc: '保持連續閱讀7天' },
-  { id: 'streak_30',     icon: '💫', name: '連續30天', desc: '保持連續閱讀30天' },
-  { id: 'nt_complete',   icon: '✨', name: '新約完成', desc: '完成整本新約' },
-  { id: 'ot_complete',   icon: '🏆', name: '舊約完成', desc: '完成整本舊約' },
-  { id: 'century',       icon: '💯', name: '百章勇士', desc: '讀完100章' },
-]
 
 function today(): string {
   return new Date().toLocaleDateString('sv-SE')
@@ -48,7 +37,7 @@ function buildHeatmap(completions: CompletionRecord[]): boolean[] {
 }
 
 export default function StatsDashboard({
-  isOpen, onClose, streak, completions, ckjv, achievements, readingPlan, onSetPlan, onClearPlan,
+  isOpen, onClose, streak, completions, ckjv, readingPlan, onSetPlan, onClearPlan,
 }: Props) {
   const [customInput, setCustomInput] = useState<number>(3)
   const [showCustom, setShowCustom] = useState(false)
@@ -96,13 +85,6 @@ export default function StatsDashboard({
     if (bc.length === 0) return 'none'
     if (bc.length >= totalChapters) return 'done'
     return 'partial'
-  }
-
-  const unlockedIds = new Set(achievements.map(a => a.id))
-  const getUnlockedDate = (id: string): string | null => {
-    const a = achievements.find(x => x.id === id)
-    if (!a) return null
-    return new Date(a.unlockedAt).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
   }
 
   const handleSetPlan = (planId: 'yearly' | 'nt90' | 'custom') => {

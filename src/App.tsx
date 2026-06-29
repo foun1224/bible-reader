@@ -3,7 +3,6 @@ import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, 
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
-import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
 import DailyDevotional from './components/DailyDevotional'
@@ -513,7 +512,6 @@ function App() {
         streak={streak}
         completions={completions}
         ckjv={ckjv}
-        achievements={achievements}
         readingPlan={readingPlan}
         onSetPlan={handleSetPlan}
         onClearPlan={handleClearPlan}
