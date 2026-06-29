@@ -99,6 +99,7 @@ function DevotionalSection({ title, children, defaultOpen = true }: {
 interface Props {
   isOpen: boolean
   onClose: () => void
+  initialTab?: '領受' | '默想' | '筆記'
   // For 領受 tab
   ckjv: BibleData | null
   onNavigate: (book: Book, chapter: Chapter) => void
@@ -119,7 +120,7 @@ interface Props {
 
 // ── Component ────────────────────────────────────────────────
 export default function ReflectionPanel({
-  isOpen, onClose,
+  isOpen, onClose, initialTab,
   ckjv, onNavigate,
   currentSource, currentBookId, currentChapter, currentChapterLabel,
   highlights, onJumpTo,
@@ -127,6 +128,10 @@ export default function ReflectionPanel({
 }: Props) {
   type Tab = '領受' | '默想' | '筆記'
   const [tab, setTab] = useState<Tab>('領受')
+
+  useEffect(() => {
+    if (isOpen && initialTab) setTab(initialTab)
+  }, [isOpen, initialTab])
 
   // ── 領受 tab state ────────────────────────────────────────
   const [devotionalPlan, setDevotionalPlan] = useState<DevotionalPlan | null>(null)

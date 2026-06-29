@@ -151,6 +151,7 @@ function App() {
 
   // Reflection panel
   const [reflectionPanelOpen, setReflectionPanelOpen] = useState(false)
+  const [reflectionInitialTab, setReflectionInitialTab] = useState<'領受' | '默想' | '筆記'>('領受')
 
   // Search modal
   const [searchOpen, setSearchOpen] = useState(false)
@@ -534,6 +535,7 @@ function App() {
       <ReflectionPanel
         isOpen={reflectionPanelOpen}
         onClose={() => setReflectionPanelOpen(false)}
+        initialTab={reflectionInitialTab}
         ckjv={ckjv}
         onNavigate={(book, chapter) => {
           selectCkjvChapter(book, chapter)
@@ -793,8 +795,8 @@ function App() {
         isOpen={moreOpen}
         onClose={() => setMoreOpen(false)}
         onSearch={() => { setSearchOpen(true); setMoreOpen(false) }}
-        onReflection={() => { setReflectionPanelOpen(true); setMoreOpen(false) }}
-        onNotes={() => { setReflectionPanelOpen(true); setMoreOpen(false) }}
+        onReflection={() => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true); setMoreOpen(false) }}
+        onNotes={() => { setReflectionInitialTab('筆記'); setReflectionPanelOpen(true); setMoreOpen(false) }}
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
       />
@@ -832,7 +834,7 @@ function App() {
           <div className="flex border-b border-stone-100 dark:border-[#2E3240]">
             {[
               { label: '搜尋', icon: <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: () => setSearchOpen(true) },
-              { label: '反思', icon: '✍️', fn: () => setReflectionPanelOpen(true) },
+              { label: '反思', icon: '✍️', fn: () => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true) } },
               { label: '更多', icon: '⋯', fn: () => setMoreOpen(true) },
             ].map(({ label, icon, fn }) => (
               <button
