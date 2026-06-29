@@ -157,11 +157,35 @@ function SidebarContent({
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
 }: ContentProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const q = searchQuery.trim().toLowerCase()
+  const filteredOld = q ? oldTestament.filter(b => b.name.toLowerCase().includes(q)) : oldTestament
+  const filteredNew = q ? newTestament.filter(b => b.name.toLowerCase().includes(q)) : newTestament
+
+  // Auto-expand single match
+  const allFiltered = [...filteredOld, ...filteredNew]
+  useEffect(() => {
+    if (q && allFiltered.length === 1) {
+      setExpandedBook(allFiltered[0].id)
+    }
+  }, [q, allFiltered.length])
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Search box */}
+      <div className="px-3 py-2 shrink-0">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="搜尋書卷…"
+          className="w-full px-2.5 py-1.5 text-xs rounded border border-parchment-200 dark:border-[#3A3028] bg-parchment-50 dark:bg-[#1A1410] text-parchment-500 dark:text-[#EDE0C4] placeholder-parchment-300 dark:placeholder-[#3A3028] focus:outline-none focus:border-gold dark:focus:border-gold-dark transition-colors"
+        />
+      </div>
       <div className="flex-1 overflow-y-auto py-2">
         {/* 舊約 group header */}
-        {oldTestament.length > 0 && (
+        {filteredOld.length > 0 && (
           <>
             <button
               onClick={() => setOldExpanded(!oldExpanded)}
@@ -172,14 +196,14 @@ function SidebarContent({
             </button>
             {oldExpanded && (
               <div className="pb-1">
-                {oldTestament.map(renderBook)}
+                {filteredOld.map(renderBook)}
               </div>
             )}
           </>
         )}
 
         {/* 新約 group header */}
-        {newTestament.length > 0 && (
+        {filteredNew.length > 0 && (
           <>
             <button
               onClick={() => setNewExpanded(!newExpanded)}
@@ -190,7 +214,7 @@ function SidebarContent({
             </button>
             {newExpanded && (
               <div className="pb-1">
-                {newTestament.map(renderBook)}
+                {filteredNew.map(renderBook)}
               </div>
             )}
           </>

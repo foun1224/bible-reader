@@ -229,6 +229,13 @@ function App() {
           onNextChapter={handleNextChapter}
           hasPrev={hasPrev}
           hasNext={hasNext}
+          chapterTitle={
+            source === 'ckjv' && activeBook
+              ? `${activeBook.name}·第${activeChapter?.number}章`
+              : source === 'jasher' && activeChapter
+              ? `雅煞珥·第${activeChapter.number}章`
+              : ''
+          }
         />
       </div>
     </div>
