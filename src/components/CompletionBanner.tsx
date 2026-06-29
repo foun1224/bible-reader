@@ -24,58 +24,63 @@ interface Props {
 }
 
 export default function CompletionBanner({ chapterLabel, bookName, hasNext, onContinue, onDismiss }: Props) {
-  const [phase, setPhase] = useState<'celebrate' | 'offer'>('celebrate')
+  const [expanded, setExpanded] = useState(false)
+  const [visible, setVisible] = useState(true)
   const closingVerse = useRef(CLOSING_VERSES[Math.floor(Math.random() * CLOSING_VERSES.length)]).current
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('offer'), bookName ? 1800 : 1200)
+    const t = setTimeout(() => setExpanded(true), 400)
     return () => clearTimeout(t)
-  }, [bookName])
+  }, [])
+
+  if (!visible) return null
+
+  const dismiss = () => {
+    setVisible(false)
+    onDismiss()
+  }
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-      <div className="relative mx-4 w-full max-w-sm rounded-2xl px-6 py-8 text-center shadow-2xl bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]">
-        {phase === 'celebrate' && (
-          <div className="animate-fadeInScale">
-            <div className="text-5xl mb-4 animate-bounceOnce">{bookName ? '🎉' : '✅'}</div>
-            <p className="text-sm text-stone-300 dark:text-[#A09890] mb-1">{chapterLabel}</p>
-            {bookName ? (
-              <>
-                <p className="text-xl font-semibold text-celebration dark:text-celebration-dark mb-1">{bookName} 讀完了！</p>
-                <p className="text-sm text-stone-400 dark:text-[#A09890]">恭喜完成整卷書卷</p>
-              </>
-            ) : (
-              <p className="text-xl font-semibold text-sage dark:text-sage-dark">已記錄這次閱讀</p>
-            )}
+    <div className="fixed bottom-0 left-0 right-0 z-[80] sm:bottom-6 sm:left-auto sm:right-6 sm:max-w-sm pointer-events-none px-0 sm:px-0">
+      <div
+        className={`pointer-events-auto mx-3 mb-3 sm:mx-0 sm:mb-0 rounded-2xl shadow-2xl border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#22242C] overflow-hidden transition-all duration-500 ${expanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+      >
+        {/* Top row */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">{bookName ? '🎉' : '✅'}</span>
+            <div>
+              <p className="text-sm font-medium text-stone-600 dark:text-[#E4DDD0]">
+                {bookName ? `${bookName} 讀完了！` : '已記錄'}
+              </p>
+              <p className="text-[11px] text-stone-300 dark:text-[#6B6460]">{chapterLabel}</p>
+            </div>
           </div>
-        )}
-        {phase === 'offer' && (
-          <div className="animate-slideUp">
-            <div className="text-4xl mb-4">{bookName ? '🎉' : '✅'}</div>
-            <p className="text-sm text-stone-300 dark:text-[#A09890] mb-1">{chapterLabel}</p>
-            <p className="text-base font-semibold text-stone-500 dark:text-[#E4DDD0] mb-4">
-              {bookName ? `${bookName} 讀完了` : '已記錄這次閱讀'}
-            </p>
-            <div className="mb-5 px-3 py-3 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border-l-2 border-amber-300 dark:border-amber-600 text-left">
-              <p className="text-sm text-stone-500 dark:text-[#E4DDD0] leading-relaxed italic">「{closingVerse.text}」</p>
-              <p className="text-xs text-stone-300 dark:text-[#6B6460] mt-1">— {closingVerse.ref}</p>
-            </div>
-            <div className="flex flex-col gap-2">
-              {hasNext && (
-                <button
-                  onClick={onContinue}
-                  className="w-full py-2.5 rounded-lg text-sm font-medium bg-sage dark:bg-sage-dark text-white dark:text-[#17191E] hover:opacity-90 transition-opacity"
-                >
-                  繼續下一章 →
-                </button>
-              )}
-              <button
-                onClick={onDismiss}
-                className="w-full py-2.5 rounded-lg text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
-              >
-                留在此章
-              </button>
-            </div>
+          <button
+            onClick={dismiss}
+            className="p-1.5 rounded-full text-stone-300 dark:text-[#6B6460] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 18 18" fill="none">
+              <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Closing verse */}
+        <div className="px-4 pb-3 border-t border-stone-100 dark:border-[#2E3240] pt-3">
+          <p className="text-xs text-stone-400 dark:text-[#A09890] leading-relaxed italic">「{closingVerse.text}」</p>
+          <p className="text-[10px] text-stone-300 dark:text-[#6B6460] mt-0.5">— {closingVerse.ref}</p>
+        </div>
+
+        {/* Actions */}
+        {hasNext && (
+          <div className="px-4 pb-4">
+            <button
+              onClick={() => { dismiss(); onContinue() }}
+              className="w-full py-2 rounded-lg text-sm font-medium bg-sage dark:bg-sage-dark text-white dark:text-[#17191E] hover:opacity-90 transition-opacity"
+            >
+              繼續下一章 →
+            </button>
           </div>
         )}
       </div>

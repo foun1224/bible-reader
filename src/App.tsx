@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight } from './types'
+import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
-import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
-import DailyDevotional from './components/DailyDevotional'
+import ReflectionPanel from './components/ReflectionPanel'
 import SearchModal from './components/SearchModal'
 import MoreMenu from './components/MoreMenu'
 import ChapterGrid from './components/ChapterGrid'
@@ -131,18 +130,28 @@ function App() {
   // Immersive reading mode
   const [isImmersive, setIsImmersive] = useState(false)
 
-  // Highlights
+  // Highlights — migrate legacy color names to semantic names on load
   const [highlights, setHighlights] = useState<Highlight[]>(() => {
-    try { return JSON.parse(localStorage.getItem(HIGHLIGHTS_KEY) || '[]') }
+    const LEGACY_COLOR_MAP: Record<LegacyHighlightColor, HighlightColor> = {
+      yellow: 'important',
+      green:  'comfort',
+      blue:   'question',
+      red:    'prayer',
+    }
+    try {
+      const raw: Array<Highlight & { color: HighlightColor | LegacyHighlightColor }> =
+        JSON.parse(localStorage.getItem(HIGHLIGHTS_KEY) || '[]')
+      return raw.map(h => ({
+        ...h,
+        color: (LEGACY_COLOR_MAP as Record<string, HighlightColor>)[h.color] ?? h.color,
+      })) as Highlight[]
+    }
     catch { return [] }
   })
 
-  // Notes Panel
-  const [notesPanelOpen, setNotesPanelOpen] = useState(false)
-  const [devotionalOpen, setDevotionalOpen] = useState(false)
-
-  // Daily devotion panel
-  const [devotionOpen, setDevotionOpen] = useState(false)
+  // Reflection panel
+  const [reflectionPanelOpen, setReflectionPanelOpen] = useState(false)
+  const [reflectionInitialTab, setReflectionInitialTab] = useState<'領受' | '默想' | '筆記'>('領受')
 
   // Search modal
   const [searchOpen, setSearchOpen] = useState(false)
@@ -152,6 +161,10 @@ function App() {
 
   // Chapter grid (mobile bottom nav tap)
   const [chapterGridOpen, setChapterGridOpen] = useState(false)
+
+  // Reading settings
+  const [verseNumStyle, setVerseNumStyle] = useState<'show' | 'fade' | 'hide'>('show')
+  const [lineSpacing, setLineSpacing] = useState<'comfortable' | 'loose'>('comfortable')
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -518,32 +531,30 @@ function App() {
         onClearPlan={handleClearPlan}
       />
 
-      {/* Notes Panel backdrop */}
-      {notesPanelOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40"
-          onClick={() => setNotesPanelOpen(false)}
-        />
-      )}
-
-      {/* Notes Panel */}
-      <NotesPanel
-        isOpen={notesPanelOpen}
-        onClose={() => setNotesPanelOpen(false)}
-        highlights={highlights}
-        ckjv={ckjv}
-        onJumpTo={handleJumpTo}
-      />
-
-      {/* Daily Devotional Panel */}
-      <DailyDevotional
-        isOpen={devotionOpen}
-        onClose={() => setDevotionOpen(false)}
+      {/* Reflection Panel */}
+      <ReflectionPanel
+        isOpen={reflectionPanelOpen}
+        onClose={() => setReflectionPanelOpen(false)}
+        initialTab={reflectionInitialTab}
         ckjv={ckjv}
         onNavigate={(book, chapter) => {
           selectCkjvChapter(book, chapter)
-          setDevotionOpen(false)
+          setReflectionPanelOpen(false)
         }}
+        currentSource={source}
+        currentBookId={activeBook?.id as number | undefined}
+        currentChapter={activeChapter?.number ?? 0}
+        currentChapterLabel={
+          source === 'ckjv' && activeBook && activeChapter
+            ? `${activeBook.name} · 第 ${activeChapter.number} 章`
+            : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
+        }
+        highlights={highlights}
+        onJumpTo={handleJumpTo}
+        verseNumStyle={verseNumStyle}
+        onVerseNumStyle={setVerseNumStyle}
+        lineSpacing={lineSpacing}
+        onLineSpacing={setLineSpacing}
       />
 
       {/* Search Modal */}
@@ -567,9 +578,6 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
-        onOpenSearch={() => setSearchOpen(true)}
-        onOpenNotes={() => setNotesPanelOpen(true)}
-        onOpenDevotion={() => setDevotionOpen(true)}
       />
       </div>
 
@@ -641,16 +649,6 @@ function App() {
                 <rect y="15" width="20" height="2" rx="1"/>
               </svg>
             </button>
-
-            {/* Streak — minimal */}
-            {showStreak && (
-              <span
-                className={`text-xs select-none ${hasReadToday ? 'text-amber-400' : 'text-stone-300 dark:text-[#6B6460]'}`}
-                title={hasReadToday ? `連續 ${streak.currentStreak} 天，最長 ${streak.longestStreak} 天` : '今天還沒讀'}
-              >
-                {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}日
-              </span>
-            )}
 
             <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
               {source === 'ckjv' && activeBook
@@ -787,6 +785,8 @@ function App() {
           onRemoveHighlight={removeHighlight}
           currentSource={source}
           currentBookId={activeBook?.id as number | undefined}
+          verseNumStyle={verseNumStyle}
+          lineSpacing={lineSpacing}
         />
       </div>
 
@@ -794,12 +794,9 @@ function App() {
       <MoreMenu
         isOpen={moreOpen}
         onClose={() => setMoreOpen(false)}
-        streak={streak}
-        hasReadToday={hasReadToday}
-        completionsCount={completions.length}
         onSearch={() => { setSearchOpen(true); setMoreOpen(false) }}
-        onDevotion={() => { setDevotionOpen(true); setMoreOpen(false) }}
-        onNotes={() => { setNotesPanelOpen(true); setMoreOpen(false) }}
+        onReflection={() => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true); setMoreOpen(false) }}
+        onNotes={() => { setReflectionInitialTab('筆記'); setReflectionPanelOpen(true); setMoreOpen(false) }}
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
       />
@@ -837,8 +834,8 @@ function App() {
           <div className="flex border-b border-stone-100 dark:border-[#2E3240]">
             {[
               { label: '搜尋', icon: <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: () => setSearchOpen(true) },
-              { label: '筆記', icon: '📝', fn: () => setNotesPanelOpen(true) },
-              { label: '靈修', icon: '🕊', fn: () => setDevotionOpen(true) },
+              { label: '反思', icon: '✍️', fn: () => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true) } },
+              { label: '更多', icon: '⋯', fn: () => setMoreOpen(true) },
             ].map(({ label, icon, fn }) => (
               <button
                 key={label}
