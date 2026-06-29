@@ -67,8 +67,8 @@ export default function Sidebar({
           title={book.name}
           className={`w-full text-left px-3 py-1.5 text-sm rounded transition-colors truncate
             ${isActive
-              ? 'bg-stone-100 dark:bg-[#22242C] text-sage dark:text-sage-dark font-medium'
-              : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
+              ? 'bg-stone-100 dark:bg-[#211D19] text-sage dark:text-sage-dark font-medium'
+              : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19]'
             }`}
         >
           <span className="flex items-center gap-1.5">
@@ -77,7 +77,7 @@ export default function Sidebar({
             {/* 進度條 */}
             {completedRatio > 0 && (
               <span className="flex-1 min-w-0 ml-1">
-                <span className="block w-full h-0.5 rounded-full bg-stone-200 dark:bg-[#2E3240] overflow-hidden">
+                <span className="block w-full h-0.5 rounded-full bg-stone-200 dark:bg-[#3A332D] overflow-hidden">
                   <span
                     className={`block h-full rounded-full transition-all duration-500 ${
                       progressFull
@@ -102,10 +102,10 @@ export default function Sidebar({
                   onClick={() => onSelectCkjvChapter(book, ch)}
                   className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
                     ${active
-                      ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                      ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#171411]'
                       : completed
-                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
-                      : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
+                      ? 'bg-stone-100 dark:bg-[#211D19] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#3A332D] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                      : 'bg-stone-100 dark:bg-[#211D19] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#3A332D]'
                     }`}
                 >
                   {ch.number}
@@ -144,23 +144,23 @@ export default function Sidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
+      <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-stone-200 dark:border-[#3A332D] bg-stone-100 dark:bg-[#211D19] overflow-hidden">
         {sidebarContent}
       </div>
 
       {/* Mobile sidebar overlay */}
       <div
         className={`sm:hidden fixed top-0 left-0 z-30 h-full w-64 flex flex-col
-          border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C]
+          border-r border-stone-200 dark:border-[#3A332D] bg-stone-100 dark:bg-[#211D19]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Close button */}
-        <div className="flex items-center justify-between px-3 py-2.5 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
+        <div className="flex items-center justify-between px-3 py-2.5 border-b border-stone-200 dark:border-[#3A332D] shrink-0">
           <span className="text-xs font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">目錄</span>
           <button
             onClick={onClose}
-            className="p-1.5 rounded text-stone-300 dark:text-[#2E3240] hover:bg-stone-200 dark:hover:bg-[#22242C] transition-colors"
+            className="p-1.5 rounded text-stone-300 dark:text-[#3A332D] hover:bg-stone-200 dark:hover:bg-[#211D19] transition-colors"
             aria-label="關閉目錄"
           >
             <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
@@ -224,7 +224,7 @@ function SidebarContent({
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="搜尋書卷…"
-          className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
+          className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#3A332D] bg-stone-50 dark:bg-[#171411] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#3A332D] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
         />
       </div>
       <div className="flex-1 overflow-y-auto py-2">
@@ -233,7 +233,7 @@ function SidebarContent({
           <>
             <button
               onClick={() => setOldExpanded(!oldExpanded)}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+              className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-300 dark:text-[#3A332D] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
             >
               <span className="text-[9px]">{oldExpanded ? '▾' : '▸'}</span>
               舊約
@@ -251,7 +251,7 @@ function SidebarContent({
           <>
             <button
               onClick={() => setNewExpanded(!newExpanded)}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+              className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-stone-300 dark:text-[#3A332D] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
             >
               <span className="text-[9px]">{newExpanded ? '▾' : '▸'}</span>
               新約
@@ -267,7 +267,7 @@ function SidebarContent({
 
       {/* Jasher — pinned to bottom */}
       {jasher && (
-        <div className="shrink-0 border-t border-stone-200 dark:border-[#2E3240] py-2">
+        <div className="shrink-0 border-t border-stone-200 dark:border-[#3A332D] py-2">
           <button
             onClick={() => {
               if (!showJasher) {
@@ -280,7 +280,7 @@ function SidebarContent({
             className={`w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors
               ${source === 'jasher'
                 ? 'text-sage dark:text-sage-dark'
-                : 'text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890]'
+                : 'text-stone-300 dark:text-[#3A332D] hover:text-stone-400 dark:hover:text-[#A09890]'
               }`}
           >
             <span className="text-[9px]">{showJasher ? '▾' : '▸'}</span>
@@ -297,10 +297,10 @@ function SidebarContent({
                     onClick={() => onSelectJasherChapter(ch)}
                     className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
                       ${active
-                        ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                        ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#171411]'
                         : completed
-                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
-                        : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
+                        ? 'bg-stone-100 dark:bg-[#211D19] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#3A332D] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                        : 'bg-stone-100 dark:bg-[#211D19] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#3A332D]'
                       }`}
                   >
                     {ch.number}

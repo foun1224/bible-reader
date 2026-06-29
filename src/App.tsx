@@ -5,14 +5,16 @@ import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
 import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
+import CompletionBanner from './components/CompletionBanner'
 
-const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
+const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
 const COMPLETIONS_KEY = 'bible-reader-completions'
 const STREAK_KEY = 'bible-reader-streak'
 const PLAN_KEY = 'bible-reader-plan'
 const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
 const HIGHLIGHTS_KEY = 'bible-reader-highlights'
+const VISITED_KEY = 'br-visited'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -40,6 +42,17 @@ function loadStreak(): StreakData {
 
 function saveStreak(data: StreakData) {
   localStorage.setItem(STREAK_KEY, JSON.stringify(data))
+}
+
+function getMidnightCountdown(): string {
+  const now = new Date()
+  const midnight = new Date(now)
+  midnight.setDate(midnight.getDate() + 1)
+  midnight.setHours(0, 0, 0, 0)
+  const diff = Math.max(0, midnight.getTime() - now.getTime())
+  const h = Math.floor(diff / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  return `${h}h${m}m`
 }
 
 /** Returns 'YYYY-MM-DD' in local time (sv-SE locale mimics ISO date format) */
@@ -110,8 +123,14 @@ function App() {
   })
   const [achievementQueue, setAchievementQueue] = useState<string[]>([])
 
-  // Completion overlay
-  const [showCompletionOverlay, setShowCompletionOverlay] = useState(false)
+  // CompletionBanner (Tiny Habits)
+  const [showBanner, setShowBanner] = useState(false)
+  // Loss Aversion countdown
+  const [countdown, setCountdown] = useState(() => getMidnightCountdown())
+  useEffect(() => {
+    const t = setInterval(() => setCountdown(getMidnightCountdown()), 60000)
+    return () => clearInterval(t)
+  }, [])
 
   // Book complete toast
   const [bookCompleteMessage, setBookCompleteMessage] = useState<string | null>(null)
@@ -165,6 +184,18 @@ function App() {
           const gen = c.books[0]
           setActiveBook(gen)
           setActiveChapter(gen.chapters[0])
+        }
+        // Endowed progress: auto-mark Jasher ch1 on first visit
+        if (!localStorage.getItem(VISITED_KEY) && j && Array.isArray(j.chapters) && j.chapters.length > 0) {
+          const ch1 = j.chapters[0]
+          setCompletions(prev => {
+            if (prev.some(r => r.sourceId === 'jasher' && r.chapter === ch1.number)) return prev
+            const rec: CompletionRecord = { sourceId: 'jasher', chapter: ch1.number, completedAt: new Date().toISOString() }
+            const next = [...prev, rec]
+            saveCompletions(next)
+            return next
+          })
+          localStorage.setItem(VISITED_KEY, '1')
         }
       }
     }).finally(() => setLoading(false))
@@ -415,11 +446,28 @@ function App() {
     )
   })()
 
+  const navigateNextChapter = useCallback(() => {
+    if (source === 'jasher' && jasher && activeChapter) {
+      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
+      if (idx < jasher.chapters.length - 1) selectJasherChapter(jasher.chapters[idx + 1])
+    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+      if (chIdx < activeBook.chapters.length - 1) {
+        selectCkjvChapter(activeBook, activeBook.chapters[chIdx + 1])
+      } else {
+        const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+        if (bIdx < ckjv.books.length - 1) {
+          const nextBook = ckjv.books[bIdx + 1]
+          selectCkjvChapter(nextBook, nextBook.chapters[0])
+        }
+      }
+    }
+  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+
   const handleMarkComplete = useCallback(() => {
     if (activeChapter && !isCurrentCompleted) {
       recordCompletion(source, activeChapter, activeBook)
-      setShowCompletionOverlay(true)
-      setTimeout(() => setShowCompletionOverlay(false), 2000)
+      setShowBanner(true)
     }
   }, [source, activeChapter, activeBook, recordCompletion, isCurrentCompleted])
 
@@ -490,14 +538,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-[#17191E] text-stone-400 dark:text-[#A09890]">
+      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-[#171411] text-stone-400 dark:text-[#A09890]">
         載入中…
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#17191E]">
+    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#171411]">
       {/* Achievement Modal — queue-based */}
       {achievementQueue.length > 0 && (
         <AchievementModal
@@ -508,7 +556,7 @@ function App() {
 
       {/* Book complete toast */}
       {bookCompleteMessage && (
-        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
+        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#171411] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
           {bookCompleteMessage}
         </div>
       )}
@@ -575,12 +623,12 @@ function App() {
         />
       )}
       {historyOpen && (
-        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#22242C] overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
+        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-stone-200 dark:border-[#3A332D] bg-stone-50 dark:bg-[#211D19] overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#3A332D] shrink-0">
             <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">已完成章節</span>
             <button
               onClick={() => setHistoryOpen(false)}
-              className="p-1 rounded text-stone-300 dark:text-[#2E3240] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="p-1 rounded text-stone-300 dark:text-[#3A332D] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
             >
               <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
                 <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -589,14 +637,14 @@ function App() {
           </div>
           <div className="flex-1 overflow-y-auto py-2">
             {sortedCompletions.length === 0 ? (
-              <p className="px-4 py-6 text-sm text-stone-300 dark:text-[#2E3240] text-center">尚無完成記錄</p>
+              <p className="px-4 py-6 text-sm text-stone-300 dark:text-[#3A332D] text-center">尚無完成記錄</p>
             ) : (
               sortedCompletions.map((r, i) => {
                 const { bookLabel, dateStr } = formatCompletion(r)
                 return (
                   <div
                     key={i}
-                    className="flex items-center justify-between px-4 py-2 hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+                    className="flex items-center justify-between px-4 py-2 hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
                   >
                     <span className="text-sm text-stone-500 dark:text-[#E4DDD0]">
                       {bookLabel} · 第 {r.chapter} 章
@@ -613,12 +661,12 @@ function App() {
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
-        <div className={`relative flex items-center justify-between px-4 py-2.5 border-b border-stone-200 dark:border-[#2E3240] bg-stone-50/80 dark:bg-[#17191E]/80 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`relative flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-[#3A332D]/60 bg-stone-50/90 dark:bg-[#171411]/90 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               aria-label="開啟目錄"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -628,17 +676,18 @@ function App() {
               </svg>
             </button>
 
-            {/* Streak counter */}
+            {/* Streak counter — ring + countdown */}
             {showStreak && (
               <span
-                className={`text-sm font-medium select-none ${
+                className={`flex items-center gap-1 text-sm font-medium select-none ${
                   hasReadToday
                     ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.5)]'
-                    : 'text-stone-300 dark:text-[#6B6460] animate-pulse'
+                    : 'text-stone-300 dark:text-[#6B6460] animate-streakPulse ring-1 ring-stone-300 dark:ring-[#6B6460] rounded px-1'
                 }`}
-                title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : '今天還沒讀，別讓它斷掉！'}
+                title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : `今天還沒讀，連續將在 ${countdown} 歸零！`}
               >
                 {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}天
+                {!hasReadToday && <span className="hidden sm:inline text-[10px]">· {countdown} 歸零</span>}
               </span>
             )}
 
@@ -673,7 +722,7 @@ function App() {
             {/* Stats Dashboard button */}
             <button
               onClick={() => setStatsDashboardOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               title="閱讀統計"
             >
               📊
@@ -681,7 +730,7 @@ function App() {
             {/* History button */}
             <button
               onClick={() => setHistoryOpen(o => !o)}
-              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               title="已讀記錄"
             >
               📖 已讀
@@ -693,21 +742,21 @@ function App() {
             </button>
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               title="切換字體大小"
             >
               {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
             <button
               onClick={() => setDark(d => !d)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
             {/* Notes Panel toggle */}
             <button
               onClick={() => setNotesPanelOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               title="筆記回顧"
               aria-label="開啟筆記回顧"
             >
@@ -716,7 +765,7 @@ function App() {
             {/* Immersive mode toggle */}
             <button
               onClick={() => setIsImmersive(v => !v)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
               title="沈浸閱讀模式（快捷鍵 F）"
               aria-label="進入沈浸閱讀模式"
             >
@@ -732,6 +781,26 @@ function App() {
             style={{ width: `${scrollProgress * 100}%` }}
           />
         </div>
+
+        {/* CompletionBanner (Tiny Habits) */}
+        {showBanner && activeChapter && (
+          <CompletionBanner
+            chapterLabel={
+              source === 'ckjv' && activeBook
+                ? `${activeBook.name} · 第 ${activeChapter.number} 章`
+                : `雅煞珥書 · 第 ${activeChapter.number} 章`
+            }
+            bookName={
+              source === 'ckjv' && activeBook &&
+              activeBook.chapters[activeBook.chapters.length - 1].number === activeChapter.number
+                ? activeBook.name
+                : undefined
+            }
+            hasNext={hasNext}
+            onContinue={() => { setShowBanner(false); navigateNextChapter() }}
+            onDismiss={() => setShowBanner(false)}
+          />
+        )}
 
         {/* Reader */}
         <Reader
@@ -759,7 +828,6 @@ function App() {
           resumeBookName={resumeBookName}
           resumeChapter={resumeChapter}
           onDismissResumeCTA={() => setShowResumeCTA(false)}
-          showCompletionOverlay={showCompletionOverlay}
           onScrollProgress={setScrollProgress}
           isImmersive={isImmersive}
           onToggleImmersive={() => setIsImmersive(v => !v)}

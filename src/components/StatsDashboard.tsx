@@ -137,8 +137,8 @@ export default function StatsDashboard({
       {/* Panel */}
       <div
         className={`fixed top-0 right-0 z-50 h-full overflow-y-auto
-          bg-stone-50 dark:bg-[#22242C]
-          border-l border-stone-200 dark:border-[#2E3240]
+          bg-stone-50 dark:bg-[#211D19]
+          border-l border-stone-200 dark:border-[#3A332D]
           shadow-2xl
           transition-transform duration-300
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
@@ -146,13 +146,13 @@ export default function StatsDashboard({
         style={{ width: 'min(100vw, 420px)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#2E3240] sticky top-0 bg-stone-50 dark:bg-[#22242C] z-10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#3A332D] sticky top-0 bg-stone-50 dark:bg-[#211D19] z-10">
           <h2 className="text-base font-semibold text-stone-500 dark:text-[#E4DDD0]">
             📊 閱讀統計
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded text-stone-300 dark:text-[#6B6460] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+            className="p-1.5 rounded text-stone-300 dark:text-[#6B6460] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
               <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -170,7 +170,7 @@ export default function StatsDashboard({
             ].map(({ label, value, unit }) => (
               <div
                 key={label}
-                className="flex flex-col items-center rounded-lg p-3 bg-stone-100 dark:bg-[#22242C]"
+                className="flex flex-col items-center rounded-lg p-3 bg-stone-100 dark:bg-[#211D19]"
               >
                 <span className="text-xl font-bold text-[#C17D3A] dark:text-[#D4935C]">{value}</span>
                 <span className="text-[10px] text-stone-300 dark:text-[#6B6460] mt-0.5">{unit}</span>
@@ -201,7 +201,7 @@ export default function StatsDashboard({
                       className={`w-2.5 h-2.5 rounded-sm ${
                         active
                           ? 'bg-[#4F7358] dark:bg-[#7AAF87]'
-                          : 'bg-stone-200 dark:bg-[#2E3240]'
+                          : 'bg-stone-200 dark:bg-[#3A332D]'
                       }`}
                     />
                   ))}
@@ -231,10 +231,10 @@ export default function StatsDashboard({
                           key={book.id}
                           className={`w-10 h-8 rounded text-[10px] flex items-center justify-center text-center leading-tight
                             ${status === 'done'
-                              ? 'bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E]'
+                              ? 'bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#171411]'
                               : status === 'partial'
-                              ? 'border-2 border-[#4F7358] dark:border-[#7AAF87] text-stone-400 dark:text-[#A09890] bg-stone-100 dark:bg-[#22242C]'
-                              : 'bg-stone-100 dark:bg-[#22242C] text-stone-300 dark:text-[#6B6460]'
+                              ? 'border-2 border-[#4F7358] dark:border-[#7AAF87] text-stone-400 dark:text-[#A09890] bg-stone-100 dark:bg-[#211D19]'
+                              : 'bg-stone-100 dark:bg-[#211D19] text-stone-300 dark:text-[#6B6460]'
                             }`}
                           title={book.name}
                         >
@@ -265,7 +265,7 @@ export default function StatsDashboard({
                     <button
                       key={id}
                       onClick={() => handleSetPlan(id)}
-                      className="flex flex-col items-start px-3 py-2 rounded-lg border border-stone-200 dark:border-[#2E3240] hover:border-[#4F7358] dark:hover:border-[#7AAF87] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors text-left"
+                      className="flex flex-col items-start px-3 py-2 rounded-lg border border-stone-200 dark:border-[#3A332D] hover:border-[#4F7358] dark:hover:border-[#7AAF87] hover:bg-stone-100 dark:hover:bg-[#211D19] transition-colors text-left"
                     >
                       <span className="text-xs font-medium text-stone-500 dark:text-[#E4DDD0]">{label}</span>
                       <span className="text-[10px] text-stone-300 dark:text-[#6B6460]">{sub}</span>
@@ -281,12 +281,12 @@ export default function StatsDashboard({
                       max={50}
                       value={customInput}
                       onChange={e => setCustomInput(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-16 px-2 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0]"
+                      className="w-16 px-2 py-1 text-xs rounded border border-stone-200 dark:border-[#3A332D] bg-stone-50 dark:bg-[#171411] text-stone-500 dark:text-[#E4DDD0]"
                     />
                     <label className="text-xs text-stone-400 dark:text-[#A09890]">章</label>
                     <button
                       onClick={handleConfirmCustom}
-                      className="px-3 py-1 text-xs rounded bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
+                      className="px-3 py-1 text-xs rounded bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#171411] font-medium hover:opacity-90 transition-opacity"
                     >
                       確認
                     </button>
@@ -302,14 +302,14 @@ export default function StatsDashboard({
                 )}
               </div>
             ) : (
-              <div className="rounded-lg border border-stone-200 dark:border-[#2E3240] p-3 space-y-2">
+              <div className="rounded-lg border border-stone-200 dark:border-[#3A332D] p-3 space-y-2">
                 <div className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">{planName}</div>
                 <div className="flex justify-between text-xs text-stone-400 dark:text-[#A09890]">
                   <span>今日目標：{planChaptersPerDay} 章</span>
                   <span>今日完成：{todayCount} 章</span>
                 </div>
                 {/* Progress bar */}
-                <div className="relative h-1.5 rounded-full bg-stone-200 dark:bg-[#2E3240] overflow-hidden">
+                <div className="relative h-1.5 rounded-full bg-stone-200 dark:bg-[#3A332D] overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 rounded-full bg-[#4F7358] dark:bg-[#7AAF87] transition-all"
                     style={{ width: `${Math.min(100, (todayCount / planChaptersPerDay) * 100)}%` }}
@@ -342,7 +342,7 @@ export default function StatsDashboard({
                     key={id}
                     className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-opacity
                       ${unlocked ? 'opacity-100' : 'opacity-40'}
-                      bg-stone-100 dark:bg-[#22242C]
+                      bg-stone-100 dark:bg-[#211D19]
                     `}
                   >
                     <span className={`text-xl shrink-0 ${unlocked ? '' : 'grayscale'}`}>{icon}</span>
