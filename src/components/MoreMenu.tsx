@@ -11,8 +11,6 @@ interface Props {
   onNotes: () => void
   onHistory: () => void
   onStats: () => void
-  onAchievements: () => void
-  onPlan: () => void
 }
 
 const menuItems = [
@@ -20,9 +18,7 @@ const menuItems = [
   { key: 'search',   label: '搜尋經文', badge: null, emoji: '🔍' },
   { key: 'notes',    label: '我的筆記', badge: null, emoji: '📝' },
   { key: 'history',  label: '已讀記錄', badge: null, emoji: '📖' },
-  { key: 'stats',    label: '閱讀統計', badge: null, emoji: '📊' },
-  { key: 'achievements', label: '成就', badge: null, emoji: '🏆' },
-  { key: 'plan',     label: '讀經計劃', badge: null, emoji: '📅' },
+  { key: 'stats',    label: '閱讀統計 & 計劃', badge: null, emoji: '📊' },
 ] as const
 
 type MenuKey = typeof menuItems[number]['key']
@@ -30,7 +26,7 @@ type MenuKey = typeof menuItems[number]['key']
 export default function MoreMenu({
   isOpen, onClose,
   streak, hasReadToday, completionsCount,
-  onSearch, onDevotion, onNotes, onHistory, onStats, onAchievements, onPlan,
+  onSearch, onDevotion, onNotes, onHistory, onStats,
 }: Props) {
   const handlers: Record<MenuKey, () => void> = {
     search: onSearch,
@@ -38,8 +34,6 @@ export default function MoreMenu({
     notes: onNotes,
     history: onHistory,
     stats: onStats,
-    achievements: onAchievements,
-    plan: onPlan,
   }
 
   function handle(key: MenuKey) {

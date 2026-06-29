@@ -803,8 +803,6 @@ function App() {
         onNotes={() => { setNotesPanelOpen(true); setMoreOpen(false) }}
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
-        onAchievements={() => { setMoreOpen(false) }}
-        onPlan={() => { setMoreOpen(false) }}
       />
 
       {/* Chapter grid (mobile bottom nav tap) */}
