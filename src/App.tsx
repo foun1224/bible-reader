@@ -19,9 +19,10 @@ function App() {
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
 
   useEffect(() => {
+    const base = import.meta.env.BASE_URL
     Promise.all([
-      fetch('/data/ckjv.json').then(r => r.json()),
-      fetch('/data/jasher.json').then(r => r.json()).catch(() => null),
+      fetch(`${base}data/ckjv.json`).then(r => r.json()),
+      fetch(`${base}data/jasher.json`).then(r => r.json()).catch(() => null),
     ]).then(([c, j]) => {
       setCkjv(c)
       setJasher(j)
