@@ -618,7 +618,7 @@ function App() {
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               aria-label="開啟目錄"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -638,7 +638,7 @@ function App() {
                     setSearchOpen(false)
                     if (view === 'devotional') setChapterGridOpen(false)
                   }}
-                  className={`px-2.5 py-1 text-xs rounded transition-colors ${
+                  className={`h-8 px-3 text-xs rounded transition-colors ${
                     mainView === view
                       ? 'bg-stone-50 dark:bg-[#17191E] text-[#4F7358] dark:text-[#7AAF87] shadow-sm'
                       : 'text-stone-400 dark:text-[#A09890] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
@@ -665,7 +665,7 @@ function App() {
             {/* 搜尋 */}
             <button
               onClick={() => setSearchOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="hidden sm:inline-flex h-8 items-center px-2.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="搜尋經文（/）"
             >
               <svg width="13" height="13" viewBox="0 0 20 20" fill="none" style={{ display: 'inline', verticalAlign: 'middle' }}>
@@ -676,7 +676,7 @@ function App() {
             {/* 沈浸模式 */}
             <button
               onClick={() => setIsImmersive(v => !v)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="hidden sm:inline-flex h-8 items-center px-2.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="沈浸閱讀（F）"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle' }}>
@@ -687,7 +687,7 @@ function App() {
             {/* 閱讀設定 */}
             <button
               onClick={() => setSettingsOpen(o => !o)}
-              className={`px-2.5 py-1 text-xs rounded border transition-colors ${
+              className={`hidden sm:inline-flex h-8 items-center px-2.5 text-xs rounded border transition-colors ${
                 settingsOpen
                   ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#22242C]'
                   : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
@@ -704,7 +704,7 @@ function App() {
             {/* 更多 */}
             <button
               onClick={() => setMoreOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              className="inline-flex h-9 items-center px-3 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="更多功能"
             >
               ⋯
@@ -806,6 +806,10 @@ function App() {
         onClose={() => setMoreOpen(false)}
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
+        onSearch={() => setSearchOpen(true)}
+        onSettings={() => setSettingsOpen(true)}
+        onToggleImmersive={() => setIsImmersive(v => !v)}
+        showScriptureTools={mainView === 'scripture'}
       />
 
       {/* 閱讀設定 popover — fixed to avoid iOS touch-event clipping */}
