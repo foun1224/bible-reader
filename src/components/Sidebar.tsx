@@ -89,8 +89,11 @@ export default function Sidebar({
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
-          <span className="text-[10px] font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">聖經閱讀器</span>
+        <div className="flex items-center justify-between px-3 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">聖經閱讀器</p>
+            <p className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">目錄</p>
+          </div>
           <button
             onClick={onClose}
             className="p-1.5 rounded text-stone-300 dark:text-[#6B6460] hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
@@ -100,9 +103,6 @@ export default function Sidebar({
               <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
-        </div>
-        <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-2">
-          <span className="text-[10px] font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">經文目錄</span>
         </div>
         {sidebarContent}
       </div>
@@ -198,7 +198,7 @@ function ScriptureContent({
                 <button
                   key={ch.number}
                   onClick={() => onSelectCkjvChapter(book, ch)}
-                  className={`flex items-center justify-center w-9 h-9 rounded-md text-sm transition-colors
+                  className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
                     ${active
                       ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                       : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
@@ -233,7 +233,7 @@ function ScriptureContent({
         {/* 目前位置 */}
         {currentChapterLabel && (
           <div className="px-3 py-2">
-            <p className="text-[10px] text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-1">目前</p>
+            <p className="text-[11px] text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-1">目前</p>
             <p className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">{currentChapterLabel}</p>
           </div>
         )}
@@ -283,7 +283,7 @@ function ScriptureContent({
                       <button
                         key={ch.number}
                         onClick={() => onSelectJasherChapter(ch)}
-                        className={`flex items-center justify-center w-9 h-9 rounded-md text-sm transition-colors
+                        className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
                           ${active
                             ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                             : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
