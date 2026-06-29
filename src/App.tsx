@@ -729,7 +729,7 @@ function App() {
               <span
                 className={`flex items-center gap-1 text-sm font-medium select-none ${
                   hasReadToday
-                    ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.5)]'
+                    ? 'text-amber-500 drop-shadow-[0_0_6px_rgba(217,119,6,0.35)]'
                     : 'text-stone-300 dark:text-[#6B6460] animate-streakPulse ring-1 ring-stone-300 dark:ring-[#6B6460] rounded px-1'
                 }`}
                 title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : `今天還沒讀，連續將在 ${countdown} 歸零！`}
