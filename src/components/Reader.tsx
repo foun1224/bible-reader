@@ -435,8 +435,8 @@ export default function Reader({
           </div>
         )}
 
-        {/* Chapter navigation + complete button */}
-        <div className={`flex justify-between items-center mt-8 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
+        {/* Chapter navigation + complete button — desktop only; mobile uses App bottom bar */}
+        <div className={`justify-between items-center mt-8 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : 'hidden sm:flex'}`}>
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}

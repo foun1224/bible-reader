@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { BibleData, JasherData, Book, Chapter, CompletionRecord } from '../types'
 
 interface Props {
@@ -58,7 +58,7 @@ export default function Sidebar({
     const progressFull = completedRatio >= 0.8
 
     return (
-      <div key={book.id}>
+      <div key={book.id} data-book-id={book.id}>
         <button
           onClick={() => {
             if (!isExpanded) {
@@ -139,6 +139,7 @@ export default function Sidebar({
       setExpandedBook={setExpandedBook}
       onSelectJasherChapter={onSelectJasherChapter}
       isJasherCompleted={isJasherCompleted}
+      expandedBook={expandedBook}
     />
   )
 
@@ -169,7 +170,7 @@ export default function Sidebar({
 
       {/* Mobile sidebar overlay */}
       <div
-        className={`sm:hidden fixed top-0 left-0 z-30 h-full w-64 flex flex-col
+        className={`sm:hidden fixed top-0 left-0 z-30 h-dvh w-64 flex flex-col
           border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -209,6 +210,7 @@ interface ContentProps {
   setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
   isJasherCompleted: (chNum: number) => boolean
+  expandedBook: number | string | null
 }
 
 function SidebarContent({
@@ -219,8 +221,10 @@ function SidebarContent({
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
   isJasherCompleted,
+  expandedBook,
 }: ContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const q = searchQuery.trim().toLowerCase()
   const filteredOld = q ? oldTestament.filter(b => b.name.toLowerCase().includes(q)) : oldTestament
@@ -234,6 +238,13 @@ function SidebarContent({
     }
   }, [q, allFiltered.length])
 
+  // Scroll active book into view when it changes
+  useEffect(() => {
+    if (!expandedBook || !scrollRef.current) return
+    const el = scrollRef.current.querySelector(`[data-book-id="${expandedBook}"]`)
+    if (el) el.scrollIntoView({ block: 'nearest' })
+  }, [expandedBook])
+
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Search box */}
@@ -246,7 +257,7 @@ function SidebarContent({
           className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
         />
       </div>
-      <div className="flex-1 overflow-y-auto py-2">
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto py-2">
         {/* 舊約 group header */}
         {filteredOld.length > 0 && (
           <>
