@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Chapter, Highlight, HighlightColor } from '../types'
+import type { Chapter, Highlight, HighlightColor, ReflectionNote } from '../types'
+
+const REFLECTION_KEY = 'bible-reader-reflections'
 
 const COLOR_BG: Record<HighlightColor, string> = {
   important: 'bg-amber-50/90 dark:bg-amber-950/25',
@@ -66,6 +68,115 @@ interface Props {
 interface PickerState {
   verse: number
   verseText: string
+}
+
+function ChapterEndReflection({ highlights, currentSource, currentBookId, currentChapter }: {
+  highlights: Highlight[]
+  currentSource: 'ckjv' | 'jasher'
+  currentBookId: number | undefined
+  currentChapter: number
+}) {
+  const chapterKey = `${currentSource}-${currentBookId ?? 'j'}-${currentChapter}`
+  const [reflections, setReflections] = useState<ReflectionNote[]>(() => {
+    try { return JSON.parse(localStorage.getItem(REFLECTION_KEY) || '[]') }
+    catch { return [] }
+  })
+  const [draft, setDraft] = useState('')
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    const note = reflections.find(
+      r => r.sourceId === currentSource && r.bookId === currentBookId && r.chapter === currentChapter
+    )
+    setDraft(note?.content ?? '')
+    setSaved(false)
+  }, [chapterKey, reflections, currentSource, currentBookId, currentChapter])
+
+  function save() {
+    const note: ReflectionNote = {
+      sourceId: currentSource,
+      bookId: currentBookId,
+      chapter: currentChapter,
+      content: draft,
+      updatedAt: new Date().toISOString(),
+    }
+    setReflections(prev => {
+      const filtered = prev.filter(
+        r => !(r.sourceId === currentSource && r.bookId === currentBookId && r.chapter === currentChapter)
+      )
+      const next = draft.trim() ? [...filtered, note] : filtered
+      localStorage.setItem(REFLECTION_KEY, JSON.stringify(next))
+      return next
+    })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
+
+  const sortedHighlights = [...highlights].sort((a, b) => a.verse - b.verse)
+
+  return (
+    <section className="mt-10 border-t border-stone-200 dark:border-[#2E3240] pt-7 space-y-7">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">章末反思</p>
+        <h2 className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">本章默想</h2>
+        <p className="mt-1 text-xs leading-relaxed text-stone-400 dark:text-[#A09890]">
+          讀完這章後再寫，讓注意力先留在經文本身，再整理你的領受。
+        </p>
+        <textarea
+          rows={5}
+          value={draft}
+          onChange={e => { setDraft(e.target.value); setSaved(false) }}
+          placeholder="這章經文讓我看見什麼？我想帶到禱告或生活裡的是什麼？"
+          className="mt-3 w-full rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] px-4 py-3 text-sm leading-7 text-stone-600 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#6B6460] resize-none focus:outline-none focus:ring-1 focus:ring-[#4F7358] dark:focus:ring-[#7AAF87]"
+        />
+        <div className="mt-2 flex justify-end">
+          <button
+            onClick={save}
+            className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
+              saved
+                ? 'text-[#4F7358] dark:text-[#7AAF87]'
+                : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
+            }`}
+          >
+            {saved ? '已儲存' : '儲存默想'}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base font-medium text-stone-600 dark:text-[#E4DDD0]">本章劃線</h2>
+          {sortedHighlights.length > 0 && (
+            <span className="rounded-full bg-stone-100 dark:bg-[#22242C] px-2 py-0.5 text-[11px] text-stone-400 dark:text-[#A09890]">
+              {sortedHighlights.length} 處
+            </span>
+          )}
+        </div>
+        {sortedHighlights.length === 0 ? (
+          <p className="mt-3 rounded-md border border-dashed border-stone-200 dark:border-[#2E3240] px-4 py-4 text-sm text-stone-300 dark:text-[#6B6460]">
+            本章尚無劃線。長按經文可標記重要、安慰、疑問或禱告。
+          </p>
+        ) : (
+          <div className="mt-3 space-y-3">
+            {sortedHighlights.map(h => (
+              <article key={h.id} className="rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-50/60 dark:bg-[#22242C]/50 px-4 py-3">
+                <div className="mb-1.5 flex items-center gap-2">
+                  <span className={`h-2.5 w-2.5 rounded-full ${COLOR_SWATCH[h.color]}`} title={COLOR_LABEL[h.color]} />
+                  <span className="text-xs font-medium text-stone-400 dark:text-[#A09890]">第 {h.verse} 節 · {COLOR_LABEL[h.color]}</span>
+                </div>
+                <p className="text-sm leading-7 text-stone-600 dark:text-[#D4CEC4]">{h.highlightText}</p>
+                {h.note && (
+                  <p className="mt-2 border-l-2 border-stone-200 dark:border-[#3A3C42] pl-3 text-xs leading-6 text-stone-400 dark:text-[#A09890]">
+                    {h.note}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
 }
 
 export default function Reader({
@@ -436,6 +547,15 @@ export default function Reader({
             )
           })}
         </div>
+
+        {!isImmersive && (
+          <ChapterEndReflection
+            highlights={highlights}
+            currentSource={currentSource}
+            currentBookId={currentBookId}
+            currentChapter={chapter.number}
+          />
+        )}
 
         {/* Highlight one-time tip */}
         {showHlTip && !isImmersive && (

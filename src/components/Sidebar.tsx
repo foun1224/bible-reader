@@ -1,23 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type {
   BibleData, JasherData, Book, Chapter, CompletionRecord,
-  Highlight, HighlightColor, ReflectionNote,
 } from '../types'
-
-const REFLECTION_KEY = 'bible-reader-reflections'
-
-const COLOR_DOT: Record<HighlightColor, string> = {
-  important: 'bg-amber-400',
-  comfort:   'bg-green-400',
-  question:  'bg-blue-400',
-  prayer:    'bg-red-400',
-}
-const COLOR_LABEL: Record<HighlightColor, string> = {
-  important: '重要',
-  comfort:   '安慰',
-  question:  '疑問',
-  prayer:    '禱告',
-}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
@@ -31,11 +15,6 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
-  highlights: Highlight[]
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
-  currentSource: 'ckjv' | 'jasher'
-  currentBookId: number | undefined
-  currentChapter: number
   currentChapterLabel: string
 }
 
@@ -44,8 +23,7 @@ export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
-  highlights, onJumpTo,
-  currentSource, currentBookId, currentChapter, currentChapterLabel,
+  currentChapterLabel,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
@@ -87,12 +65,7 @@ export default function Sidebar({
         isJasherCompleted={isJasherCompleted}
         onSelectCkjvChapter={onSelectCkjvChapter}
         onSelectJasherChapter={onSelectJasherChapter}
-        highlights={highlights}
-        onJumpTo={onJumpTo}
         onClose={onClose}
-        currentSource={currentSource}
-        currentBookId={currentBookId}
-        currentChapter={currentChapter}
         currentChapterLabel={currentChapterLabel}
       />
     </div>
@@ -103,8 +76,8 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-72 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">經文</p>
-          <p className="mt-1 text-sm font-medium text-stone-600 dark:text-[#E4DDD0]">書卷與本章</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">目錄</p>
+          <p className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">經文書卷</p>
         </div>
         {sidebarContent}
       </div>
@@ -137,206 +110,6 @@ export default function Sidebar({
   )
 }
 
-// ── Collapsible section (shared) ──────────────────────────────────────────────
-function Collapsible({ title, children, defaultOpen = true, badge }: {
-  title: string
-  children: React.ReactNode
-  defaultOpen?: boolean
-  badge?: string
-}) {
-  const [open, setOpen] = useState(defaultOpen)
-  return (
-    <div className="border-t border-stone-200 dark:border-[#2E3240]">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
-      >
-        <span className="flex items-center gap-2">
-          <span className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] uppercase tracking-widest">{title}</span>
-          {badge && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-200 dark:bg-[#2E3240] text-stone-400 dark:text-[#6B6460]">{badge}</span>
-          )}
-        </span>
-        <span className={`text-[9px] text-stone-300 dark:text-[#6B6460] transition-transform duration-200 inline-block ${open ? 'rotate-180' : ''}`}>▾</span>
-      </button>
-      <div className={`overflow-hidden transition-all duration-200 ${open ? 'max-h-[2000px]' : 'max-h-0'}`}>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-// ── 本章 meditation sub-section ───────────────────────────────────────────────
-function ChapterMeditation({ currentSource, currentBookId, currentChapter }: {
-  currentSource: 'ckjv' | 'jasher'
-  currentBookId: number | undefined
-  currentChapter: number
-}) {
-  const chapterKey = `${currentSource}-${currentBookId ?? 'j'}-${currentChapter}`
-  const [reflections, setReflections] = useState<ReflectionNote[]>(() => {
-    try { return JSON.parse(localStorage.getItem(REFLECTION_KEY) || '[]') }
-    catch { return [] }
-  })
-  const [draft, setDraft] = useState('')
-  const [saved, setSaved] = useState(false)
-
-  useEffect(() => {
-    const r = reflections.find(
-      r => r.sourceId === currentSource && r.bookId === currentBookId && r.chapter === currentChapter
-    )
-    setDraft(r?.content ?? '')
-    setSaved(false)
-  }, [chapterKey])
-
-  function save() {
-    const note: ReflectionNote = {
-      sourceId: currentSource,
-      bookId: currentBookId,
-      chapter: currentChapter,
-      content: draft,
-      updatedAt: new Date().toISOString(),
-    }
-    setReflections(prev => {
-      const filtered = prev.filter(
-        r => !(r.sourceId === currentSource && r.bookId === currentBookId && r.chapter === currentChapter)
-      )
-      const next = draft.trim() ? [...filtered, note] : filtered
-      localStorage.setItem(REFLECTION_KEY, JSON.stringify(next))
-      return next
-    })
-    setSaved(true)
-    setTimeout(() => setSaved(false), 1500)
-  }
-
-  return (
-    <div className="px-3 pb-3 flex flex-col gap-2">
-      <textarea
-        rows={5}
-        value={draft}
-        onChange={e => { setDraft(e.target.value); setSaved(false) }}
-        placeholder={`讀完這章，你注意到什麼？有什麼觸動你？`}
-        className="w-full rounded border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] text-xs px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-[#4F7358] dark:focus:ring-[#7AAF87] placeholder-stone-300 dark:placeholder-[#6B6460] leading-relaxed"
-      />
-      <div className="flex justify-end">
-        <button
-          onClick={save}
-          className={`px-3 py-1 text-xs rounded transition-all ${
-            saved
-              ? 'text-[#4F7358] dark:text-[#7AAF87]'
-              : 'text-stone-400 dark:text-[#A09890] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
-          }`}
-        >
-          {saved ? '已儲存' : '儲存'}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// ── 本章 highlights sub-section ───────────────────────────────────────────────
-function ChapterHighlights({ highlights, ckjv, onJumpTo, onClose, currentSource, currentBookId, currentChapter }: {
-  highlights: Highlight[]
-  ckjv: BibleData | null
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
-  onClose: () => void
-  currentSource: 'ckjv' | 'jasher'
-  currentBookId: number | undefined
-  currentChapter: number
-}) {
-  const chapterHighlights = highlights.filter(h =>
-    h.sourceId === currentSource &&
-    h.bookId === currentBookId &&
-    h.chapter === currentChapter
-  ).sort((a, b) => a.verse - b.verse)
-
-  if (chapterHighlights.length === 0) {
-    return (
-      <p className="px-3 pb-3 text-xs text-stone-300 dark:text-[#6B6460]">本章尚無劃線</p>
-    )
-  }
-
-  return (
-    <div className="px-3 pb-3 space-y-2">
-      {chapterHighlights.map(h => (
-        <div key={h.id} className="space-y-0.5">
-          <div className="flex items-start gap-1.5">
-            <span className={`w-2 h-2 rounded-full shrink-0 mt-0.5 ${COLOR_DOT[h.color]}`} title={COLOR_LABEL[h.color]} />
-            <p className="text-xs text-stone-500 dark:text-[#D4CEC4] leading-relaxed flex-1">
-              <span className="text-[10px] text-stone-300 dark:text-[#6B6460] mr-1">節 {h.verse}</span>
-              {h.highlightText}
-            </p>
-          </div>
-          {h.note && (
-            <p className="text-[10px] text-stone-400 dark:text-[#A09890] leading-relaxed ml-3.5 pl-0.5 border-l border-stone-200 dark:border-[#2E3240]">
-              {h.note}
-            </p>
-          )}
-        </div>
-      ))}
-      <button
-        onClick={() => { onJumpTo(currentSource, currentBookId, currentChapter); onClose() }}
-        className="text-[10px] text-[#4F7358] dark:text-[#7AAF87] hover:underline"
-      >
-        跳到本章 →
-      </button>
-    </div>
-  )
-}
-
-// ── 全部劃線 sub-section ──────────────────────────────────────────────────────
-function AllHighlights({ highlights, ckjv, onJumpTo, onClose }: {
-  highlights: Highlight[]
-  ckjv: BibleData | null
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
-  onClose: () => void
-}) {
-  const sorted = [...highlights].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
-
-  if (sorted.length === 0) {
-    return (
-      <p className="px-3 pb-3 text-xs text-stone-300 dark:text-[#6B6460]">尚無劃線記錄</p>
-    )
-  }
-
-  return (
-    <div className="px-3 pb-3 space-y-2">
-      {sorted.map(h => {
-        const bookName = h.sourceId === 'jasher'
-          ? '雅煞珥書'
-          : ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
-        return (
-          <div key={h.id} className="space-y-0.5">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className={`w-2 h-2 rounded-full shrink-0 ${COLOR_DOT[h.color]}`} title={COLOR_LABEL[h.color]} />
-                <span className="text-[10px] text-stone-400 dark:text-[#A09890] truncate">
-                  {bookName} {h.chapter}:{h.verse}
-                </span>
-              </div>
-              <button
-                onClick={() => { onJumpTo(h.sourceId, h.bookId, h.chapter); onClose() }}
-                className="shrink-0 text-[10px] text-[#4F7358] dark:text-[#7AAF87] hover:underline"
-              >
-                跳到 →
-              </button>
-            </div>
-            <p className="text-[10px] text-stone-400 dark:text-[#A09890] leading-relaxed ml-3.5">
-              {h.highlightText.slice(0, 60)}{h.highlightText.length > 60 ? '…' : ''}
-            </p>
-            {h.note && (
-              <p className="text-[10px] text-stone-500 dark:text-[#D4CEC4] leading-relaxed ml-3.5">
-                {h.note}
-              </p>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 // ── 經文 tab ──────────────────────────────────────────────────────────────────
 interface ScriptureProps {
   ckjv: BibleData | null
@@ -358,12 +131,7 @@ interface ScriptureProps {
   isJasherCompleted: (chNum: number) => boolean
   onSelectCkjvChapter: (book: Book, chapter: Chapter) => void
   onSelectJasherChapter: (chapter: Chapter) => void
-  highlights: Highlight[]
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
   onClose: () => void
-  currentSource: 'ckjv' | 'jasher'
-  currentBookId: number | undefined
-  currentChapter: number
   currentChapterLabel: string
 }
 
@@ -376,8 +144,8 @@ function ScriptureContent({
   showJasher, setShowJasher, expandedBook, setExpandedBook,
   isCkjvCompleted, isJasherCompleted,
   onSelectCkjvChapter, onSelectJasherChapter,
-  highlights, onJumpTo, onClose,
-  currentSource, currentBookId, currentChapter, currentChapterLabel,
+  onClose,
+  currentChapterLabel,
 }: ScriptureProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -397,11 +165,6 @@ function ScriptureContent({
     if (el) el.scrollIntoView({ block: 'nearest' })
   }, [expandedBook])
 
-  const chapterHighlightCount = highlights.filter(h =>
-    h.sourceId === currentSource &&
-    h.bookId === currentBookId &&
-    h.chapter === currentChapter
-  ).length
 
   const renderBook = (book: Book) => {
     const isExpanded = expandedBook === book.id
@@ -415,14 +178,14 @@ function ScriptureContent({
             setShowJasher(false)
           }}
           title={book.name}
-          className={`w-full text-left px-3 py-2 text-[15px] rounded transition-colors
+          className={`w-full text-left px-3 py-2.5 text-sm rounded-md transition-colors
             ${isActive
               ? 'bg-stone-200 dark:bg-[#2E3240] text-sage dark:text-sage-dark font-medium'
               : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
             }`}
         >
           <span className="flex items-center gap-2">
-            <span className="text-[11px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
+            <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
             <span className="truncate leading-5">{book.name}</span>
           </span>
         </button>
@@ -435,7 +198,7 @@ function ScriptureContent({
                 <button
                   key={ch.number}
                   onClick={() => onSelectCkjvChapter(book, ch)}
-                  className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                  className={`flex items-center justify-center w-9 h-9 rounded-md text-sm transition-colors
                     ${active
                       ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                       : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
@@ -461,7 +224,7 @@ function ScriptureContent({
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="搜尋書卷…"
-          className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-[#4F7358] dark:focus:border-[#7AAF87] transition-colors"
+          className="w-full px-3 py-2 text-sm rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-[#4F7358] dark:focus:border-[#7AAF87] transition-colors"
         />
       </div>
 
@@ -470,8 +233,8 @@ function ScriptureContent({
         {/* 目前位置 */}
         {currentChapterLabel && (
           <div className="px-3 py-2">
-            <p className="text-[9px] text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-0.5">目前</p>
-            <p className="text-xs font-medium text-stone-500 dark:text-[#E4DDD0]">{currentChapterLabel}</p>
+            <p className="text-[10px] text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-1">目前</p>
+            <p className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">{currentChapterLabel}</p>
           </div>
         )}
 
@@ -481,7 +244,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setOldExpanded(!oldExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-2 text-[10px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{oldExpanded ? '▾' : '▸'}</span>舊約
               </button>
@@ -492,7 +255,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setNewExpanded(!newExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-2 mt-1 text-[10px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2.5 mt-1 text-[11px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{newExpanded ? '▾' : '▸'}</span>新約
               </button>
@@ -503,7 +266,7 @@ function ScriptureContent({
             <div className="mt-1">
               <button
                 onClick={() => setShowJasher(!showJasher)}
-                className={`w-full flex items-center gap-1.5 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest transition-colors
+                className={`w-full flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold uppercase tracking-widest transition-colors
                   ${source === 'jasher'
                     ? 'text-[#4F7358] dark:text-[#7AAF87]'
                     : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
@@ -520,7 +283,7 @@ function ScriptureContent({
                       <button
                         key={ch.number}
                         onClick={() => onSelectJasherChapter(ch)}
-                        className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                        className={`flex items-center justify-center w-9 h-9 rounded-md text-sm transition-colors
                           ${active
                             ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                             : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
@@ -536,47 +299,6 @@ function ScriptureContent({
             </div>
           )}
         </div>
-
-        {/* 本章 */}
-        {currentChapter > 0 && (
-          <div className="mt-2">
-            <Collapsible
-              title="我的默想"
-              defaultOpen={true}
-            >
-              <ChapterMeditation
-                currentSource={currentSource}
-                currentBookId={currentBookId}
-                currentChapter={currentChapter}
-              />
-            </Collapsible>
-            <Collapsible
-              title="本章劃線"
-              defaultOpen={true}
-              badge={chapterHighlightCount > 0 ? String(chapterHighlightCount) : undefined}
-            >
-              <ChapterHighlights
-                highlights={highlights}
-                ckjv={ckjv}
-                onJumpTo={onJumpTo}
-                onClose={onClose}
-                currentSource={currentSource}
-                currentBookId={currentBookId}
-                currentChapter={currentChapter}
-              />
-            </Collapsible>
-            {highlights.length > 0 && (
-              <Collapsible title="全部劃線" defaultOpen={false} badge={String(highlights.length)}>
-                <AllHighlights
-                  highlights={highlights}
-                  ckjv={ckjv}
-                  onJumpTo={onJumpTo}
-                  onClose={onClose}
-                />
-              </Collapsible>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )

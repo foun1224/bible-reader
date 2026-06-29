@@ -551,11 +551,6 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
-        highlights={highlights}
-        onJumpTo={handleJumpTo}
-        currentSource={source}
-        currentBookId={activeBook?.id as number | undefined}
-        currentChapter={activeChapter?.number ?? 0}
         currentChapterLabel={
           source === 'ckjv' && activeBook && activeChapter
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
