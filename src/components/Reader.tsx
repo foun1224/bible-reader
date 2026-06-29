@@ -79,6 +79,7 @@ export default function Reader({
   const [pickerColor, setPickerColor] = useState<HighlightColor>('yellow')
   const [pickerNote, setPickerNote] = useState('')
   const [copied, setCopied] = useState(false)
+  const [showHlTip, setShowHlTip] = useState(() => !localStorage.getItem('hl-tip-shown'))
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
@@ -204,10 +205,6 @@ export default function Reader({
       </div>
     )
   }
-
-  // Estimated reading time
-  const totalChars = chapter.verses.reduce((sum, v) => sum + v.text.length, 0)
-  const readingMins = Math.ceil(totalChars / 300)
 
   const completeBtn = (
     <button
@@ -371,14 +368,6 @@ export default function Reader({
         )}
 
         {/* Estimated reading time */}
-        {(() => {
-          return (
-            <div className="text-xs text-stone-300 dark:text-[#6B6460] mb-6 text-right">
-              約 {readingMins} 分鐘
-            </div>
-          )
-        })()}
-
         <div
           className={`${isImmersive ? 'text-xl leading-9' : fontSize} text-stone-500 dark:text-[#E4DDD0]`}
           style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '1.9' }}
@@ -432,8 +421,22 @@ export default function Reader({
           })}
         </div>
 
+        {/* Highlight one-time tip */}
+        {showHlTip && !isImmersive && (
+          <div className="mt-8 mb-2 flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 text-xs text-stone-400 dark:text-[#A09890]">
+            <span className="text-base shrink-0">💡</span>
+            <span className="flex-1">長按任何節文，可劃線、選顏色、加筆記</span>
+            <button
+              onClick={() => { setShowHlTip(false); localStorage.setItem('hl-tip-shown', '1') }}
+              className="shrink-0 px-2 py-0.5 rounded text-stone-300 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890] transition-colors"
+            >
+              知道了
+            </button>
+          </div>
+        )}
+
         {/* Chapter navigation + complete button */}
-        <div className={`flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
+        <div className={`flex justify-between items-center mt-8 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}

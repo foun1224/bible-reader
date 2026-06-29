@@ -65,29 +65,35 @@ function today(): string {
 
 function updateStreak(prev: StreakData): StreakData {
   const todayStr = today()
-  if (prev.lastReadDate === todayStr) {
-    // Already read today — no change
-    return prev
-  }
+  if (prev.lastReadDate === todayStr) return prev
 
-  // Calculate yesterday's date string
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  const yesterdayStr = d.toLocaleDateString('sv-SE')
+  const offset = (days: number) => {
+    const d = new Date()
+    d.setDate(d.getDate() - days)
+    return d.toLocaleDateString('sv-SE')
+  }
+  const yesterdayStr = offset(1)
+  const twoDaysAgoStr = offset(2)
 
   let newStreak: number
+  let gracePeriodUsed = prev.gracePeriodUsed ?? false
+
   if (prev.lastReadDate === yesterdayStr) {
-    // Read yesterday → extend streak
     newStreak = prev.currentStreak + 1
+  } else if (prev.lastReadDate === twoDaysAgoStr && !gracePeriodUsed) {
+    // Streak Freeze：跳過一天，寬限一次延續連讀
+    newStreak = prev.currentStreak + 1
+    gracePeriodUsed = true
   } else {
-    // Gap → reset
     newStreak = 1
+    gracePeriodUsed = false
   }
 
   const updated: StreakData = {
     lastReadDate: todayStr,
     currentStreak: newStreak,
     longestStreak: Math.max(prev.longestStreak, newStreak),
+    gracePeriodUsed,
   }
   saveStreak(updated)
   return updated
@@ -731,6 +737,10 @@ function App() {
                 : source === 'jasher' && activeChapter
                 ? `雅煞珥書 · 第 ${activeChapter.number} 章`
                 : ''}
+              {activeChapter && (() => {
+                const mins = Math.ceil(activeChapter.verses.reduce((s, v) => s + v.text.length, 0) / 300)
+                return <span className="ml-1.5 text-[10px] font-normal text-stone-300 dark:text-[#6B6460]">約{mins}分鐘</span>
+              })()}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -745,14 +755,23 @@ function App() {
                 <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </button>
-            {/* 字體 */}
-            <button
-              onClick={() => setFontSize(s => (s + 1) % 3)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="切換字體大小"
-            >
-              {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
-            </button>
+            {/* 字體 Radio */}
+            <div className="flex rounded border border-stone-200 dark:border-[#2E3240] overflow-hidden">
+              {([['text-[10px]','小'], ['text-xs','中'], ['text-sm','大']] as const).map(([sz, label], i) => (
+                <button
+                  key={i}
+                  onClick={() => setFontSize(i)}
+                  title={`字體${label}`}
+                  className={`px-2 py-1 ${sz} font-medium transition-colors
+                    ${fontSize === i
+                      ? 'bg-stone-200 dark:bg-[#2E3240] text-stone-600 dark:text-[#E4DDD0]'
+                      : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
+                    }`}
+                >
+                  A
+                </button>
+              ))}
+            </div>
             {/* 深淺色 */}
             <button
               onClick={() => setDark(d => !d)}
