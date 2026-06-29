@@ -759,6 +759,13 @@ function App() {
           verseNumStyle={verseNumStyle}
           lineSpacing={lineSpacing}
         />
+        {/* Mobile spacer — reserves space for the fixed bottom nav bar so reader doesn't scroll under it */}
+        {!isImmersive && (
+          <div
+            className="sm:hidden shrink-0"
+            style={{ height: 'calc(44px + env(safe-area-inset-bottom))' }}
+          />
+        )}
       </div>
 
       {/* More menu */}
