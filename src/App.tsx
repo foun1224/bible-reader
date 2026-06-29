@@ -567,9 +567,6 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
-        onOpenSearch={() => setSearchOpen(true)}
-        onOpenNotes={() => setNotesPanelOpen(true)}
-        onOpenDevotion={() => setDevotionOpen(true)}
       />
       </div>
 
