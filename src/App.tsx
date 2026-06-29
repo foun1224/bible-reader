@@ -637,14 +637,10 @@ function App() {
 
             <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
               {source === 'ckjv' && activeBook
-                ? `${activeBook.name} · 第 ${activeChapter?.number} 章`
+                ? `${activeBook.name} · ${activeChapter?.number ?? ''}`
                 : source === 'jasher' && activeChapter
-                ? `雅煞珥書 · 第 ${activeChapter.number} 章`
+                ? `雅煞珥書 · ${activeChapter.number}`
                 : ''}
-              {activeChapter && (() => {
-                const mins = Math.ceil(activeChapter.verses.reduce((s, v) => s + v.text.length, 0) / 300)
-                return <span className="ml-1.5 text-[10px] font-normal text-stone-300 dark:text-[#6B6460]">約{mins}分鐘</span>
-              })()}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -658,31 +654,6 @@ function App() {
                 <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
                 <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
-            </button>
-            {/* 字體 Radio */}
-            <div className="flex rounded border border-stone-200 dark:border-[#2E3240] overflow-hidden">
-              {([['text-[10px]','小'], ['text-xs','中'], ['text-sm','大']] as const).map(([sz, label], i) => (
-                <button
-                  key={i}
-                  onClick={() => setFontSize(i)}
-                  title={`字體${label}`}
-                  className={`px-2 py-1 ${sz} font-medium transition-colors
-                    ${fontSize === i
-                      ? 'bg-stone-200 dark:bg-[#2E3240] text-stone-600 dark:text-[#E4DDD0]'
-                      : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
-                    }`}
-                >
-                  A
-                </button>
-              ))}
-            </div>
-            {/* 深淺色 */}
-            <button
-              onClick={() => setDark(d => !d)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title={dark ? '切換淺色模式' : '切換深色模式'}
-            >
-              {dark ? '☀' : '☽'}
             </button>
             {/* 沈浸模式 */}
             <button
@@ -721,9 +692,45 @@ function App() {
           </div>
           {/* 閱讀設定 popover */}
           {settingsOpen && (
-            <div className="absolute top-full right-0 z-30 mt-1 mr-2 w-64 bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240] rounded-lg shadow-lg p-4 space-y-4">
+            <div className="absolute top-full right-0 z-30 mt-1 mr-2 w-60 bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240] rounded-lg shadow-lg p-4 space-y-4">
               <div>
-                <div className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">節號顯示</div>
+                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">文字</div>
+                <div className="flex gap-1">
+                  {([['text-[10px]','小'], ['text-xs','中'], ['text-sm','大']] as const).map(([, label], i) => (
+                    <button
+                      key={i}
+                      onClick={() => setFontSize(i)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        fontSize === i
+                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">主題</div>
+                <div className="flex gap-1">
+                  {([['紙白', false], ['夜讀', true]] as [string, boolean][]).map(([label, isDark]) => (
+                    <button
+                      key={label}
+                      onClick={() => setDark(isDark)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        dark === isDark
+                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">節號</div>
                 <div className="flex gap-1">
                   {(['show', 'fade', 'hide'] as const).map(v => (
                     <button
@@ -741,7 +748,7 @@ function App() {
                 </div>
               </div>
               <div>
-                <div className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">行距</div>
+                <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">行距</div>
                 <div className="flex gap-1">
                   {(['comfortable', 'loose'] as const).map(v => (
                     <button
