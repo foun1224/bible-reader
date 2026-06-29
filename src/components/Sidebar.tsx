@@ -22,19 +22,16 @@ export default function Sidebar({
     activeBook?.id ?? null
   )
   const [showJasher, setShowJasher] = useState(source === 'jasher')
-  const [search, setSearch] = useState('')
+  const [oldExpanded, setOldExpanded] = useState(true)
+  const [newExpanded, setNewExpanded] = useState(true)
 
-  // P1-2: sync expandedBook when bookmark restores a different book
+  // sync expandedBook when bookmark restores a different book
   useEffect(() => {
     if (activeBook?.id != null) setExpandedBook(activeBook.id)
   }, [activeBook?.id])
 
-  const filteredBooks = ckjv?.books.filter(b =>
-    b.name.includes(search) || b.nameEn?.toLowerCase().includes(search.toLowerCase())
-  ) ?? []
-
-  const oldTestament = filteredBooks.filter(b => b.testament === '舊約')
-  const newTestament = filteredBooks.filter(b => b.testament === '新約')
+  const oldTestament = ckjv?.books.filter(b => b.testament === '舊約') ?? []
+  const newTestament = ckjv?.books.filter(b => b.testament === '新約') ?? []
 
   const renderBook = (book: Book) => {
     const isExpanded = expandedBook === book.id
@@ -43,8 +40,6 @@ export default function Sidebar({
       <div key={book.id}>
         <button
           onClick={() => {
-            // P2-1: only toggle expand, do NOT auto-select chapter 1
-            // P2-2: collapse Jasher when expanding a CKJV book
             if (!isExpanded) {
               setExpandedBook(book.id)
               setShowJasher(false)
@@ -55,11 +50,14 @@ export default function Sidebar({
           title={book.name}
           className={`w-full text-left px-3 py-1.5 text-sm rounded transition-colors truncate
             ${isActive
-              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 font-medium'
-              : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700/50'
+              ? 'bg-parchment-100 dark:bg-[#2E261E] text-gold dark:text-gold-dark font-medium'
+              : 'text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E]'
             }`}
         >
-          {book.name}
+          <span className="flex items-center gap-1.5">
+            <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
+            {book.name}
+          </span>
         </button>
         {isExpanded && (
           <div className="flex flex-wrap gap-1 px-3 py-1 pb-2">
@@ -67,14 +65,13 @@ export default function Sidebar({
               <button
                 key={ch.number}
                 onClick={() => onSelectCkjvChapter(book, ch)}
-                /* min 44px touch target via padding; visual size via inner span */
-                className={`flex items-center justify-center min-w-[44px] min-h-[44px] p-0.5 rounded transition-colors
+                className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
                   ${source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-amber-200 dark:hover:bg-amber-800/50'
+                    ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
+                    : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
                   }`}
               >
-                <span className="text-xs leading-none">{ch.number}</span>
+                {ch.number}
               </button>
             ))}
           </div>
@@ -85,11 +82,12 @@ export default function Sidebar({
 
   const sidebarContent = (
     <SidebarContent
-      search={search}
-      setSearch={setSearch}
       oldTestament={oldTestament}
       newTestament={newTestament}
-      filteredBooks={filteredBooks}
+      oldExpanded={oldExpanded}
+      setOldExpanded={setOldExpanded}
+      newExpanded={newExpanded}
+      setNewExpanded={setNewExpanded}
       renderBook={renderBook}
       jasher={jasher}
       source={source}
@@ -101,32 +99,30 @@ export default function Sidebar({
     />
   )
 
-  // On desktop (sm+): always show as side panel (w-52, relative)
-  // On mobile (<sm): show as fixed overlay from left when isOpen
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden sm:flex w-52 shrink-0 flex-col border-r border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 overflow-hidden">
+      <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-parchment-200 dark:border-[#3A3028] bg-parchment-100 dark:bg-[#221C17] overflow-hidden">
         {sidebarContent}
       </div>
 
       {/* Mobile sidebar overlay */}
       <div
         className={`sm:hidden fixed top-0 left-0 z-30 h-full w-64 flex flex-col
-          border-r border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800
+          border-r border-parchment-200 dark:border-[#3A3028] bg-parchment-100 dark:bg-[#221C17]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Close button */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200 dark:border-stone-700 shrink-0">
-          <span className="text-sm font-semibold text-stone-600 dark:text-stone-300">目錄</span>
+        <div className="flex items-center justify-between px-3 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] shrink-0">
+          <span className="text-xs font-medium text-parchment-400 dark:text-[#A8906E] uppercase tracking-widest">目錄</span>
           <button
             onClick={onClose}
-            className="p-1.5 rounded text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700"
+            className="p-1.5 rounded text-parchment-300 dark:text-[#3A3028] hover:bg-parchment-200 dark:hover:bg-[#2E261E] transition-colors"
             aria-label="關閉目錄"
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
-              <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+              <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
         </div>
@@ -136,13 +132,13 @@ export default function Sidebar({
   )
 }
 
-/* Shared inner content to avoid duplicating JSX */
 interface ContentProps {
-  search: string
-  setSearch: (v: string) => void
   oldTestament: Book[]
   newTestament: Book[]
-  filteredBooks: Book[]
+  oldExpanded: boolean
+  setOldExpanded: (v: boolean) => void
+  newExpanded: boolean
+  setNewExpanded: (v: boolean) => void
   renderBook: (book: Book) => React.ReactNode
   jasher: JasherData | null
   source: 'ckjv' | 'jasher'
@@ -154,86 +150,93 @@ interface ContentProps {
 }
 
 function SidebarContent({
-  search, setSearch,
-  oldTestament, newTestament, filteredBooks,
+  oldTestament, newTestament,
+  oldExpanded, setOldExpanded,
+  newExpanded, setNewExpanded,
   renderBook,
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
 }: ContentProps) {
-  // P2-4: search results grouped by testament; empty groups hidden
-  const searchOld = search ? filteredBooks.filter(b => b.testament === '舊約') : oldTestament
-  const searchNew = search ? filteredBooks.filter(b => b.testament === '新約') : newTestament
-
   return (
-    <>
-      {/* Search */}
-      <div className="p-2 border-b border-stone-200 dark:border-stone-700 shrink-0">
-        <input
-          type="text"
-          placeholder="搜尋書卷…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full px-2 py-1 text-sm rounded border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-800 dark:text-stone-200 outline-none focus:border-amber-400"
-        />
-      </div>
-
-      <div className="flex-1 overflow-y-auto py-1">
-        {/* P2-4: always show testament group headers; hide empty groups */}
-        {searchOld.length > 0 && (
-          <div className="px-3 py-1 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mt-1">
-            舊約
-          </div>
-        )}
-        {searchOld.map(renderBook)}
-
-        {searchNew.length > 0 && (
-          <div className="px-3 py-1 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mt-3">
-            新約
-          </div>
-        )}
-        {searchNew.map(renderBook)}
-
-        {/* Jasher */}
-        {jasher && (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-1 overflow-y-auto py-2">
+        {/* 舊約 group header */}
+        {oldTestament.length > 0 && (
           <>
-            <div className="px-3 mt-3 mb-1">
-              <button
-                onClick={() => {
-                  // P2-3: only toggle, do NOT auto-jump to chapter 1
-                  // P2-2: collapse CKJV books when expanding Jasher
-                  if (!showJasher) {
-                    setShowJasher(true)
-                    setExpandedBook(null)
-                  } else {
-                    setShowJasher(false)
-                  }
-                }}
-                className={`w-full text-left text-xs font-semibold uppercase tracking-wider py-1
-                  ${source === 'jasher' ? 'text-amber-600 dark:text-amber-400' : 'text-stone-400 dark:text-stone-500'}`}
-              >
-                次經 · 雅煞珥書 {showJasher ? '▾' : '▸'}
-              </button>
-            </div>
-            {showJasher && (
-              <div className="flex flex-wrap gap-1 px-3 pb-2">
-                {jasher.chapters.map(ch => (
-                  <button
-                    key={ch.number}
-                    onClick={() => onSelectJasherChapter(ch)}
-                    className={`flex items-center justify-center min-w-[44px] min-h-[44px] p-0.5 rounded transition-colors
-                      ${source === 'jasher' && activeChapter?.number === ch.number
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-amber-200 dark:hover:bg-amber-800/50'
-                      }`}
-                  >
-                    <span className="text-xs leading-none">{ch.number}</span>
-                  </button>
-                ))}
+            <button
+              onClick={() => setOldExpanded(!oldExpanded)}
+              className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-parchment-300 dark:text-[#3A3028] hover:text-parchment-400 dark:hover:text-[#A8906E] uppercase tracking-widest transition-colors"
+            >
+              <span className="text-[9px]">{oldExpanded ? '▾' : '▸'}</span>
+              舊約
+            </button>
+            {oldExpanded && (
+              <div className="pb-1">
+                {oldTestament.map(renderBook)}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* 新約 group header */}
+        {newTestament.length > 0 && (
+          <>
+            <button
+              onClick={() => setNewExpanded(!newExpanded)}
+              className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-parchment-300 dark:text-[#3A3028] hover:text-parchment-400 dark:hover:text-[#A8906E] uppercase tracking-widest transition-colors"
+            >
+              <span className="text-[9px]">{newExpanded ? '▾' : '▸'}</span>
+              新約
+            </button>
+            {newExpanded && (
+              <div className="pb-1">
+                {newTestament.map(renderBook)}
               </div>
             )}
           </>
         )}
       </div>
-    </>
+
+      {/* Jasher — pinned to bottom */}
+      {jasher && (
+        <div className="shrink-0 border-t border-parchment-200 dark:border-[#3A3028] py-2">
+          <button
+            onClick={() => {
+              if (!showJasher) {
+                setShowJasher(true)
+                setExpandedBook(null)
+              } else {
+                setShowJasher(false)
+              }
+            }}
+            className={`w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors
+              ${source === 'jasher'
+                ? 'text-gold dark:text-gold-dark'
+                : 'text-parchment-300 dark:text-[#3A3028] hover:text-parchment-400 dark:hover:text-[#A8906E]'
+              }`}
+          >
+            <span className="text-[9px]">{showJasher ? '▾' : '▸'}</span>
+            次經 · 雅煞珥書
+          </button>
+          {showJasher && (
+            <div className="flex flex-wrap gap-1 px-3 pb-2 pt-1">
+              {jasher.chapters.map(ch => (
+                <button
+                  key={ch.number}
+                  onClick={() => onSelectJasherChapter(ch)}
+                  className={`flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                    ${source === 'jasher' && activeChapter?.number === ch.number
+                      ? 'bg-gold text-white dark:bg-gold-dark dark:text-[#1A1410]'
+                      : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-200 dark:hover:bg-[#3A3028]'
+                    }`}
+                >
+                  {ch.number}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

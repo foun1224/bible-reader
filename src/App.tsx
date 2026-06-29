@@ -14,7 +14,6 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // source: 'ckjv' or 'jasher'
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
@@ -27,7 +26,6 @@ function App() {
     ]).then(([c, j]) => {
       setCkjv(c)
       setJasher(j)
-      // restore bookmark — attempt first, always fall back to Genesis 1
       let restored = false
       if (c && Array.isArray(c.books) && c.books.length > 0) {
         try {
@@ -48,7 +46,6 @@ function App() {
             }
           }
         } catch { /* ignore */ }
-        // fallback: always load Genesis 1 if bookmark restore failed
         if (!restored) {
           const gen = c.books[0]
           setActiveBook(gen)
@@ -82,16 +79,85 @@ function App() {
     setSidebarOpen(false)
   }, [saveBookmark])
 
+  // --- Chapter navigation logic ---
+  const handlePrevChapter = useCallback(() => {
+    if (source === 'jasher' && jasher && activeChapter) {
+      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
+      if (idx > 0) selectJasherChapter(jasher.chapters[idx - 1])
+    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+      if (chIdx > 0) {
+        selectCkjvChapter(activeBook, activeBook.chapters[chIdx - 1])
+      } else {
+        // go to previous book's last chapter
+        const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+        if (bIdx > 0) {
+          const prevBook = ckjv.books[bIdx - 1]
+          selectCkjvChapter(prevBook, prevBook.chapters[prevBook.chapters.length - 1])
+        }
+      }
+    }
+  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+
+  const handleNextChapter = useCallback(() => {
+    if (source === 'jasher' && jasher && activeChapter) {
+      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
+      if (idx < jasher.chapters.length - 1) selectJasherChapter(jasher.chapters[idx + 1])
+    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+      if (chIdx < activeBook.chapters.length - 1) {
+        selectCkjvChapter(activeBook, activeBook.chapters[chIdx + 1])
+      } else {
+        // go to next book's first chapter
+        const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+        if (bIdx < ckjv.books.length - 1) {
+          const nextBook = ckjv.books[bIdx + 1]
+          selectCkjvChapter(nextBook, nextBook.chapters[0])
+        }
+      }
+    }
+  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+
+  const hasPrev = (() => {
+    if (!activeChapter) return false
+    if (source === 'jasher' && jasher) {
+      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
+      return idx > 0
+    }
+    if (source === 'ckjv' && ckjv && activeBook) {
+      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+      if (chIdx > 0) return true
+      const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+      return bIdx > 0
+    }
+    return false
+  })()
+
+  const hasNext = (() => {
+    if (!activeChapter) return false
+    if (source === 'jasher' && jasher) {
+      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
+      return idx < jasher.chapters.length - 1
+    }
+    if (source === 'ckjv' && ckjv && activeBook) {
+      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+      if (chIdx < activeBook.chapters.length - 1) return true
+      const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+      return bIdx < ckjv.books.length - 1
+    }
+    return false
+  })()
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300">
+      <div className="flex items-center justify-center h-screen bg-parchment-50 dark:bg-[#1A1410] text-parchment-400 dark:text-[#A8906E]">
         載入中…
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-stone-900">
+    <div className="flex h-screen overflow-hidden bg-parchment-50 dark:bg-[#1A1410]">
       {/* Sidebar — desktop: always visible; mobile: overlay */}
       <Sidebar
         ckjv={ckjv}
@@ -108,55 +174,62 @@ function App() {
       {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/40 sm:hidden"
+          className="fixed inset-0 z-20 bg-black/30 sm:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 shrink-0">
+        {/* Toolbar — light, non-intrusive */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] bg-parchment-50/80 dark:bg-[#1A1410]/80 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden p-1.5 rounded text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700"
+              className="sm:hidden p-1.5 rounded text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
               aria-label="開啟目錄"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                 <rect y="3" width="20" height="2" rx="1"/>
                 <rect y="9" width="20" height="2" rx="1"/>
                 <rect y="15" width="20" height="2" rx="1"/>
               </svg>
             </button>
-            <span className="text-base font-bold text-stone-700 dark:text-stone-200">
+            <span className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4] tracking-wide">
               {source === 'ckjv' && activeBook
-                ? `${activeBook.name} ${activeChapter?.number} 章${activeChapter ? ` · 共 ${activeChapter.verses.length} 節` : ''}`
+                ? `${activeBook.name} · 第 ${activeChapter?.number} 章`
                 : source === 'jasher' && activeChapter
-                ? `雅煞珥書 ${activeChapter.number} 章 · 共 ${activeChapter.verses.length} 節`
+                ? `雅煞珥書 · 第 ${activeChapter.number} 章`
                 : ''}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
-              className="px-2 py-1 text-xs rounded border border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700"
+              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
               title="切換字體大小"
             >
               {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
             <button
               onClick={() => setDark(d => !d)}
-              className="px-2 py-1 text-xs rounded border border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700"
+              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
             >
-              {dark ? '☀️ 淺色' : '🌙 深色'}
+              {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
           </div>
         </div>
 
         {/* Reader */}
-        <Reader chapter={activeChapter} fontSize={FONT_SIZES[fontSize]} />
+        <Reader
+          chapter={activeChapter}
+          fontSize={FONT_SIZES[fontSize]}
+          onPrevChapter={handlePrevChapter}
+          onNextChapter={handleNextChapter}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
+        />
       </div>
     </div>
   )

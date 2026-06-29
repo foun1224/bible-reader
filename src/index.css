@@ -4,4 +4,26 @@
 
 body {
   font-family: 'Noto Serif TC', Georgia, serif;
+  background-color: #FDF8EF;
+  color: #2C1A0E;
+}
+
+.dark body {
+  background-color: #1A1410;
+  color: #EDE0C4;
+}
+
+/* Scrollbar styling — parchment tone */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #DDD0BC;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #3A3028;
 }
