@@ -4,21 +4,21 @@ import type { Chapter, Highlight } from '../types'
 type HighlightColor = 'yellow' | 'red' | 'green' | 'blue'
 
 const COLOR_BG: Record<HighlightColor, string> = {
-  yellow: 'bg-yellow-100/70 dark:bg-yellow-900/30',
-  red: 'bg-red-100/70 dark:bg-red-900/30',
-  green: 'bg-green-100/70 dark:bg-green-900/30',
-  blue: 'bg-blue-100/70 dark:bg-blue-900/30',
+  yellow: 'bg-amber-50/90 dark:bg-amber-950/25',
+  red: 'bg-red-50/80 dark:bg-red-950/20',
+  green: 'bg-green-50/80 dark:bg-green-950/20',
+  blue: 'bg-blue-50/80 dark:bg-blue-950/20',
 }
 
 const COLOR_DOT: Record<HighlightColor, string> = {
-  yellow: 'text-yellow-500',
-  red: 'text-red-500',
-  green: 'text-green-500',
-  blue: 'text-blue-500',
+  yellow: 'text-amber-400',
+  red: 'text-red-400',
+  green: 'text-green-400',
+  blue: 'text-blue-400',
 }
 
 const COLOR_SWATCH: Record<HighlightColor, string> = {
-  yellow: 'bg-yellow-400',
+  yellow: 'bg-amber-300',
   red: 'bg-red-400',
   green: 'bg-green-400',
   blue: 'bg-blue-400',
@@ -40,13 +40,13 @@ interface Props {
   resumeBookName: string
   resumeChapter: number
   onDismissResumeCTA: () => void
-  // Completion overlay
-  showCompletionOverlay: boolean
   // Scroll progress callback (lifted to App)
   onScrollProgress: (v: number) => void
   // Immersive mode
   isImmersive: boolean
   onToggleImmersive: () => void
+  // Chapter grid (mobile)
+  onOpenChapterGrid: () => void
   // Highlights
   highlights: Highlight[]
   onHighlight: (h: Highlight) => void
@@ -64,8 +64,9 @@ export default function Reader({
   chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle, bookName,
   onMarkComplete, isCompleted,
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
-  showCompletionOverlay, onScrollProgress,
+  onScrollProgress,
   isImmersive, onToggleImmersive,
+  onOpenChapterGrid,
   highlights, onHighlight, onRemoveHighlight,
   currentSource, currentBookId,
 }: Props) {
@@ -78,6 +79,7 @@ export default function Reader({
   const [pickerColor, setPickerColor] = useState<HighlightColor>('yellow')
   const [pickerNote, setPickerNote] = useState('')
   const [copied, setCopied] = useState(false)
+  const [showHlTip, setShowHlTip] = useState(() => !localStorage.getItem('hl-tip-shown'))
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
@@ -204,10 +206,6 @@ export default function Reader({
     )
   }
 
-  // Estimated reading time
-  const totalChars = chapter.verses.reduce((sum, v) => sum + v.text.length, 0)
-  const readingMins = Math.ceil(totalChars / 300)
-
   const completeBtn = (
     <button
       onClick={onMarkComplete}
@@ -216,11 +214,11 @@ export default function Reader({
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
           : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
         }`}
-      title={isCompleted ? '已完成' : '標記本章為完成'}
+      title={isCompleted ? '已讀' : '標記已讀'}
       disabled={isCompleted}
     >
       <span>{isCompleted ? '✓' : '○'}</span>
-      <span className="hidden sm:inline">{isCompleted ? '已完成' : '完成本章'}</span>
+      <span className="hidden sm:inline">{isCompleted ? '已讀' : '標記已讀'}</span>
     </button>
   )
 
@@ -228,15 +226,6 @@ export default function Reader({
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
-      {/* Completion full-screen overlay */}
-      {showCompletionOverlay && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex flex-col items-center justify-center pointer-events-none">
-          <div className="text-8xl mb-4 animate-pop-in">✓</div>
-          <div className="text-2xl font-bold text-white">{chapterTitle}</div>
-          <div className="text-stone-200 mt-2 text-sm">章節完成</div>
-        </div>
-      )}
-
       {/* Immersive exit button */}
       {isImmersive && (
         <button
@@ -348,7 +337,7 @@ export default function Reader({
 
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
-      <div className={`mx-auto px-8 pt-16 pb-32 sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] px-10 pt-8'}`}>
+      <div className={`mx-auto px-6 pt-16 pb-[96px] sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
         <div ref={topRef} />
 
         {/* Immersive watermark */}
@@ -379,17 +368,9 @@ export default function Reader({
         )}
 
         {/* Estimated reading time */}
-        {(() => {
-          return (
-            <div className="text-xs text-stone-300 dark:text-[#6B6460] mb-6 text-right">
-              約 {readingMins} 分鐘
-            </div>
-          )
-        })()}
-
         <div
           className={`${isImmersive ? 'text-xl leading-9' : fontSize} text-stone-500 dark:text-[#E4DDD0]`}
-          style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '2.1' }}
+          style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '1.9' }}
         >
           {chapter.verses.map(v => {
             const hl = highlights.find(h => h.verse === v.number)
@@ -414,8 +395,8 @@ export default function Reader({
                 }}
               >
                 <sup
-                  className="text-sage dark:text-sage-dark select-none mr-0.5"
-                  style={{ fontSize: '9px', fontWeight: 400, opacity: 0.35, verticalAlign: 'super' }}
+                  className="text-sage dark:text-sage-dark select-none mr-0.5 opacity-35 group-hover:opacity-60 transition-opacity duration-150"
+                  style={{ fontSize: '9px', fontWeight: 400, verticalAlign: 'super' }}
                 >
                   {v.number}
                 </sup>
@@ -440,8 +421,22 @@ export default function Reader({
           })}
         </div>
 
-        {/* Chapter navigation + complete button */}
-        <div className={`flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
+        {/* Highlight one-time tip */}
+        {showHlTip && !isImmersive && (
+          <div className="mt-8 mb-2 flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 text-xs text-stone-400 dark:text-[#A09890]">
+            <span className="text-base shrink-0">💡</span>
+            <span className="flex-1">長按任何節文，可劃線、選顏色、加筆記</span>
+            <button
+              onClick={() => { setShowHlTip(false); localStorage.setItem('hl-tip-shown', '1') }}
+              className="shrink-0 px-2 py-0.5 rounded text-stone-300 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890] transition-colors"
+            >
+              知道了
+            </button>
+          </div>
+        )}
+
+        {/* Chapter navigation + complete button — desktop only; mobile uses App bottom bar */}
+        <div className={`justify-between items-center mt-8 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : 'hidden sm:flex'}`}>
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}
@@ -455,10 +450,7 @@ export default function Reader({
             <span>上一章</span>
           </button>
 
-          {/* Complete button — desktop center */}
-          <div className="hidden sm:flex">
-            {completeBtn}
-          </div>
+          {completeBtn}
 
           <button
             onClick={onNextChapter}
@@ -475,37 +467,6 @@ export default function Reader({
         </div>
       </div>
 
-      {/* Mobile bottom nav bar */}
-      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]`}>
-        <button
-          onClick={onPrevChapter}
-          disabled={!hasPrev}
-          className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
-            ${hasPrev
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
-              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
-            }`}
-        >
-          <span>←</span>
-          <span>上一章</span>
-        </button>
-
-        {/* Complete button — mobile center */}
-        {completeBtn}
-
-        <button
-          onClick={onNextChapter}
-          disabled={!hasNext}
-          className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
-            ${hasNext
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
-              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
-            }`}
-        >
-          <span>下一章</span>
-          <span>→</span>
-        </button>
-      </div>
     </div>
   )
 }

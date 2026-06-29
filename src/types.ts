@@ -47,6 +47,7 @@ export interface StreakData {
   lastReadDate: string  // 'YYYY-MM-DD'（台灣時區，sv-SE locale）
   currentStreak: number
   longestStreak: number
+  gracePeriodUsed?: boolean  // 本輪連讀已用過一次寬限
 }
 
 // 閱讀計劃

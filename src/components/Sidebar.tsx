@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { BibleData, JasherData, Book, Chapter, CompletionRecord } from '../types'
 
 interface Props {
@@ -12,12 +12,16 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
+  onOpenSearch: () => void
+  onOpenNotes: () => void
+  onOpenDevotion: () => void
 }
 
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
+  onOpenSearch, onOpenNotes, onOpenDevotion,
 }: Props) {
   const [expandedBook, setExpandedBook] = useState<number | string | null>(
     activeBook?.id ?? null
@@ -54,7 +58,7 @@ export default function Sidebar({
     const progressFull = completedRatio >= 0.8
 
     return (
-      <div key={book.id}>
+      <div key={book.id} data-book-id={book.id}>
         <button
           onClick={() => {
             if (!isExpanded) {
@@ -104,14 +108,11 @@ export default function Sidebar({
                     ${active
                       ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                       : completed
-                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-stone-200/60 dark:ring-stone-600/30'
                       : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
                     }`}
                 >
                   {ch.number}
-                  {completed && !active && (
-                    <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
-                  )}
                 </button>
               )
             })}
@@ -138,6 +139,7 @@ export default function Sidebar({
       setExpandedBook={setExpandedBook}
       onSelectJasherChapter={onSelectJasherChapter}
       isJasherCompleted={isJasherCompleted}
+      expandedBook={expandedBook}
     />
   )
 
@@ -146,11 +148,29 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         {sidebarContent}
+        {/* Desktop bottom tool row */}
+        <div className="shrink-0 flex items-center border-t border-stone-200 dark:border-[#2E3240]">
+          {[
+            { label: '搜尋', icon: <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: onOpenSearch },
+            { label: '筆記', icon: '📝', fn: onOpenNotes },
+            { label: '靈修', icon: '🕊', fn: onOpenDevotion },
+          ].map(({ label, icon, fn }) => (
+            <button
+              key={label}
+              onClick={fn}
+              title={label}
+              className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#17191E] transition-colors"
+            >
+              <span className="text-sm leading-none">{icon}</span>
+              <span className="text-[9px] leading-none">{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Mobile sidebar overlay */}
       <div
-        className={`sm:hidden fixed top-0 left-0 z-30 h-full w-64 flex flex-col
+        className={`sm:hidden fixed top-0 left-0 z-30 h-dvh w-64 flex flex-col
           border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -190,6 +210,7 @@ interface ContentProps {
   setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
   isJasherCompleted: (chNum: number) => boolean
+  expandedBook: number | string | null
 }
 
 function SidebarContent({
@@ -200,8 +221,10 @@ function SidebarContent({
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
   isJasherCompleted,
+  expandedBook,
 }: ContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const q = searchQuery.trim().toLowerCase()
   const filteredOld = q ? oldTestament.filter(b => b.name.toLowerCase().includes(q)) : oldTestament
@@ -215,6 +238,13 @@ function SidebarContent({
     }
   }, [q, allFiltered.length])
 
+  // Scroll active book into view when it changes
+  useEffect(() => {
+    if (!expandedBook || !scrollRef.current) return
+    const el = scrollRef.current.querySelector(`[data-book-id="${expandedBook}"]`)
+    if (el) el.scrollIntoView({ block: 'nearest' })
+  }, [expandedBook])
+
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Search box */}
@@ -227,7 +257,7 @@ function SidebarContent({
           className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
         />
       </div>
-      <div className="flex-1 overflow-y-auto py-2">
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto py-2">
         {/* 舊約 group header */}
         {filteredOld.length > 0 && (
           <>
@@ -299,14 +329,11 @@ function SidebarContent({
                       ${active
                         ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                         : completed
-                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-stone-200/60 dark:ring-stone-600/30'
                         : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
                       }`}
                   >
                     {ch.number}
-                    {completed && !active && (
-                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
-                    )}
                   </button>
                 )
               })}
