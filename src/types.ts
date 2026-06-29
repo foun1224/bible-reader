@@ -63,14 +63,26 @@ export interface Achievement {
   unlockedAt: string  // ISO 8601
 }
 
+export type HighlightColor = 'important' | 'comfort' | 'question' | 'prayer'
+// Legacy color names kept for migration only
+export type LegacyHighlightColor = 'yellow' | 'red' | 'green' | 'blue'
+
 export interface Highlight {
   id: string                     // UUID-like: `${sourceId}-${bookId ?? 'j'}-${chapter}-${verse}-${Date.now()}`
   sourceId: 'ckjv' | 'jasher'
   bookId?: number
   chapter: number
   verse: number
-  color: 'yellow' | 'red' | 'green' | 'blue'
+  color: HighlightColor
   note: string                   // 可空字串
   highlightText: string          // 劃線的文字內容
   createdAt: string              // ISO timestamp
+}
+
+export interface ReflectionNote {
+  sourceId: 'ckjv' | 'jasher'
+  bookId?: number
+  chapter: number
+  content: string
+  updatedAt: string
 }

@@ -1,4 +1,4 @@
-import type { Highlight, BibleData } from '../types'
+import type { Highlight, BibleData, HighlightColor } from '../types'
 
 interface Props {
   isOpen: boolean
@@ -8,11 +8,11 @@ interface Props {
   onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
 }
 
-const COLOR_DOT: Record<string, string> = {
-  yellow: 'bg-yellow-400',
-  red: 'bg-red-400',
-  green: 'bg-green-400',
-  blue: 'bg-blue-400',
+const COLOR_DOT: Record<HighlightColor, string> = {
+  important: 'bg-amber-400',
+  comfort:   'bg-green-400',
+  question:  'bg-blue-400',
+  prayer:    'bg-red-400',
 }
 
 function formatDate(iso: string): string {

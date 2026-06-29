@@ -1,27 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Chapter, Highlight } from '../types'
-
-type HighlightColor = 'yellow' | 'red' | 'green' | 'blue'
+import type { Chapter, Highlight, HighlightColor } from '../types'
 
 const COLOR_BG: Record<HighlightColor, string> = {
-  yellow: 'bg-amber-50/90 dark:bg-amber-950/25',
-  red: 'bg-red-50/80 dark:bg-red-950/20',
-  green: 'bg-green-50/80 dark:bg-green-950/20',
-  blue: 'bg-blue-50/80 dark:bg-blue-950/20',
+  important: 'bg-amber-50/90 dark:bg-amber-950/25',
+  comfort:   'bg-green-50/80 dark:bg-green-950/20',
+  question:  'bg-blue-50/80 dark:bg-blue-950/20',
+  prayer:    'bg-red-50/80 dark:bg-red-950/20',
 }
 
 const COLOR_DOT: Record<HighlightColor, string> = {
-  yellow: 'text-amber-400',
-  red: 'text-red-400',
-  green: 'text-green-400',
-  blue: 'text-blue-400',
+  important: 'text-amber-400',
+  comfort:   'text-green-400',
+  question:  'text-blue-400',
+  prayer:    'text-red-400',
 }
 
 const COLOR_SWATCH: Record<HighlightColor, string> = {
-  yellow: 'bg-amber-300',
-  red: 'bg-red-400',
-  green: 'bg-green-400',
-  blue: 'bg-blue-400',
+  important: 'bg-amber-300',
+  comfort:   'bg-green-400',
+  question:  'bg-blue-400',
+  prayer:    'bg-red-400',
+}
+
+const COLOR_LABEL: Record<HighlightColor, string> = {
+  important: '重要',
+  comfort:   '安慰',
+  question:  '疑問',
+  prayer:    '禱告',
 }
 
 interface Props {
@@ -53,6 +58,9 @@ interface Props {
   onRemoveHighlight: (sourceId: string, bookId: number | undefined, chapter: number, verse: number) => void
   currentSource: 'ckjv' | 'jasher'
   currentBookId: number | undefined
+  // Reading settings
+  verseNumStyle: 'show' | 'fade' | 'hide'
+  lineSpacing: 'comfortable' | 'loose'
 }
 
 interface PickerState {
@@ -69,6 +77,7 @@ export default function Reader({
   onOpenChapterGrid,
   highlights, onHighlight, onRemoveHighlight,
   currentSource, currentBookId,
+  verseNumStyle, lineSpacing,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -76,7 +85,7 @@ export default function Reader({
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [picker, setPicker] = useState<PickerState | null>(null)
-  const [pickerColor, setPickerColor] = useState<HighlightColor>('yellow')
+  const [pickerColor, setPickerColor] = useState<HighlightColor>('important')
   const [pickerNote, setPickerNote] = useState('')
   const [copied, setCopied] = useState(false)
   const [showHlTip, setShowHlTip] = useState(() => !localStorage.getItem('hl-tip-shown'))
@@ -136,7 +145,7 @@ export default function Reader({
 
   const openPicker = (verseNumber: number, verseText: string) => {
     const existing = highlights.find(h => h.verse === verseNumber)
-    setPickerColor(existing?.color ?? 'yellow')
+    setPickerColor(existing?.color ?? 'important')
     setPickerNote(existing?.note ?? '')
     setPicker({ verse: verseNumber, verseText })
   }
@@ -209,16 +218,15 @@ export default function Reader({
   const completeBtn = (
     <button
       onClick={onMarkComplete}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
+      className={`text-xs transition-colors px-2 py-1 rounded
         ${isCompleted
-          ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
-          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
+          ? 'text-[#4F7358] dark:text-[#7AAF87] cursor-default'
+          : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890]'
         }`}
       title={isCompleted ? '已讀' : '標記已讀'}
       disabled={isCompleted}
     >
-      <span>{isCompleted ? '✓' : '○'}</span>
-      <span className="hidden sm:inline">{isCompleted ? '已讀' : '標記已讀'}</span>
+      {isCompleted ? '✓ 已讀' : '標記已讀'}
     </button>
   )
 
@@ -279,14 +287,18 @@ export default function Reader({
             </p>
 
             {/* Color swatches + remove button */}
-            <div className="flex items-center gap-3 mb-4">
-              {(['yellow', 'red', 'green', 'blue'] as HighlightColor[]).map(c => (
+            <div className="flex items-center gap-2 mb-4">
+              {(['important', 'comfort', 'question', 'prayer'] as HighlightColor[]).map(c => (
                 <button
                   key={c}
                   onClick={() => setPickerColor(c)}
-                  className={`w-8 h-8 rounded-full ${COLOR_SWATCH[c]} transition-all ${pickerColor === c ? 'ring-2 ring-offset-2 ring-stone-400 dark:ring-stone-500 scale-110' : 'opacity-70 hover:opacity-100'}`}
-                  aria-label={c}
-                />
+                  className={`flex flex-col items-center gap-0.5 px-1.5 py-1.5 rounded transition-all
+                    ${pickerColor === c ? 'bg-stone-100 dark:bg-[#2E3240]' : 'opacity-60 hover:opacity-90'}`}
+                  aria-label={COLOR_LABEL[c]}
+                >
+                  <span className={`w-5 h-5 rounded-full ${COLOR_SWATCH[c]} ${pickerColor === c ? 'scale-110' : ''} transition-transform`} />
+                  <span className={`text-[9px] ${pickerColor === c ? 'text-stone-500 dark:text-[#E4DDD0]' : 'text-stone-300 dark:text-[#6B6460]'}`}>{COLOR_LABEL[c]}</span>
+                </button>
               ))}
               {existingHighlight && (
                 <button
@@ -370,7 +382,7 @@ export default function Reader({
         {/* Estimated reading time */}
         <div
           className={`${isImmersive ? 'text-xl leading-9' : fontSize} text-stone-500 dark:text-[#E4DDD0]`}
-          style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '1.9' }}
+          style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : lineSpacing === 'loose' ? '2.4' : '1.9' }}
         >
           {chapter.verses.map(v => {
             const hl = highlights.find(h => h.verse === v.number)
@@ -395,7 +407,11 @@ export default function Reader({
                 }}
               >
                 <sup
-                  className="text-sage dark:text-sage-dark select-none mr-0.5 opacity-35 group-hover:opacity-60 transition-opacity duration-150"
+                  className={`text-sage dark:text-sage-dark select-none mr-0.5 transition-opacity duration-150 ${
+                    verseNumStyle === 'hide' ? 'opacity-0'
+                    : verseNumStyle === 'fade' ? 'opacity-15 group-hover:opacity-40'
+                    : 'opacity-35 group-hover:opacity-60'
+                  }`}
                   style={{ fontSize: '9px', fontWeight: 400, verticalAlign: 'super' }}
                 >
                   {v.number}

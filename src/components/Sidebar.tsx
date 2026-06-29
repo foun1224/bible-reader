@@ -12,16 +12,12 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
-  onOpenSearch: () => void
-  onOpenNotes: () => void
-  onOpenDevotion: () => void
 }
 
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
-  onOpenSearch, onOpenNotes, onOpenDevotion,
 }: Props) {
   const [expandedBook, setExpandedBook] = useState<number | string | null>(
     activeBook?.id ?? null
@@ -50,13 +46,6 @@ export default function Sidebar({
     const isExpanded = expandedBook === book.id
     const isActive = source === 'ckjv' && activeBook?.id === book.id
 
-    // 功能 B：書卷完成進度
-    const completedChapters = completions.filter(
-      c => c.sourceId === 'ckjv' && c.bookId === (book.id as number)
-    ).length
-    const completedRatio = book.chapters.length > 0 ? completedChapters / book.chapters.length : 0
-    const progressFull = completedRatio >= 0.8
-
     return (
       <div key={book.id} data-book-id={book.id}>
         <button
@@ -77,22 +66,7 @@ export default function Sidebar({
         >
           <span className="flex items-center gap-1.5">
             <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
-            <span className="truncate flex-shrink min-w-0">{book.name}</span>
-            {/* 進度條 */}
-            {completedRatio > 0 && (
-              <span className="flex-1 min-w-0 ml-1">
-                <span className="block w-full h-0.5 rounded-full bg-stone-200 dark:bg-[#2E3240] overflow-hidden">
-                  <span
-                    className={`block h-full rounded-full transition-all duration-500 ${
-                      progressFull
-                        ? 'bg-[#4F7358] dark:bg-[#7AAF87]'
-                        : 'bg-[#4F7358]/80 dark:bg-[#7AAF87]/80'
-                    }`}
-                    style={{ width: `${Math.round(completedRatio * 100)}%` }}
-                  />
-                </span>
-              </span>
-            )}
+            <span className="truncate">{book.name}</span>
           </span>
         </button>
         {isExpanded && (
@@ -148,24 +122,6 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         {sidebarContent}
-        {/* Desktop bottom tool row */}
-        <div className="shrink-0 flex items-center border-t border-stone-200 dark:border-[#2E3240]">
-          {[
-            { label: '搜尋', icon: <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: onOpenSearch },
-            { label: '筆記', icon: '📝', fn: onOpenNotes },
-            { label: '靈修', icon: '🕊', fn: onOpenDevotion },
-          ].map(({ label, icon, fn }) => (
-            <button
-              key={label}
-              onClick={fn}
-              title={label}
-              className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#17191E] transition-colors"
-            >
-              <span className="text-sm leading-none">{icon}</span>
-              <span className="text-[9px] leading-none">{label}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Mobile sidebar overlay */}
