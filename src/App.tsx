@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement } from './types'
+import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
@@ -11,6 +11,7 @@ const COMPLETIONS_KEY = 'bible-reader-completions'
 const STREAK_KEY = 'bible-reader-streak'
 const PLAN_KEY = 'bible-reader-plan'
 const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
+const HIGHLIGHTS_KEY = 'bible-reader-highlights'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -119,6 +120,12 @@ function App() {
 
   // Immersive reading mode
   const [isImmersive, setIsImmersive] = useState(false)
+
+  // Highlights
+  const [highlights, setHighlights] = useState<Highlight[]>(() => {
+    try { return JSON.parse(localStorage.getItem(HIGHLIGHTS_KEY) || '[]') }
+    catch { return [] }
+  })
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -276,6 +283,23 @@ function App() {
   const handleClearPlan = useCallback(() => {
     setReadingPlan(null)
     localStorage.removeItem(PLAN_KEY)
+  }, [])
+
+  const saveHighlight = useCallback((h: Highlight) => {
+    setHighlights(prev => {
+      const filtered = prev.filter(x => !(x.sourceId === h.sourceId && x.bookId === h.bookId && x.chapter === h.chapter && x.verse === h.verse))
+      const next = [...filtered, h]
+      localStorage.setItem(HIGHLIGHTS_KEY, JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const removeHighlight = useCallback((sourceId: string, bookId: number | undefined, chapter: number, verse: number) => {
+    setHighlights(prev => {
+      const next = prev.filter(x => !(x.sourceId === sourceId && x.bookId === bookId && x.chapter === chapter && x.verse === verse))
+      localStorage.setItem(HIGHLIGHTS_KEY, JSON.stringify(next))
+      return next
+    })
   }, [])
 
   const selectCkjvChapter = useCallback((book: Book, chapter: Chapter) => {
@@ -687,6 +711,15 @@ function App() {
           onScrollProgress={setScrollProgress}
           isImmersive={isImmersive}
           onToggleImmersive={() => setIsImmersive(v => !v)}
+          highlights={highlights.filter(h =>
+            h.sourceId === source &&
+            h.bookId === (activeBook?.id as number | undefined) &&
+            h.chapter === (activeChapter?.number ?? -1)
+          )}
+          onHighlight={saveHighlight}
+          onRemoveHighlight={removeHighlight}
+          currentSource={source}
+          currentBookId={activeBook?.id as number | undefined}
         />
       </div>
     </div>

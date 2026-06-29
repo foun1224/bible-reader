@@ -1,5 +1,28 @@
-import { useEffect, useRef } from 'react'
-import type { Chapter } from '../types'
+import { useEffect, useRef, useState } from 'react'
+import type { Chapter, Highlight } from '../types'
+
+type HighlightColor = 'yellow' | 'red' | 'green' | 'blue'
+
+const COLOR_BG: Record<HighlightColor, string> = {
+  yellow: 'bg-yellow-100/70 dark:bg-yellow-900/30',
+  red: 'bg-red-100/70 dark:bg-red-900/30',
+  green: 'bg-green-100/70 dark:bg-green-900/30',
+  blue: 'bg-blue-100/70 dark:bg-blue-900/30',
+}
+
+const COLOR_DOT: Record<HighlightColor, string> = {
+  yellow: 'text-yellow-500',
+  red: 'text-red-500',
+  green: 'text-green-500',
+  blue: 'text-blue-500',
+}
+
+const COLOR_SWATCH: Record<HighlightColor, string> = {
+  yellow: 'bg-yellow-400',
+  red: 'bg-red-400',
+  green: 'bg-green-400',
+  blue: 'bg-blue-400',
+}
 
 interface Props {
   chapter: Chapter | null
@@ -23,6 +46,17 @@ interface Props {
   // Immersive mode
   isImmersive: boolean
   onToggleImmersive: () => void
+  // Highlights
+  highlights: Highlight[]
+  onHighlight: (h: Highlight) => void
+  onRemoveHighlight: (sourceId: string, bookId: number | undefined, chapter: number, verse: number) => void
+  currentSource: 'ckjv' | 'jasher'
+  currentBookId: number | undefined
+}
+
+interface PickerState {
+  verse: number
+  verseText: string
 }
 
 export default function Reader({
@@ -31,10 +65,17 @@ export default function Reader({
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
   showCompletionOverlay, onScrollProgress,
   isImmersive, onToggleImmersive,
+  highlights, onHighlight, onRemoveHighlight,
+  currentSource, currentBookId,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const touchStartY = useRef<number>(0)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [picker, setPicker] = useState<PickerState | null>(null)
+  const [pickerColor, setPickerColor] = useState<HighlightColor>('yellow')
+  const [pickerNote, setPickerNote] = useState('')
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
@@ -89,6 +130,45 @@ export default function Reader({
     scrollRef.current?.scrollTo(0, 0)
   }
 
+  const openPicker = (verseNumber: number, verseText: string) => {
+    const existing = highlights.find(h => h.verse === verseNumber)
+    setPickerColor(existing?.color ?? 'yellow')
+    setPickerNote(existing?.note ?? '')
+    setPicker({ verse: verseNumber, verseText })
+  }
+
+  const closePicker = () => {
+    setPicker(null)
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }
+
+  const handleSave = () => {
+    if (!picker || !chapter) return
+    const verseObj = chapter.verses.find(v => v.number === picker.verse)
+    const h: Highlight = {
+      id: `${currentSource}-${currentBookId ?? 'j'}-${chapter.number}-${picker.verse}-${Date.now()}`,
+      sourceId: currentSource,
+      bookId: currentBookId,
+      chapter: chapter.number,
+      verse: picker.verse,
+      color: pickerColor,
+      note: pickerNote,
+      highlightText: verseObj?.text ?? '',
+      createdAt: new Date().toISOString(),
+    }
+    onHighlight(h)
+    closePicker()
+  }
+
+  const handleRemove = () => {
+    if (!picker || !chapter) return
+    onRemoveHighlight(currentSource, currentBookId, chapter.number, picker.verse)
+    closePicker()
+  }
+
   if (!chapter) {
     return (
       <div className="flex-1 flex items-center justify-center text-stone-300 dark:text-[#2E3240]">
@@ -117,6 +197,8 @@ export default function Reader({
     </button>
   )
 
+  const existingHighlight = picker ? highlights.find(h => h.verse === picker.verse) : null
+
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
       {/* Completion full-screen overlay */}
@@ -141,6 +223,89 @@ export default function Reader({
           </svg>
         </button>
       )}
+
+      {/* Highlight Picker Backdrop */}
+      {picker && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30"
+          onClick={closePicker}
+        />
+      )}
+
+      {/* Highlight Picker Drawer */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-40 bg-stone-50 dark:bg-[#22242C] rounded-t-2xl shadow-2xl transition-transform duration-300 ${picker ? 'translate-y-0' : 'translate-y-full'}`}
+      >
+        {picker && (
+          <div className="px-5 pt-4 pb-8 max-w-lg mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">
+                第 {picker.verse} 節
+              </span>
+              <button
+                onClick={closePicker}
+                className="p-1.5 rounded-full text-stone-400 hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
+                aria-label="關閉"
+              >
+                <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+                  <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-stone-200 dark:border-[#2E3240] mb-3" />
+
+            {/* Verse preview */}
+            <p className="text-xs text-stone-400 dark:text-[#A09890] mb-4 line-clamp-2 leading-relaxed">
+              「{picker.verseText.slice(0, 40)}{picker.verseText.length > 40 ? '…' : ''}」
+            </p>
+
+            {/* Color swatches + remove button */}
+            <div className="flex items-center gap-3 mb-4">
+              {(['yellow', 'red', 'green', 'blue'] as HighlightColor[]).map(c => (
+                <button
+                  key={c}
+                  onClick={() => setPickerColor(c)}
+                  className={`w-8 h-8 rounded-full ${COLOR_SWATCH[c]} transition-all ${pickerColor === c ? 'ring-2 ring-offset-2 ring-stone-400 dark:ring-stone-500 scale-110' : 'opacity-70 hover:opacity-100'}`}
+                  aria-label={c}
+                />
+              ))}
+              {existingHighlight && (
+                <button
+                  onClick={handleRemove}
+                  className="ml-auto text-xs text-red-400 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 border border-red-200 dark:border-red-800/50 rounded px-2 py-1 transition-colors"
+                >
+                  移除劃線
+                </button>
+              )}
+            </div>
+
+            {/* Note textarea */}
+            <label className="block text-xs text-stone-400 dark:text-[#A09890] mb-1.5">
+              筆記（選填）
+            </label>
+            <textarea
+              rows={3}
+              value={pickerNote}
+              onChange={e => setPickerNote(e.target.value)}
+              placeholder="寫下你的感動..."
+              className="w-full rounded-lg border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] text-sm px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-stone-300 dark:focus:ring-[#4F7358] placeholder-stone-300 dark:placeholder-[#6B6460]"
+            />
+
+            {/* Save button */}
+            <div className="flex justify-end mt-3">
+              <button
+                onClick={handleSave}
+                className="px-5 py-2 text-sm rounded-lg bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
+              >
+                儲存
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
@@ -187,17 +352,53 @@ export default function Reader({
           className={`${isImmersive ? 'text-xl leading-9' : fontSize} text-stone-500 dark:text-[#E4DDD0]`}
           style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '2.1' }}
         >
-          {chapter.verses.map(v => (
-            <p key={v.number} className="py-0.5 group">
-              <sup
-                className="text-sage dark:text-sage-dark select-none mr-0.5"
-                style={{ fontSize: '9px', fontWeight: 400, opacity: 0.35, verticalAlign: 'super' }}
+          {chapter.verses.map(v => {
+            const hl = highlights.find(h => h.verse === v.number)
+            return (
+              <p
+                key={v.number}
+                className="py-0.5 group"
+                onPointerDown={() => {
+                  longPressTimer.current = setTimeout(() => openPicker(v.number, v.text), 500)
+                }}
+                onPointerUp={() => {
+                  if (longPressTimer.current) {
+                    clearTimeout(longPressTimer.current)
+                    longPressTimer.current = null
+                  }
+                }}
+                onPointerLeave={() => {
+                  if (longPressTimer.current) {
+                    clearTimeout(longPressTimer.current)
+                    longPressTimer.current = null
+                  }
+                }}
               >
-                {v.number}
-              </sup>
-              {v.text}
-            </p>
-          ))}
+                <sup
+                  className="text-sage dark:text-sage-dark select-none mr-0.5"
+                  style={{ fontSize: '9px', fontWeight: 400, opacity: 0.35, verticalAlign: 'super' }}
+                >
+                  {v.number}
+                </sup>
+                {hl && (
+                  <span className={`mr-0.5 ${COLOR_DOT[hl.color]}`} title={hl.note || undefined}>•</span>
+                )}
+                {/* Bookmark icon tap target */}
+                <button
+                  onClick={e => { e.stopPropagation(); openPicker(v.number, v.text) }}
+                  className="opacity-0 group-hover:opacity-40 hover:!opacity-100 focus:opacity-100 transition-opacity mr-1 align-middle text-stone-400 dark:text-[#A09890]"
+                  style={{ fontSize: '10px', lineHeight: 1 }}
+                  aria-label={`標記第 ${v.number} 節`}
+                  tabIndex={-1}
+                >
+                  🔖
+                </button>
+                <span className={hl ? `rounded ${COLOR_BG[hl.color]}` : ''}>
+                  {v.text}
+                </span>
+              </p>
+            )
+          })}
         </div>
 
         {/* Chapter navigation + complete button */}

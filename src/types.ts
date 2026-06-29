@@ -61,3 +61,15 @@ export interface Achievement {
   id: string
   unlockedAt: string  // ISO 8601
 }
+
+export interface Highlight {
+  id: string                     // UUID-like: `${sourceId}-${bookId ?? 'j'}-${chapter}-${verse}-${Date.now()}`
+  sourceId: 'ckjv' | 'jasher'
+  bookId?: number
+  chapter: number
+  verse: number
+  color: 'yellow' | 'red' | 'green' | 'blue'
+  note: string                   // 可空字串
+  highlightText: string          // 劃線的文字內容
+  createdAt: string              // ISO timestamp
+}
