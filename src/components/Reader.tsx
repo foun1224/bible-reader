@@ -45,6 +45,8 @@ interface Props {
   // Immersive mode
   isImmersive: boolean
   onToggleImmersive: () => void
+  // Chapter grid (mobile)
+  onOpenChapterGrid: () => void
   // Highlights
   highlights: Highlight[]
   onHighlight: (h: Highlight) => void
@@ -64,6 +66,7 @@ export default function Reader({
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
   onScrollProgress,
   isImmersive, onToggleImmersive,
+  onOpenChapterGrid,
   highlights, onHighlight, onRemoveHighlight,
   currentSource, currentBookId,
 }: Props) {
@@ -337,7 +340,7 @@ export default function Reader({
 
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
-      <div className={`mx-auto px-6 pt-16 pb-32 sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
+      <div className={`mx-auto px-6 pt-16 pb-[96px] sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
         <div ref={topRef} />
 
         {/* Immersive watermark */}
@@ -444,10 +447,7 @@ export default function Reader({
             <span>上一章</span>
           </button>
 
-          {/* Complete button — desktop center */}
-          <div className="hidden sm:flex">
-            {completeBtn}
-          </div>
+          {completeBtn}
 
           <button
             onClick={onNextChapter}
@@ -464,37 +464,6 @@ export default function Reader({
         </div>
       </div>
 
-      {/* Mobile bottom nav bar */}
-      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]`}>
-        <button
-          onClick={onPrevChapter}
-          disabled={!hasPrev}
-          className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
-            ${hasPrev
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
-              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
-            }`}
-        >
-          <span>←</span>
-          <span>上一章</span>
-        </button>
-
-        {/* Complete button — mobile center */}
-        {completeBtn}
-
-        <button
-          onClick={onNextChapter}
-          disabled={!hasNext}
-          className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
-            ${hasNext
-              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
-              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
-            }`}
-        >
-          <span>下一章</span>
-          <span>→</span>
-        </button>
-      </div>
     </div>
   )
 }

@@ -8,6 +8,8 @@ import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
 import DailyDevotional from './components/DailyDevotional'
 import SearchModal from './components/SearchModal'
+import MoreMenu from './components/MoreMenu'
+import ChapterGrid from './components/ChapterGrid'
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -16,7 +18,6 @@ const STREAK_KEY = 'bible-reader-streak'
 const PLAN_KEY = 'bible-reader-plan'
 const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
 const HIGHLIGHTS_KEY = 'bible-reader-highlights'
-const VISITED_KEY = 'br-visited'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -158,6 +159,12 @@ function App() {
   // Search modal
   const [searchOpen, setSearchOpen] = useState(false)
 
+  // More menu (Layer 2 features)
+  const [moreOpen, setMoreOpen] = useState(false)
+
+  // Chapter grid (mobile bottom nav tap)
+  const [chapterGridOpen, setChapterGridOpen] = useState(false)
+
   useEffect(() => {
     const base = import.meta.env.BASE_URL
     Promise.all([
@@ -192,18 +199,6 @@ function App() {
           const gen = c.books[0]
           setActiveBook(gen)
           setActiveChapter(gen.chapters[0])
-        }
-        // Endowed progress: auto-mark Jasher ch1 on first visit
-        if (!localStorage.getItem(VISITED_KEY) && j && Array.isArray(j.chapters) && j.chapters.length > 0) {
-          const ch1 = j.chapters[0]
-          setCompletions(prev => {
-            if (prev.some(r => r.sourceId === 'jasher' && r.chapter === ch1.number)) return prev
-            const rec: CompletionRecord = { sourceId: 'jasher', chapter: ch1.number, completedAt: new Date().toISOString() }
-            const next = [...prev, rec]
-            saveCompletions(next)
-            return next
-          })
-          localStorage.setItem(VISITED_KEY, '1')
         }
       }
     }).finally(() => setLoading(false))
@@ -645,10 +640,6 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
-        streak={streak}
-        readingPlan={readingPlan}
-        todayCount={todayCount}
-        onOpenStats={() => setStatsDashboardOpen(true)}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenNotes={() => setNotesPanelOpen(true)}
         onOpenDevotion={() => setDevotionOpen(true)}
@@ -724,18 +715,13 @@ function App() {
               </svg>
             </button>
 
-            {/* Streak counter — ring + countdown */}
+            {/* Streak — minimal */}
             {showStreak && (
               <span
-                className={`flex items-center gap-1 text-sm font-medium select-none ${
-                  hasReadToday
-                    ? 'text-amber-500 drop-shadow-[0_0_6px_rgba(217,119,6,0.35)]'
-                    : 'text-stone-300 dark:text-[#6B6460] animate-streakPulse ring-1 ring-stone-300 dark:ring-[#6B6460] rounded px-1'
-                }`}
-                title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : `今天還沒讀，連續將在 ${countdown} 歸零！`}
+                className={`text-xs select-none ${hasReadToday ? 'text-amber-400' : 'text-stone-300 dark:text-[#6B6460]'}`}
+                title={hasReadToday ? `連續 ${streak.currentStreak} 天，最長 ${streak.longestStreak} 天` : '今天還沒讀'}
               >
-                {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}天
-                {!hasReadToday && <span className="hidden sm:inline text-[10px]">· {countdown} 歸零</span>}
+                {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}日
               </span>
             )}
 
@@ -748,6 +734,18 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-1.5">
+            {/* 搜尋 */}
+            <button
+              onClick={() => setSearchOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="搜尋經文（/）"
+            >
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            {/* 字體 */}
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
@@ -755,6 +753,7 @@ function App() {
             >
               {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
+            {/* 深淺色 */}
             <button
               onClick={() => setDark(d => !d)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
@@ -762,17 +761,24 @@ function App() {
             >
               {dark ? '☀' : '☽'}
             </button>
-            {/* Immersive mode toggle */}
+            {/* 沈浸模式 */}
             <button
               onClick={() => setIsImmersive(v => !v)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="沈浸閱讀模式（快捷鍵 F）"
-              aria-label="進入沈浸閱讀模式"
+              title="沈浸閱讀（F）"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle' }}>
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
+            </button>
+            {/* 更多 */}
+            <button
+              onClick={() => setMoreOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="更多功能"
+            >
+              ⋯
             </button>
           </div>
           {/* G4: Scroll progress bar inside toolbar */}
@@ -831,6 +837,7 @@ function App() {
           onScrollProgress={setScrollProgress}
           isImmersive={isImmersive}
           onToggleImmersive={() => setIsImmersive(v => !v)}
+          onOpenChapterGrid={() => setChapterGridOpen(true)}
           highlights={highlights.filter(h =>
             h.sourceId === source &&
             h.bookId === (activeBook?.id as number | undefined) &&
@@ -842,6 +849,98 @@ function App() {
           currentBookId={activeBook?.id as number | undefined}
         />
       </div>
+
+      {/* More menu */}
+      <MoreMenu
+        isOpen={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        streak={streak}
+        hasReadToday={hasReadToday}
+        completionsCount={completions.length}
+        onSearch={() => { setSearchOpen(true); setMoreOpen(false) }}
+        onDevotion={() => { setDevotionOpen(true); setMoreOpen(false) }}
+        onNotes={() => { setNotesPanelOpen(true); setMoreOpen(false) }}
+        onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
+        onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
+        onAchievements={() => { setMoreOpen(false) }}
+        onPlan={() => { setMoreOpen(false) }}
+      />
+
+      {/* Chapter grid (mobile bottom nav tap) */}
+      <ChapterGrid
+        isOpen={chapterGridOpen}
+        onClose={() => setChapterGridOpen(false)}
+        title={source === 'ckjv' && activeBook ? activeBook.name : '雅煞珥書'}
+        chapters={
+          source === 'ckjv' && activeBook
+            ? activeBook.chapters
+            : (jasher?.chapters ?? [])
+        }
+        activeChapterNum={activeChapter?.number ?? null}
+        completedNums={new Set(
+          completions
+            .filter(r =>
+              source === 'ckjv'
+                ? r.sourceId === 'ckjv' && r.bookId === (activeBook?.id as number | undefined)
+                : r.sourceId === 'jasher'
+            )
+            .map(r => r.chapter)
+        )}
+        onSelect={ch => {
+          if (source === 'ckjv' && activeBook) selectCkjvChapter(activeBook, ch)
+          else selectJasherChapter(ch)
+        }}
+      />
+
+      {/* Mobile combined bottom bar: tool tab bar + chapter nav */}
+      {!isImmersive && (
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
+          {/* Row 1: Tool shortcuts */}
+          <div className="flex border-b border-stone-100 dark:border-[#2E3240]">
+            {[
+              { label: '搜尋', icon: <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: () => setSearchOpen(true) },
+              { label: '筆記', icon: '📝', fn: () => setNotesPanelOpen(true) },
+              { label: '靈修', icon: '🕊', fn: () => setDevotionOpen(true) },
+            ].map(({ label, icon, fn }) => (
+              <button
+                key={label}
+                onClick={fn}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              >
+                <span className="text-sm leading-none">{icon}</span>
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+          {/* Row 2: Chapter navigation */}
+          <div className="flex items-center">
+            <button
+              onClick={handlePrevChapter}
+              disabled={!hasPrev}
+              className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
+                ${hasPrev ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => setChapterGridOpen(true)}
+              className="flex-1 h-11 flex items-center justify-center text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+            >
+              {source === 'ckjv' && activeBook && activeChapter
+                ? `${activeBook.name} · 第 ${activeChapter.number} 章`
+                : activeChapter ? `雅煞珥 · 第 ${activeChapter.number} 章` : ''}
+            </button>
+            <button
+              onClick={handleNextChapter}
+              disabled={!hasNext}
+              className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
+                ${hasNext ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
+            >
+              ›
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
