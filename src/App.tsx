@@ -7,6 +7,7 @@ import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
 import DailyDevotionPanel from './components/DailyDevotionPanel'
+import SearchModal from './components/SearchModal'
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -153,6 +154,9 @@ function App() {
 
   // Daily devotion panel
   const [devotionOpen, setDevotionOpen] = useState(false)
+
+  // Search modal
+  const [searchOpen, setSearchOpen] = useState(false)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -420,6 +424,12 @@ function App() {
   // Keyboard shortcuts: f/F = toggle immersive, ArrowLeft/Right = chapter nav
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/') {
+        if (e.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
+        e.preventDefault()
+        setSearchOpen(v => !v)
+        return
+      }
       if (e.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
       if (e.key === 'f' || e.key === 'F') {
         setIsImmersive(v => !v)
@@ -603,6 +613,14 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        ckjv={ckjv}
+        onJumpTo={handleJumpTo}
+      />
+
       {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
       <div className={`flex h-full shrink-0 transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
       <Sidebar
@@ -764,6 +782,18 @@ function App() {
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
+            </button>
+            {/* Search */}
+            <button
+              onClick={() => setSearchOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="搜尋經文（/）"
+              aria-label="搜尋"
+            >
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
             </button>
             {/* Daily devotion toggle */}
             <button
