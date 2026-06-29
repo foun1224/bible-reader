@@ -5,6 +5,7 @@ import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
 import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
+import DailyDevotional from './components/DailyDevotional'
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -130,6 +131,7 @@ function App() {
 
   // Notes Panel
   const [notesPanelOpen, setNotesPanelOpen] = useState(false)
+  const [devotionalOpen, setDevotionalOpen] = useState(false)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -543,6 +545,17 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
+      {/* Daily Devotional Panel */}
+      <DailyDevotional
+        isOpen={devotionalOpen}
+        onClose={() => setDevotionalOpen(false)}
+        ckjv={ckjv}
+        onNavigate={(book, chapter) => {
+          selectCkjvChapter(book, chapter)
+          setDevotionalOpen(false)
+        }}
+      />
+
       {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
       <div className={`flex h-full shrink-0 transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
       <Sidebar
@@ -670,6 +683,14 @@ function App() {
                 </span>
               )
             })()}
+            {/* Daily Devotional button */}
+            <button
+              onClick={() => setDevotionalOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="今日靈修"
+            >
+              🕊
+            </button>
             {/* Stats Dashboard button */}
             <button
               onClick={() => setStatsDashboardOpen(o => !o)}
