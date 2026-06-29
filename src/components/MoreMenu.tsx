@@ -1,3 +1,50 @@
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list'
+
+function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
+  const common = {
+    width: 16,
+    height: 16,
+    viewBox: '0 0 20 20',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.5,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  }
+
+  if (icon === 'search') return (
+    <svg {...common}>
+      <circle cx="8.5" cy="8.5" r="5.5" />
+      <path d="M13 13l3.5 3.5" />
+    </svg>
+  )
+  if (icon === 'settings') return (
+    <svg {...common}>
+      <circle cx="10" cy="10" r="3" />
+      <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.2 3.2l1.4 1.4M15.4 15.4l1.4 1.4M3.2 16.8l1.4-1.4M15.4 4.6l1.4-1.4" />
+    </svg>
+  )
+  if (icon === 'book') return (
+    <svg {...common}>
+      <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H17" />
+      <path d="M6.5 2H17v16H6.5A2.5 2.5 0 0 1 4 15.5v-11A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  )
+  if (icon === 'history') return (
+    <svg {...common}>
+      <path d="M4 6.5A7 7 0 1 1 3.5 11" />
+      <path d="M4 3v3.5h3.5" />
+      <path d="M10 6v4l2.5 1.5" />
+    </svg>
+  )
+  return (
+    <svg {...common}>
+      <path d="M5 6h10M5 10h10M5 14h10" />
+    </svg>
+  )
+}
+
 interface Props {
   isOpen: boolean
   onClose: () => void
@@ -20,14 +67,14 @@ export default function MoreMenu({
   showScriptureTools = false,
 }: Props) {
   const scriptureTools = [
-    { label: '搜尋經文', icon: '⌕', fn: onSearch },
-    { label: '閱讀設定', icon: '⚙', fn: onSettings },
-    { label: '沉浸閱讀', icon: '□', fn: onToggleImmersive },
+    { label: '搜尋經文', icon: 'search' as MenuIcon, fn: onSearch },
+    { label: '閱讀設定', icon: 'settings' as MenuIcon, fn: onSettings },
+    { label: '沉浸閱讀', icon: 'book' as MenuIcon, fn: onToggleImmersive },
   ].filter(item => Boolean(item.fn))
 
   const reviewTools = [
-    { label: '閱讀回顧', icon: '↺', fn: onStats },
-    { label: '已讀記錄', icon: '☰', fn: onHistory },
+    { label: '閱讀回顧', icon: 'history' as MenuIcon, fn: onStats },
+    { label: '已讀記錄', icon: 'list' as MenuIcon, fn: onHistory },
   ]
 
   return (
@@ -46,7 +93,7 @@ export default function MoreMenu({
                   onClick={() => { fn?.(); onClose() }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-stone-500 dark:text-[#E4DDD0] hover:bg-stone-100 dark:hover:bg-[#17191E] transition-colors text-left"
                 >
-                  <span className="w-5 text-center text-sm shrink-0 text-stone-300 dark:text-[#6B6460]">{icon}</span>
+                  <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon={icon} /></span>
                   <span>{label}</span>
                 </button>
               ))}
@@ -61,7 +108,7 @@ export default function MoreMenu({
                 onClick={() => { fn(); onClose() }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-stone-500 dark:text-[#E4DDD0] hover:bg-stone-100 dark:hover:bg-[#17191E] transition-colors text-left"
               >
-                <span className="w-5 text-center text-sm shrink-0 text-stone-300 dark:text-[#6B6460]">{icon}</span>
+                <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon={icon} /></span>
                 <span>{label}</span>
               </button>
             ))}

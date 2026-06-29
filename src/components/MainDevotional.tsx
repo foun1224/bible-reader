@@ -95,7 +95,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
             ←
           </button>
           <div className="text-center">
-            <p className="text-[10px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">領受</p>
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">領受</p>
             <p className="mt-1 text-sm text-stone-500 dark:text-[#E4DDD0]">
               {mmdd.slice(0, 2)}月{mmdd.slice(2, 4)}日
               {mmdd === todayKey && (
