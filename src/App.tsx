@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord } from './types'
+import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
 const COMPLETIONS_KEY = 'bible-reader-completions'
+const STREAK_KEY = 'bible-reader-streak'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -17,6 +18,57 @@ function loadCompletions(): CompletionRecord[] {
 
 function saveCompletions(records: CompletionRecord[]) {
   localStorage.setItem(COMPLETIONS_KEY, JSON.stringify(records))
+}
+
+function loadStreak(): StreakData {
+  try {
+    return JSON.parse(localStorage.getItem(STREAK_KEY) || 'null') ?? {
+      lastReadDate: '',
+      currentStreak: 0,
+      longestStreak: 0,
+    }
+  } catch {
+    return { lastReadDate: '', currentStreak: 0, longestStreak: 0 }
+  }
+}
+
+function saveStreak(data: StreakData) {
+  localStorage.setItem(STREAK_KEY, JSON.stringify(data))
+}
+
+/** Returns 'YYYY-MM-DD' in local time (sv-SE locale mimics ISO date format) */
+function today(): string {
+  return new Date().toLocaleDateString('sv-SE')
+}
+
+function updateStreak(prev: StreakData): StreakData {
+  const todayStr = today()
+  if (prev.lastReadDate === todayStr) {
+    // Already read today — no change
+    return prev
+  }
+
+  // Calculate yesterday's date string
+  const d = new Date()
+  d.setDate(d.getDate() - 1)
+  const yesterdayStr = d.toLocaleDateString('sv-SE')
+
+  let newStreak: number
+  if (prev.lastReadDate === yesterdayStr) {
+    // Read yesterday → extend streak
+    newStreak = prev.currentStreak + 1
+  } else {
+    // Gap → reset
+    newStreak = 1
+  }
+
+  const updated: StreakData = {
+    lastReadDate: todayStr,
+    currentStreak: newStreak,
+    longestStreak: Math.max(prev.longestStreak, newStreak),
+  }
+  saveStreak(updated)
+  return updated
 }
 
 function App() {
@@ -33,6 +85,10 @@ function App() {
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
+  const [streak, setStreak] = useState<StreakData>(() => loadStreak())
+
+  // Resume CTA: show on first load if bookmark exists
+  const [showResumeCTA, setShowResumeCTA] = useState(false)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -54,11 +110,13 @@ function App() {
                 setActiveBook(book)
                 setActiveChapter(book.chapters[bm.chapter - 1] ?? book.chapters[0])
                 restored = true
+                setShowResumeCTA(true)
               }
             } else if (bm.sourceId === 'jasher' && j && Array.isArray(j.chapters) && j.chapters.length > 0) {
               setSource('jasher')
               setActiveChapter(j.chapters[bm.chapter - 1] ?? j.chapters[0])
               restored = true
+              setShowResumeCTA(true)
             }
           }
         } catch { /* ignore */ }
@@ -85,6 +143,9 @@ function App() {
     chapter: Chapter,
     book?: Book | null
   ) => {
+    // Update streak
+    setStreak(prev => updateStreak(prev))
+
     setCompletions(prev => {
       const record: CompletionRecord = {
         sourceId: src,
@@ -228,6 +289,29 @@ function App() {
     (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
   )
 
+  // Streak display vars
+  const todayStr = today()
+  const hasReadToday = streak.lastReadDate === todayStr
+  const showStreak = streak.currentStreak > 0
+
+  // Bookmark for Resume CTA
+  let bookmark: BookMark | null = null
+  try {
+    bookmark = JSON.parse(localStorage.getItem(BOOKMARK_KEY) || 'null')
+  } catch { /* ignore */ }
+
+  const resumeBookName =
+    bookmark?.sourceId === 'ckjv'
+      ? (ckjv?.books.find(b => b.id === bookmark!.bookId)?.name ?? '')
+      : '雅煞珥書'
+  const resumeChapter = bookmark?.chapter ?? 1
+
+  // Hide resume CTA when already at bookmark position
+  const isAtBookmark = bookmark
+    ? source === bookmark.sourceId && activeChapter?.number === bookmark.chapter &&
+      (bookmark.sourceId === 'jasher' || (activeBook?.id === bookmark.bookId))
+    : false
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-parchment-50 dark:bg-[#1A1410] text-parchment-400 dark:text-[#A8906E]">
@@ -320,6 +404,21 @@ function App() {
                 <rect y="15" width="20" height="2" rx="1"/>
               </svg>
             </button>
+
+            {/* Streak counter — 功能 A */}
+            {showStreak && (
+              <span
+                className={`text-sm font-medium select-none ${
+                  hasReadToday
+                    ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.5)]'
+                    : 'text-parchment-300 dark:text-[#5A4838]'
+                }`}
+                title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : '今天還沒讀，別讓它斷掉！'}
+              >
+                {hasReadToday ? '🔥' : '🕯'} {streak.currentStreak}天
+              </span>
+            )}
+
             <span className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4] tracking-wide">
               {source === 'ckjv' && activeBook
                 ? `${activeBook.name} · 第 ${activeChapter?.number} 章`
@@ -375,6 +474,10 @@ function App() {
           }
           onMarkComplete={handleMarkComplete}
           isCompleted={isCurrentCompleted}
+          showResumeCTA={showResumeCTA && !isAtBookmark}
+          resumeBookName={resumeBookName}
+          resumeChapter={resumeChapter}
+          onDismissResumeCTA={() => setShowResumeCTA(false)}
         />
       </div>
     </div>

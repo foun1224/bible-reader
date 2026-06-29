@@ -45,6 +45,14 @@ export default function Sidebar({
   const renderBook = (book: Book) => {
     const isExpanded = expandedBook === book.id
     const isActive = source === 'ckjv' && activeBook?.id === book.id
+
+    // 功能 B：書卷完成進度
+    const completedChapters = completions.filter(
+      c => c.sourceId === 'ckjv' && c.bookId === (book.id as number)
+    ).length
+    const completedRatio = book.chapters.length > 0 ? completedChapters / book.chapters.length : 0
+    const progressFull = completedRatio >= 0.8
+
     return (
       <div key={book.id}>
         <button
@@ -65,7 +73,22 @@ export default function Sidebar({
         >
           <span className="flex items-center gap-1.5">
             <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
-            {book.name}
+            <span className="truncate flex-shrink min-w-0">{book.name}</span>
+            {/* 進度條 */}
+            {completedRatio > 0 && (
+              <span className="flex-1 min-w-0 ml-1">
+                <span className="block w-full h-0.5 rounded-full bg-parchment-200 dark:bg-[#3A3028] overflow-hidden">
+                  <span
+                    className={`block h-full rounded-full transition-all duration-500 ${
+                      progressFull
+                        ? 'bg-[#8B6418] dark:bg-[#C9A84C]'
+                        : 'bg-[#8B6418]/60 dark:bg-[#C9A84C]/60'
+                    }`}
+                    style={{ width: `${Math.round(completedRatio * 100)}%` }}
+                  />
+                </span>
+              </span>
+            )}
           </span>
         </button>
         {isExpanded && (

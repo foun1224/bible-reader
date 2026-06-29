@@ -42,3 +42,9 @@ export interface CompletionRecord {
   chapter: number
   completedAt: string  // ISO 8601 timestamp
 }
+
+export interface StreakData {
+  lastReadDate: string  // 'YYYY-MM-DD'（台灣時區，sv-SE locale）
+  currentStreak: number
+  longestStreak: number
+}

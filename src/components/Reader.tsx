@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Chapter } from '../types'
 
 interface Props {
@@ -11,17 +11,58 @@ interface Props {
   chapterTitle: string
   onMarkComplete: () => void
   isCompleted: boolean
+  // Resume CTA (功能 C)
+  showResumeCTA: boolean
+  resumeBookName: string
+  resumeChapter: number
+  onDismissResumeCTA: () => void
 }
 
 export default function Reader({
   chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle,
   onMarkComplete, isCompleted,
+  showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // 功能 D：完成 Toast
+  const [showToast, setShowToast] = useState(false)
+  const [toastFading, setToastFading] = useState(false)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     topRef.current?.parentElement?.scrollTo(0, 0)
   }, [chapter])
+
+  const handleMarkComplete = () => {
+    onMarkComplete()
+    if (!isCompleted) {
+      // Trigger toast
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+      setShowToast(true)
+      setToastFading(false)
+      toastTimerRef.current = setTimeout(() => {
+        setToastFading(true)
+        toastTimerRef.current = setTimeout(() => {
+          setShowToast(false)
+          setToastFading(false)
+        }, 800)
+      }, 1000)
+    }
+  }
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    }
+  }, [])
+
+  const handleResumeCTA = () => {
+    onDismissResumeCTA()
+    scrollRef.current?.scrollTo(0, 0)
+  }
 
   if (!chapter) {
     return (
@@ -33,7 +74,7 @@ export default function Reader({
 
   const completeBtn = (
     <button
-      onClick={onMarkComplete}
+      onClick={handleMarkComplete}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
         ${isCompleted
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
@@ -48,9 +89,40 @@ export default function Reader({
   )
 
   return (
-    <div className="flex-1 overflow-y-auto relative">
-      <div className="max-w-[680px] mx-auto px-10 pt-16 pb-32 sm:pb-24">
+    <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
+      {/* 功能 D：完成 Toast */}
+      {showToast && (
+        <div
+          className={`fixed top-14 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2
+            bg-[#8B6418] dark:bg-[#C9A84C] text-white rounded-lg px-4 py-2 shadow-lg
+            transition-opacity duration-700 ${toastFading ? 'opacity-0' : 'opacity-100'}`}
+        >
+          <span className="animate-bounce inline-block">✓</span>
+          <span className="text-sm font-medium">第 {chapter.number} 章完成</span>
+        </div>
+      )}
+
+      <div className="max-w-[680px] mx-auto px-10 pt-8 pb-32 sm:pb-24">
         <div ref={topRef} />
+
+        {/* 功能 C：Resume CTA */}
+        {showResumeCTA && (
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-[#8B6418]/30 dark:border-[#C9A84C]/30 bg-[#8B6418]/10 dark:bg-[#C9A84C]/10 px-4 py-3">
+            <div>
+              <p className="text-xs font-medium text-parchment-300 dark:text-[#A8906E] mb-0.5">📖 繼續上次閱讀</p>
+              <p className="text-sm text-parchment-500 dark:text-[#EDE0C4]">
+                {resumeBookName} · 第 {resumeChapter} 章
+              </p>
+            </div>
+            <button
+              onClick={handleResumeCTA}
+              className="ml-4 shrink-0 px-3 py-1.5 text-xs rounded border border-[#8B6418]/40 dark:border-[#C9A84C]/40 text-[#8B6418] dark:text-[#C9A84C] hover:bg-[#8B6418]/10 dark:hover:bg-[#C9A84C]/10 transition-colors font-medium"
+            >
+              繼續閱讀 →
+            </button>
+          </div>
+        )}
+
         <div
           className={`${fontSize} text-parchment-500 dark:text-[#EDE0C4]`}
           style={{ lineHeight: '2.1', letterSpacing: '0.02em' }}
