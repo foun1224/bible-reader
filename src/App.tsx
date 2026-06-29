@@ -419,14 +419,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-parchment-50 dark:bg-[#1A1410] text-parchment-400 dark:text-[#A8906E]">
+      <div className="flex items-center justify-center h-screen bg-stone-50 dark:bg-[#17191E] text-stone-400 dark:text-[#A09890]">
         載入中…
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-parchment-50 dark:bg-[#1A1410]">
+    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#17191E]">
       {/* Achievement Modal — queue-based */}
       {achievementQueue.length > 0 && (
         <AchievementModal
@@ -437,7 +437,7 @@ function App() {
 
       {/* Book complete toast */}
       {bookCompleteMessage && (
-        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#8B6418] dark:bg-[#C9A84C] text-white dark:text-[#1A1410] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
+        <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
           {bookCompleteMessage}
         </div>
       )}
@@ -485,12 +485,12 @@ function App() {
         />
       )}
       {historyOpen && (
-        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-parchment-200 dark:border-[#3A3028] bg-parchment-50 dark:bg-[#221C17] overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-parchment-200 dark:border-[#3A3028] shrink-0">
-            <span className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4]">已完成章節</span>
+        <div className="fixed top-12 right-2 z-50 w-80 max-h-[70vh] flex flex-col rounded-lg shadow-xl border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#22242C] overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
+            <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">已完成章節</span>
             <button
               onClick={() => setHistoryOpen(false)}
-              className="p-1 rounded text-parchment-300 dark:text-[#3A3028] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="p-1 rounded text-stone-300 dark:text-[#2E3240] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
             >
               <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
                 <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -499,19 +499,19 @@ function App() {
           </div>
           <div className="flex-1 overflow-y-auto py-2">
             {sortedCompletions.length === 0 ? (
-              <p className="px-4 py-6 text-sm text-parchment-300 dark:text-[#3A3028] text-center">尚無完成記錄</p>
+              <p className="px-4 py-6 text-sm text-stone-300 dark:text-[#2E3240] text-center">尚無完成記錄</p>
             ) : (
               sortedCompletions.map((r, i) => {
                 const { bookLabel, dateStr } = formatCompletion(r)
                 return (
                   <div
                     key={i}
-                    className="flex items-center justify-between px-4 py-2 hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+                    className="flex items-center justify-between px-4 py-2 hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
                   >
-                    <span className="text-sm text-parchment-500 dark:text-[#EDE0C4]">
+                    <span className="text-sm text-stone-500 dark:text-[#E4DDD0]">
                       {bookLabel} · 第 {r.chapter} 章
                     </span>
-                    <span className="text-xs text-parchment-300 dark:text-[#5A4838] ml-2 shrink-0">{dateStr}</span>
+                    <span className="text-xs text-stone-300 dark:text-[#6B6460] ml-2 shrink-0">{dateStr}</span>
                   </div>
                 )
               })
@@ -523,12 +523,12 @@ function App() {
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
-        <div className="relative flex items-center justify-between px-4 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] bg-parchment-50/80 dark:bg-[#1A1410]/80 backdrop-blur-sm shrink-0">
+        <div className="relative flex items-center justify-between px-4 py-2.5 border-b border-stone-200 dark:border-[#2E3240] bg-stone-50/80 dark:bg-[#17191E]/80 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden p-1.5 rounded text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="sm:hidden p-1.5 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               aria-label="開啟目錄"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
@@ -544,7 +544,7 @@ function App() {
                 className={`text-sm font-medium select-none ${
                   hasReadToday
                     ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.5)]'
-                    : 'text-parchment-300 dark:text-[#5A4838] animate-pulse'
+                    : 'text-stone-300 dark:text-[#6B6460] animate-pulse'
                 }`}
                 title={hasReadToday ? `最長連續：${streak.longestStreak} 天` : '今天還沒讀，別讓它斷掉！'}
               >
@@ -552,7 +552,7 @@ function App() {
               </span>
             )}
 
-            <span className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4] tracking-wide">
+            <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
               {source === 'ckjv' && activeBook
                 ? `${activeBook.name} · 第 ${activeChapter?.number} 章`
                 : source === 'jasher' && activeChapter
@@ -572,10 +572,10 @@ function App() {
               ).length
               const done = todayCount >= planChaptersPerDay
               return (
-                <span className={`text-xs select-none ${done ? 'text-green-500 dark:text-green-400' : 'text-parchment-400 dark:text-[#A8906E]'}`}>
+                <span className={`text-xs select-none ${done ? 'text-green-500 dark:text-green-400' : 'text-stone-400 dark:text-[#A09890]'}`}>
                   {done
                     ? '✓ 今日達標'
-                    : <><span className="text-[#8B6418] dark:text-[#C9A84C] font-medium">{todayCount}/{planChaptersPerDay}</span>章</>
+                    : <><span className="text-[#4F7358] dark:text-[#7AAF87] font-medium">{todayCount}/{planChaptersPerDay}</span>章</>
                   }
                 </span>
               )
@@ -583,7 +583,7 @@ function App() {
             {/* Stats Dashboard button */}
             <button
               onClick={() => setStatsDashboardOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="閱讀統計"
             >
               📊
@@ -591,33 +591,33 @@ function App() {
             {/* History button */}
             <button
               onClick={() => setHistoryOpen(o => !o)}
-              className="relative px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="已讀記錄"
             >
               📖 已讀
               {completions.length > 0 && (
-                <span className="ml-1 text-[10px] text-gold dark:text-gold-dark font-medium">
+                <span className="ml-1 text-[10px] text-sage dark:text-sage-dark font-medium">
                   {completions.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
-              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
               title="切換字體大小"
             >
               {fontSize === 0 ? 'A' : fontSize === 1 ? 'A+' : 'A++'}
             </button>
             <button
               onClick={() => setDark(d => !d)}
-              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
           </div>
           {/* G4: Scroll progress bar inside toolbar */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8B6418]/70 dark:bg-[#C9A84C]/70 pointer-events-none transition-none"
+            className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#4F7358] dark:bg-[#7AAF87] pointer-events-none transition-none"
             style={{ width: `${scrollProgress * 100}%` }}
           />
         </div>

@@ -137,8 +137,8 @@ export default function StatsDashboard({
       {/* Panel */}
       <div
         className={`fixed top-0 right-0 z-50 h-full overflow-y-auto
-          bg-parchment-50 dark:bg-[#221C17]
-          border-l border-parchment-200 dark:border-[#3A3028]
+          bg-stone-50 dark:bg-[#22242C]
+          border-l border-stone-200 dark:border-[#2E3240]
           shadow-2xl
           transition-transform duration-300
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
@@ -146,13 +146,13 @@ export default function StatsDashboard({
         style={{ width: 'min(100vw, 420px)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-parchment-200 dark:border-[#3A3028] sticky top-0 bg-parchment-50 dark:bg-[#221C17] z-10">
-          <h2 className="text-base font-semibold text-parchment-500 dark:text-[#EDE0C4]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#2E3240] sticky top-0 bg-stone-50 dark:bg-[#22242C] z-10">
+          <h2 className="text-base font-semibold text-stone-500 dark:text-[#E4DDD0]">
             📊 閱讀統計
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded text-parchment-300 dark:text-[#5A4838] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+            className="p-1.5 rounded text-stone-300 dark:text-[#6B6460] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
               <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -170,11 +170,11 @@ export default function StatsDashboard({
             ].map(({ label, value, unit }) => (
               <div
                 key={label}
-                className="flex flex-col items-center rounded-lg p-3 bg-parchment-100 dark:bg-[#2E261E]"
+                className="flex flex-col items-center rounded-lg p-3 bg-stone-100 dark:bg-[#22242C]"
               >
-                <span className="text-xl font-bold text-[#8B6418] dark:text-[#C9A84C]">{value}</span>
-                <span className="text-[10px] text-parchment-300 dark:text-[#5A4838] mt-0.5">{unit}</span>
-                <span className="text-[10px] text-parchment-400 dark:text-[#A8906E] mt-0.5">{label}</span>
+                <span className="text-xl font-bold text-[#C17D3A] dark:text-[#D4935C]">{value}</span>
+                <span className="text-[10px] text-stone-300 dark:text-[#6B6460] mt-0.5">{unit}</span>
+                <span className="text-[10px] text-stone-400 dark:text-[#A09890] mt-0.5">{label}</span>
               </div>
             ))}
           </div>
@@ -182,12 +182,12 @@ export default function StatsDashboard({
           {/* 2. Heatmap */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] uppercase tracking-wide">
+              <h3 className="text-xs font-semibold text-stone-400 dark:text-[#A09890] uppercase tracking-wide">
                 {showFullHeatmap ? '過去 52 週' : '最近 8 週'}
               </h3>
               <button
                 onClick={() => setShowFullHeatmap(v => !v)}
-                className="text-[10px] text-parchment-300 dark:text-[#5A4838] hover:text-parchment-400 dark:hover:text-[#A8906E] transition-colors"
+                className="text-[10px] text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] transition-colors"
               >
                 {showFullHeatmap ? '收合 ↑' : '全年 ↓'}
               </button>
@@ -200,8 +200,8 @@ export default function StatsDashboard({
                       key={di}
                       className={`w-2.5 h-2.5 rounded-sm ${
                         active
-                          ? 'bg-[#8B6418] dark:bg-[#C9A84C]'
-                          : 'bg-parchment-200 dark:bg-[#3A3028]'
+                          ? 'bg-[#4F7358] dark:bg-[#7AAF87]'
+                          : 'bg-stone-200 dark:bg-[#2E3240]'
                       }`}
                     />
                   ))}
@@ -213,7 +213,7 @@ export default function StatsDashboard({
           {/* 3. Book grid */}
           {ckjv && (
             <div>
-              <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] mb-2 uppercase tracking-wide">
+              <h3 className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">
                 書卷進度
               </h3>
               {[
@@ -221,7 +221,7 @@ export default function StatsDashboard({
                 { label: '新約', books: ntBooks },
               ].map(({ label, books }) => (
                 <div key={label} className="mb-3">
-                  <div className="text-[10px] text-parchment-300 dark:text-[#5A4838] mb-1.5">{label}</div>
+                  <div className="text-[10px] text-stone-300 dark:text-[#6B6460] mb-1.5">{label}</div>
                   <div className="flex flex-wrap gap-1">
                     {books.map(book => {
                       const status = getBookStatus(book.id as number, book.chapters.length)
@@ -231,10 +231,10 @@ export default function StatsDashboard({
                           key={book.id}
                           className={`w-10 h-8 rounded text-[10px] flex items-center justify-center text-center leading-tight
                             ${status === 'done'
-                              ? 'bg-[#8B6418] dark:bg-[#C9A84C] text-white dark:text-[#1A1410]'
+                              ? 'bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E]'
                               : status === 'partial'
-                              ? 'border-2 border-[#8B6418] dark:border-[#C9A84C] text-parchment-400 dark:text-[#A8906E] bg-parchment-100 dark:bg-[#2E261E]'
-                              : 'bg-parchment-100 dark:bg-[#2E261E] text-parchment-300 dark:text-[#5A4838]'
+                              ? 'border-2 border-[#4F7358] dark:border-[#7AAF87] text-stone-400 dark:text-[#A09890] bg-stone-100 dark:bg-[#22242C]'
+                              : 'bg-stone-100 dark:bg-[#22242C] text-stone-300 dark:text-[#6B6460]'
                             }`}
                           title={book.name}
                         >
@@ -250,7 +250,7 @@ export default function StatsDashboard({
 
           {/* 4. Reading Plan */}
           <div>
-            <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] mb-2 uppercase tracking-wide">
+            <h3 className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">
               我的計劃
             </h3>
 
@@ -265,28 +265,28 @@ export default function StatsDashboard({
                     <button
                       key={id}
                       onClick={() => handleSetPlan(id)}
-                      className="flex flex-col items-start px-3 py-2 rounded-lg border border-parchment-200 dark:border-[#3A3028] hover:border-[#8B6418] dark:hover:border-[#C9A84C] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors text-left"
+                      className="flex flex-col items-start px-3 py-2 rounded-lg border border-stone-200 dark:border-[#2E3240] hover:border-[#4F7358] dark:hover:border-[#7AAF87] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors text-left"
                     >
-                      <span className="text-xs font-medium text-parchment-500 dark:text-[#EDE0C4]">{label}</span>
-                      <span className="text-[10px] text-parchment-300 dark:text-[#5A4838]">{sub}</span>
+                      <span className="text-xs font-medium text-stone-500 dark:text-[#E4DDD0]">{label}</span>
+                      <span className="text-[10px] text-stone-300 dark:text-[#6B6460]">{sub}</span>
                     </button>
                   ))}
                 </div>
                 {showCustom && (
                   <div className="flex items-center gap-2 mt-2">
-                    <label className="text-xs text-parchment-400 dark:text-[#A8906E]">每天</label>
+                    <label className="text-xs text-stone-400 dark:text-[#A09890]">每天</label>
                     <input
                       type="number"
                       min={1}
                       max={50}
                       value={customInput}
                       onChange={e => setCustomInput(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-16 px-2 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] bg-parchment-50 dark:bg-[#1A1410] text-parchment-500 dark:text-[#EDE0C4]"
+                      className="w-16 px-2 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0]"
                     />
-                    <label className="text-xs text-parchment-400 dark:text-[#A8906E]">章</label>
+                    <label className="text-xs text-stone-400 dark:text-[#A09890]">章</label>
                     <button
                       onClick={handleConfirmCustom}
-                      className="px-3 py-1 text-xs rounded bg-[#8B6418] dark:bg-[#C9A84C] text-white dark:text-[#1A1410] font-medium hover:opacity-90 transition-opacity"
+                      className="px-3 py-1 text-xs rounded bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
                     >
                       確認
                     </button>
@@ -295,32 +295,32 @@ export default function StatsDashboard({
                 {choosingPlan && readingPlan && (
                   <button
                     onClick={() => { setChoosingPlan(false); setShowCustom(false) }}
-                    className="text-[10px] text-parchment-300 dark:text-[#5A4838] underline"
+                    className="text-[10px] text-stone-300 dark:text-[#6B6460] underline"
                   >
                     取消
                   </button>
                 )}
               </div>
             ) : (
-              <div className="rounded-lg border border-parchment-200 dark:border-[#3A3028] p-3 space-y-2">
-                <div className="text-sm font-medium text-parchment-500 dark:text-[#EDE0C4]">{planName}</div>
-                <div className="flex justify-between text-xs text-parchment-400 dark:text-[#A8906E]">
+              <div className="rounded-lg border border-stone-200 dark:border-[#2E3240] p-3 space-y-2">
+                <div className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">{planName}</div>
+                <div className="flex justify-between text-xs text-stone-400 dark:text-[#A09890]">
                   <span>今日目標：{planChaptersPerDay} 章</span>
                   <span>今日完成：{todayCount} 章</span>
                 </div>
                 {/* Progress bar */}
-                <div className="relative h-1.5 rounded-full bg-parchment-200 dark:bg-[#3A3028] overflow-hidden">
+                <div className="relative h-1.5 rounded-full bg-stone-200 dark:bg-[#2E3240] overflow-hidden">
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-[#8B6418] dark:bg-[#C9A84C] transition-all"
+                    className="absolute inset-y-0 left-0 rounded-full bg-[#4F7358] dark:bg-[#7AAF87] transition-all"
                     style={{ width: `${Math.min(100, (todayCount / planChaptersPerDay) * 100)}%` }}
                   />
                 </div>
-                <div className="text-[10px] text-parchment-300 dark:text-[#5A4838]">
+                <div className="text-[10px] text-stone-300 dark:text-[#6B6460]">
                   {todayCount} / {planChaptersPerDay} 章
                 </div>
                 <button
                   onClick={() => { setChoosingPlan(true); setShowCustom(false) }}
-                  className="text-[10px] text-parchment-300 dark:text-[#5A4838] underline"
+                  className="text-[10px] text-stone-300 dark:text-[#6B6460] underline"
                 >
                   更改計劃
                 </button>
@@ -330,7 +330,7 @@ export default function StatsDashboard({
 
           {/* 5. Achievements */}
           <div>
-            <h3 className="text-xs font-semibold text-parchment-400 dark:text-[#A8906E] mb-2 uppercase tracking-wide">
+            <h3 className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">
               成就
             </h3>
             <div className="space-y-2">
@@ -342,16 +342,16 @@ export default function StatsDashboard({
                     key={id}
                     className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-opacity
                       ${unlocked ? 'opacity-100' : 'opacity-40'}
-                      bg-parchment-100 dark:bg-[#2E261E]
+                      bg-stone-100 dark:bg-[#22242C]
                     `}
                   >
                     <span className={`text-xl shrink-0 ${unlocked ? '' : 'grayscale'}`}>{icon}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-parchment-500 dark:text-[#EDE0C4]">{name}</div>
-                      <div className="text-[10px] text-parchment-300 dark:text-[#5A4838]">{desc}</div>
+                      <div className="text-xs font-medium text-stone-500 dark:text-[#E4DDD0]">{name}</div>
+                      <div className="text-[10px] text-stone-300 dark:text-[#6B6460]">{desc}</div>
                     </div>
                     {unlocked && date && (
-                      <span className="text-[10px] text-[#8B6418] dark:text-[#C9A84C] shrink-0">{date}</span>
+                      <span className="text-[10px] text-[#C17D3A] dark:text-[#D4935C] shrink-0">{date}</span>
                     )}
                   </div>
                 )

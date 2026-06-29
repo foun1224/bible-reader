@@ -57,7 +57,7 @@ export default function Reader({
 
   if (!chapter) {
     return (
-      <div className="flex-1 flex items-center justify-center text-parchment-300 dark:text-[#3A3028]">
+      <div className="flex-1 flex items-center justify-center text-stone-300 dark:text-[#2E3240]">
         請從左側選擇書卷與章節
       </div>
     )
@@ -73,7 +73,7 @@ export default function Reader({
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
         ${isCompleted
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
-          : 'border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E]'
+          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
         }`}
       title={isCompleted ? '已完成' : '標記本章為完成'}
       disabled={isCompleted}
@@ -90,7 +90,7 @@ export default function Reader({
         <div className="fixed inset-0 z-50 bg-black/60 flex flex-col items-center justify-center pointer-events-none">
           <div className="text-8xl mb-4 animate-pop-in">✓</div>
           <div className="text-2xl font-bold text-white">{chapterTitle}</div>
-          <div className="text-parchment-200 mt-2 text-sm">章節完成</div>
+          <div className="text-stone-200 mt-2 text-sm">章節完成</div>
         </div>
       )}
 
@@ -101,16 +101,16 @@ export default function Reader({
 
         {/* Resume CTA */}
         {showResumeCTA && (
-          <div className="mb-6 flex items-center justify-between rounded-lg border border-[#8B6418]/30 dark:border-[#C9A84C]/30 bg-[#8B6418]/10 dark:bg-[#C9A84C]/10 px-4 py-3">
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-[#4F7358]/30 dark:border-[#7AAF87]/30 bg-[#4F7358]/10 dark:bg-[#7AAF87]/10 px-4 py-3">
             <div>
-              <p className="text-xs font-medium text-parchment-300 dark:text-[#A8906E] mb-0.5">📖 繼續上次閱讀</p>
-              <p className="text-sm text-parchment-500 dark:text-[#EDE0C4]">
+              <p className="text-xs font-medium text-stone-300 dark:text-[#A09890] mb-0.5">📖 繼續上次閱讀</p>
+              <p className="text-sm text-stone-500 dark:text-[#E4DDD0]">
                 {resumeBookName} · 第 {resumeChapter} 章
               </p>
             </div>
             <button
               onClick={handleResumeCTA}
-              className="ml-4 shrink-0 px-3 py-1.5 text-xs rounded border border-[#8B6418]/40 dark:border-[#C9A84C]/40 text-[#8B6418] dark:text-[#C9A84C] hover:bg-[#8B6418]/10 dark:hover:bg-[#C9A84C]/10 transition-colors font-medium"
+              className="ml-4 shrink-0 px-3 py-1.5 text-xs rounded border border-[#4F7358]/40 dark:border-[#7AAF87]/40 text-[#4F7358] dark:text-[#7AAF87] hover:bg-[#4F7358]/10 dark:hover:bg-[#7AAF87]/10 transition-colors font-medium"
             >
               繼續閱讀 →
             </button>
@@ -120,20 +120,20 @@ export default function Reader({
         {/* Estimated reading time */}
         {(() => {
           return (
-            <div className="text-xs text-parchment-300 dark:text-[#5A4838] mb-6 text-right">
+            <div className="text-xs text-stone-300 dark:text-[#6B6460] mb-6 text-right">
               約 {readingMins} 分鐘
             </div>
           )
         })()}
 
         <div
-          className={`${fontSize} text-parchment-500 dark:text-[#EDE0C4]`}
+          className={`${fontSize} text-stone-500 dark:text-[#E4DDD0]`}
           style={{ lineHeight: '2.1', letterSpacing: '0.02em' }}
         >
           {chapter.verses.map(v => (
             <p key={v.number} className="py-0.5 group">
               <sup
-                className="text-gold dark:text-gold-dark select-none mr-0.5"
+                className="text-sage dark:text-sage-dark select-none mr-0.5"
                 style={{ fontSize: '9px', fontWeight: 400, opacity: 0.35, verticalAlign: 'super' }}
               >
                 {v.number}
@@ -144,14 +144,14 @@ export default function Reader({
         </div>
 
         {/* Chapter navigation + complete button */}
-        <div className="flex justify-between items-center mt-16 pt-6 border-t border-parchment-200 dark:border-[#3A3028]">
+        <div className="flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240]">
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}
             className={`flex items-center gap-1.5 px-4 py-2 rounded text-sm transition-colors
               ${hasPrev
-                ? 'text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] border border-parchment-200 dark:border-[#3A3028]'
-                : 'text-parchment-200 dark:text-[#3A3028] cursor-not-allowed'
+                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+                : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
               }`}
           >
             <span>←</span>
@@ -168,8 +168,8 @@ export default function Reader({
             disabled={!hasNext}
             className={`flex items-center gap-1.5 px-4 py-2 rounded text-sm transition-colors
               ${hasNext
-                ? 'text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] border border-parchment-200 dark:border-[#3A3028]'
-                : 'text-parchment-200 dark:text-[#3A3028] cursor-not-allowed'
+                ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+                : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
               }`}
           >
             <span>下一章</span>
@@ -179,14 +179,14 @@ export default function Reader({
       </div>
 
       {/* Mobile bottom nav bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-parchment-50/95 dark:bg-[#1A1410]/95 backdrop-blur-sm border-t border-parchment-200 dark:border-[#3A3028]">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
         <button
           onClick={onPrevChapter}
           disabled={!hasPrev}
           className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
             ${hasPrev
-              ? 'text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] border border-parchment-200 dark:border-[#3A3028]'
-              : 'text-parchment-200 dark:text-[#3A3028] cursor-not-allowed'
+              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
             }`}
         >
           <span>←</span>
@@ -201,8 +201,8 @@ export default function Reader({
           disabled={!hasNext}
           className={`flex items-center gap-1 px-3 py-2 rounded text-sm transition-colors
             ${hasNext
-              ? 'text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] border border-parchment-200 dark:border-[#3A3028]'
-              : 'text-parchment-200 dark:text-[#3A3028] cursor-not-allowed'
+              ? 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] border border-stone-200 dark:border-[#2E3240]'
+              : 'text-stone-200 dark:text-[#2E3240] cursor-not-allowed'
             }`}
         >
           <span>下一章</span>

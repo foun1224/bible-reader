@@ -8,17 +8,21 @@ export default {
         serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
       },
       colors: {
-        parchment: {
-          50: '#FDF8EF',
-          100: '#F2EBE0',
-          200: '#DDD0BC',
-          300: '#A8906E',
-          400: '#7A5C3E',
-          500: '#2C1A0E',
+        stone: {
+          50:  '#F5F2EC',
+          100: '#E8E4DB',
+          200: '#D4CEC4',
+          300: '#A09890',
+          400: '#6B6460',
+          500: '#2A2725',
         },
-        gold: {
-          DEFAULT: '#8B6418',
-          dark: '#C9A84C',
+        sage: {
+          DEFAULT: '#4F7358',
+          dark: '#7AAF87',
+        },
+        celebration: {
+          DEFAULT: '#C17D3A',
+          dark: '#D4935C',
         },
       },
       keyframes: {

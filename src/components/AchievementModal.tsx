@@ -29,13 +29,13 @@ export default function AchievementModal({ achievementId, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="flex flex-col items-center gap-3 px-10 py-8 rounded-2xl bg-parchment-50 dark:bg-[#221C17] shadow-2xl"
+        className="flex flex-col items-center gap-3 px-10 py-8 rounded-2xl bg-stone-50 dark:bg-[#22242C] shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="text-7xl">{label.icon}</div>
-        <div className="text-sm font-medium text-parchment-300 dark:text-[#A8906E]">成就解鎖！</div>
-        <div className="text-2xl font-bold text-parchment-500 dark:text-[#EDE0C4]">{label.name}</div>
-        <div className="text-[10px] text-parchment-300 dark:text-[#5A4838] mt-3 opacity-60">點任意處關閉</div>
+        <div className="text-sm font-medium text-stone-300 dark:text-[#A09890]">成就解鎖！</div>
+        <div className="text-2xl font-bold text-stone-500 dark:text-[#E4DDD0]">{label.name}</div>
+        <div className="text-[10px] text-stone-300 dark:text-[#6B6460] mt-3 opacity-60">點任意處關閉</div>
       </div>
     </div>
   )
