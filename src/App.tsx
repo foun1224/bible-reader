@@ -544,7 +544,7 @@ function App() {
       />
 
       {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
-      <div className={`transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
+      <div className={`flex h-full shrink-0 transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
       <Sidebar
         ckjv={ckjv}
         jasher={jasher}
