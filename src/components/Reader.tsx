@@ -349,7 +349,7 @@ export default function Reader({
 
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
-      <div className={`mx-auto px-6 pt-16 pb-[96px] sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
+      <div className={`mx-auto px-6 pt-16 pb-[140px] sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
         <div ref={topRef} />
 
         {/* Immersive watermark */}

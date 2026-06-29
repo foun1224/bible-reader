@@ -509,7 +509,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#17191E]">
+    <div className="flex h-dvh overflow-hidden bg-stone-50 dark:bg-[#17191E]">
       {/* Book complete toast */}
       {bookCompleteMessage && (
         <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
@@ -759,6 +759,13 @@ function App() {
           verseNumStyle={verseNumStyle}
           lineSpacing={lineSpacing}
         />
+        {/* Mobile spacer — reserves space for the fixed bottom nav bar so reader doesn't scroll under it */}
+        {!isImmersive && (
+          <div
+            className="sm:hidden shrink-0"
+            style={{ height: 'calc(44px + env(safe-area-inset-bottom))' }}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -878,7 +885,7 @@ function App() {
 
       {/* Mobile combined bottom bar: tool tab bar + chapter nav */}
       {!isImmersive && (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {/* Chapter navigation */}
           <div className="flex items-center">
             <button
