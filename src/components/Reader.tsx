@@ -340,7 +340,7 @@ export default function Reader({
 
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
-      <div className={`mx-auto px-6 pt-16 pb-32 sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
+      <div className={`mx-auto px-6 pt-16 pb-[96px] sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] sm:px-10 pt-8'}`}>
         <div ref={topRef} />
 
         {/* Immersive watermark */}
@@ -464,31 +464,6 @@ export default function Reader({
         </div>
       </div>
 
-      {/* Mobile bottom nav bar: ‹ [章節標題] › */}
-      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]`}>
-        <button
-          onClick={onPrevChapter}
-          disabled={!hasPrev}
-          className={`flex items-center justify-center w-14 h-12 shrink-0 text-lg transition-colors
-            ${hasPrev ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
-        >
-          ‹
-        </button>
-        <button
-          onClick={onOpenChapterGrid}
-          className="flex-1 h-12 flex items-center justify-center text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-        >
-          {chapterTitle}
-        </button>
-        <button
-          onClick={onNextChapter}
-          disabled={!hasNext}
-          className={`flex items-center justify-center w-14 h-12 shrink-0 text-lg transition-colors
-            ${hasNext ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
-        >
-          ›
-        </button>
-      </div>
     </div>
   )
 }

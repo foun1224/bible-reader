@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { BibleData, JasherData, Book, Chapter, CompletionRecord, StreakData } from '../types'
+import type { BibleData, JasherData, Book, Chapter, CompletionRecord } from '../types'
 
 interface Props {
   ckjv: BibleData | null
@@ -12,14 +12,16 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
-  streak?: StreakData
-  hasReadToday?: boolean
+  onOpenSearch: () => void
+  onOpenNotes: () => void
+  onOpenDevotion: () => void
 }
 
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
-  isOpen, onClose, completions, streak, hasReadToday,
+  isOpen, onClose, completions,
+  onOpenSearch, onOpenNotes, onOpenDevotion,
 }: Props) {
   const [expandedBook, setExpandedBook] = useState<number | string | null>(
     activeBook?.id ?? null
@@ -140,8 +142,6 @@ export default function Sidebar({
       setExpandedBook={setExpandedBook}
       onSelectJasherChapter={onSelectJasherChapter}
       isJasherCompleted={isJasherCompleted}
-      streak={streak}
-      hasReadToday={hasReadToday}
     />
   )
 
@@ -150,6 +150,24 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-56 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         {sidebarContent}
+        {/* Desktop bottom tool row */}
+        <div className="shrink-0 flex items-center border-t border-stone-200 dark:border-[#2E3240]">
+          {[
+            { label: '搜尋', icon: <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: onOpenSearch },
+            { label: '筆記', icon: '📝', fn: onOpenNotes },
+            { label: '靈修', icon: '🕊', fn: onOpenDevotion },
+          ].map(({ label, icon, fn }) => (
+            <button
+              key={label}
+              onClick={fn}
+              title={label}
+              className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#17191E] transition-colors"
+            >
+              <span className="text-sm leading-none">{icon}</span>
+              <span className="text-[9px] leading-none">{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -194,8 +212,6 @@ interface ContentProps {
   setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
   isJasherCompleted: (chNum: number) => boolean
-  streak?: StreakData
-  hasReadToday?: boolean
 }
 
 function SidebarContent({
@@ -206,7 +222,6 @@ function SidebarContent({
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
   isJasherCompleted,
-  streak, hasReadToday,
 }: ContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -224,20 +239,6 @@ function SidebarContent({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      {/* Streak strip */}
-      {streak !== undefined && (
-        <div className="shrink-0 flex items-center gap-2 px-3 py-2 border-b border-stone-200 dark:border-[#2E3240]">
-          <span className={`text-sm ${hasReadToday ? 'drop-shadow-[0_0_4px_rgba(249,115,22,0.5)]' : 'opacity-40'}`}>
-            {hasReadToday ? '🔥' : '🕯'}
-          </span>
-          <span className="text-xs text-stone-400 dark:text-[#A09890]">
-            <span className="font-semibold text-stone-500 dark:text-[#E4DDD0]">{streak.currentStreak}</span> 天連續
-          </span>
-          {!hasReadToday && (
-            <span className="ml-auto text-[10px] text-stone-300 dark:text-[#6B6460]">今天還沒讀</span>
-          )}
-        </div>
-      )}
       {/* Search box */}
       <div className="px-3 py-2 shrink-0">
         <input
