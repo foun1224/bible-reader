@@ -4,8 +4,6 @@ import type {
   Highlight, HighlightColor, ReflectionNote,
 } from '../types'
 
-type SidebarTab = '經文' | '領受'
-
 const REFLECTION_KEY = 'bible-reader-reflections'
 
 const COLOR_DOT: Record<HighlightColor, string> = {
@@ -19,42 +17,6 @@ const COLOR_LABEL: Record<HighlightColor, string> = {
   comfort:   '安慰',
   question:  '疑問',
   prayer:    '禱告',
-}
-
-// ── Devotional helpers ────────────────────────────────────────────────────────
-interface DevotionalDay {
-  ref: string; title: string; verseText: string
-  meditation: string[]; responses: string[]; hints: string[]; prayer: string
-}
-type DevotionalPlan = Record<string, DevotionalDay>
-
-function todayMMDD(): string {
-  const d = new Date()
-  return `${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
-}
-
-function shiftMMDD(mmdd: string, delta: number): string {
-  const m = parseInt(mmdd.slice(0, 2)), d = parseInt(mmdd.slice(2, 4))
-  const date = new Date(2024, m - 1, d)
-  date.setDate(date.getDate() + delta)
-  return `${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`
-}
-
-function parseChapterFromRef(ref: string): number {
-  const match = ref.match(/(\d+)\s*[:.：]/)
-  return match ? parseInt(match[1]) : 1
-}
-
-function findBookByRef(ref: string, books: Book[]): Book | null {
-  const sorted = [...books].sort((a, b) => b.name.length - a.name.length)
-  for (const book of sorted) if (ref.includes(book.name)) return book
-  return null
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('zh-TW', {
-    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
-  })
 }
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -75,7 +37,6 @@ interface Props {
   currentBookId: number | undefined
   currentChapter: number
   currentChapterLabel: string
-  onNavigate: (book: Book, chapter: Chapter) => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -85,9 +46,8 @@ export default function Sidebar({
   isOpen, onClose, completions,
   highlights, onJumpTo,
   currentSource, currentBookId, currentChapter, currentChapterLabel,
-  onNavigate,
 }: Props) {
-  const [tab, setTab] = useState<SidebarTab>('經文')
+
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
   const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
@@ -105,59 +65,36 @@ export default function Sidebar({
   const isJasherCompleted = (chNum: number) =>
     completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
 
-  const tabBar = (
-    <div className="shrink-0 flex border-b border-stone-200 dark:border-[#2E3240]">
-      {(['經文', '領受'] as SidebarTab[]).map(t => (
-        <button
-          key={t}
-          onClick={() => setTab(t)}
-          className={`flex-1 py-2.5 text-xs font-medium tracking-wide transition-colors
-            ${tab === t
-              ? 'text-[#4F7358] dark:text-[#7AAF87] border-b-2 border-[#4F7358] dark:border-[#7AAF87] -mb-px'
-              : 'text-stone-400 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890]'
-            }`}
-        >
-          {t}
-        </button>
-      ))}
-    </div>
-  )
-
-  const tabContent = (
+  const sidebarContent = (
     <div className="flex-1 min-h-0 overflow-hidden">
-      {tab === '經文' && (
-        <ScriptureContent
-          ckjv={ckjv}
-          oldTestament={oldTestament}
-          newTestament={newTestament}
-          oldExpanded={oldExpanded}
-          setOldExpanded={setOldExpanded}
-          newExpanded={newExpanded}
-          setNewExpanded={setNewExpanded}
-          jasher={jasher}
-          source={source}
-          activeBook={activeBook}
-          activeChapter={activeChapter}
-          showJasher={showJasher}
-          setShowJasher={setShowJasher}
-          expandedBook={expandedBook}
-          setExpandedBook={setExpandedBook}
-          isCkjvCompleted={isCkjvCompleted}
-          isJasherCompleted={isJasherCompleted}
-          onSelectCkjvChapter={onSelectCkjvChapter}
-          onSelectJasherChapter={onSelectJasherChapter}
-          highlights={highlights}
-          onJumpTo={onJumpTo}
-          onClose={onClose}
-          currentSource={currentSource}
-          currentBookId={currentBookId}
-          currentChapter={currentChapter}
-          currentChapterLabel={currentChapterLabel}
-        />
-      )}
-      {tab === '領受' && (
-        <DevotionalTab ckjv={ckjv} onNavigate={onNavigate} />
-      )}
+      <ScriptureContent
+        ckjv={ckjv}
+        oldTestament={oldTestament}
+        newTestament={newTestament}
+        oldExpanded={oldExpanded}
+        setOldExpanded={setOldExpanded}
+        newExpanded={newExpanded}
+        setNewExpanded={setNewExpanded}
+        jasher={jasher}
+        source={source}
+        activeBook={activeBook}
+        activeChapter={activeChapter}
+        showJasher={showJasher}
+        setShowJasher={setShowJasher}
+        expandedBook={expandedBook}
+        setExpandedBook={setExpandedBook}
+        isCkjvCompleted={isCkjvCompleted}
+        isJasherCompleted={isJasherCompleted}
+        onSelectCkjvChapter={onSelectCkjvChapter}
+        onSelectJasherChapter={onSelectJasherChapter}
+        highlights={highlights}
+        onJumpTo={onJumpTo}
+        onClose={onClose}
+        currentSource={currentSource}
+        currentBookId={currentBookId}
+        currentChapter={currentChapter}
+        currentChapterLabel={currentChapterLabel}
+      />
     </div>
   )
 
@@ -165,8 +102,11 @@ export default function Sidebar({
     <>
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-72 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
-        {tabBar}
-        {tabContent}
+        <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">經文</p>
+          <p className="mt-1 text-sm font-medium text-stone-600 dark:text-[#E4DDD0]">書卷與本章</p>
+        </div>
+        {sidebarContent}
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -188,8 +128,10 @@ export default function Sidebar({
             </svg>
           </button>
         </div>
-        {tabBar}
-        {tabContent}
+        <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-2">
+          <span className="text-[10px] font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">經文目錄</span>
+        </div>
+        {sidebarContent}
       </div>
     </>
   )
@@ -473,15 +415,15 @@ function ScriptureContent({
             setShowJasher(false)
           }}
           title={book.name}
-          className={`w-full text-left px-3 py-1.5 text-sm rounded transition-colors
+          className={`w-full text-left px-3 py-2 text-[15px] rounded transition-colors
             ${isActive
               ? 'bg-stone-200 dark:bg-[#2E3240] text-sage dark:text-sage-dark font-medium'
               : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
             }`}
         >
-          <span className="flex items-center gap-1.5">
-            <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
-            <span className="truncate">{book.name}</span>
+          <span className="flex items-center gap-2">
+            <span className="text-[11px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
+            <span className="truncate leading-5">{book.name}</span>
           </span>
         </button>
         {isExpanded && (
@@ -539,7 +481,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setOldExpanded(!oldExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2 text-[10px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{oldExpanded ? '▾' : '▸'}</span>舊約
               </button>
@@ -550,7 +492,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setNewExpanded(!newExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-[9px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2 mt-1 text-[10px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{newExpanded ? '▾' : '▸'}</span>新約
               </button>
@@ -561,7 +503,7 @@ function ScriptureContent({
             <div className="mt-1">
               <button
                 onClick={() => setShowJasher(!showJasher)}
-                className={`w-full flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-widest transition-colors
+                className={`w-full flex items-center gap-1.5 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest transition-colors
                   ${source === 'jasher'
                     ? 'text-[#4F7358] dark:text-[#7AAF87]'
                     : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
@@ -636,172 +578,6 @@ function ScriptureContent({
           </div>
         )}
       </div>
-    </div>
-  )
-}
-
-// ── 領受 tab ──────────────────────────────────────────────────────────────────
-function DevotionalCollapsible({ title, children, defaultOpen = true }: {
-  title: string; children: React.ReactNode; defaultOpen?: boolean
-}) {
-  const [open, setOpen] = useState(defaultOpen)
-  return (
-    <div className="border-b border-stone-200 dark:border-[#2E3240] last:border-0">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
-      >
-        <span className="text-[10px] font-semibold text-stone-500 dark:text-[#E4DDD0] uppercase tracking-widest">{title}</span>
-        <span className={`text-[9px] text-stone-300 dark:text-[#6B6460] ml-2 transition-transform duration-200 inline-block ${open ? 'rotate-180' : ''}`}>▾</span>
-      </button>
-      <div className={`overflow-hidden transition-all duration-200 ${open ? 'max-h-[2000px]' : 'max-h-0'}`}>
-        <div className="px-3 pb-3">{children}</div>
-      </div>
-    </div>
-  )
-}
-
-function DevotionalTab({ ckjv, onNavigate }: { ckjv: BibleData | null; onNavigate: (book: Book, ch: Chapter) => void }) {
-  const [plan, setPlan] = useState<DevotionalPlan | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
-  const [mmdd, setMmdd] = useState(todayMMDD)
-  const todayKey = todayMMDD()
-
-  useEffect(() => {
-    if (plan) return
-    setLoading(true); setError(false)
-    fetch(`${import.meta.env.BASE_URL}devotional-plan.json`)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then((data: DevotionalPlan) => { setPlan(data); setLoading(false) })
-      .catch(() => { setError(true); setLoading(false) })
-  }, [])
-
-  const day = plan?.[mmdd]
-
-  function handleNavigate() {
-    if (!day || !ckjv) return
-    const book = findBookByRef(day.ref, ckjv.books)
-    if (!book) return
-    const ch = book.chapters.find(c => c.number === parseChapterFromRef(day.ref))
-    if (!ch) return
-    onNavigate(book, ch)
-  }
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      {/* Date nav */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
-        <button
-          onClick={() => setMmdd(shiftMMDD(mmdd, -1))}
-          className="p-1 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
-        >←</button>
-        <span className="text-xs text-stone-400 dark:text-[#A09890]">
-          {mmdd.slice(0, 2)}月{mmdd.slice(2, 4)}日
-          {mmdd === todayKey && (
-            <span className="ml-1 text-[10px] px-1 py-0.5 rounded bg-[#4F7358]/10 dark:bg-[#7AAF87]/10 text-[#4F7358] dark:text-[#7AAF87]">今天</span>
-          )}
-        </span>
-        <button
-          onClick={() => setMmdd(shiftMMDD(mmdd, 1))}
-          className="p-1 rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
-        >→</button>
-      </div>
-
-      {loading && (
-        <div className="flex items-center justify-center h-24 text-xs text-stone-300 dark:text-[#6B6460]">
-          <div className="w-4 h-4 border-2 border-stone-200 border-t-[#4F7358] rounded-full animate-spin mr-2" />
-          載入中…
-        </div>
-      )}
-      {error && (
-        <p className="text-center text-xs text-stone-300 dark:text-[#6B6460] py-8">無法載入靈修資料</p>
-      )}
-      {plan && !day && (
-        <p className="text-center text-xs text-stone-300 dark:text-[#6B6460] py-8">此日期暫無資料</p>
-      )}
-
-      {day && (
-        <>
-          <div className="px-3 py-3 border-b border-stone-200 dark:border-[#2E3240]">
-            <p className="text-[10px] text-stone-300 dark:text-[#6B6460] mb-1">{day.title}</p>
-            <p className="text-sm font-semibold text-stone-600 dark:text-[#E4DDD0] mb-2">{day.ref}</p>
-            {day.verseText && (
-              <p className="text-xs text-stone-400 dark:text-[#A09890] leading-relaxed mb-3 italic">{day.verseText}</p>
-            )}
-            <div className="flex gap-2">
-              {ckjv && (
-                <button
-                  onClick={handleNavigate}
-                  className="flex-1 py-1.5 text-[10px] rounded border border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] hover:bg-[#4F7358]/10 dark:hover:bg-[#7AAF87]/10 transition-colors font-medium"
-                >
-                  在讀經器打開 →
-                </button>
-              )}
-              <a
-                href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-1.5 text-[10px] rounded border border-stone-300 dark:border-[#3A3C42] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors text-center"
-              >
-                完整靈修 ↗
-              </a>
-            </div>
-          </div>
-
-          {day.meditation.length > 0 && (
-            <DevotionalCollapsible title="觀察默想">
-              <ol className="space-y-2 list-none">
-                {day.meditation.map((q, i) => (
-                  <li key={i} className="flex gap-1.5 text-xs text-stone-500 dark:text-[#D4CEC4] leading-relaxed">
-                    <span className="shrink-0 text-[#4F7358] dark:text-[#7AAF87] font-semibold">{i + 1}.</span>
-                    <span>{q}</span>
-                  </li>
-                ))}
-              </ol>
-            </DevotionalCollapsible>
-          )}
-          {day.responses.length > 0 && (
-            <DevotionalCollapsible title="靈修回應">
-              <ol className="space-y-2 list-none">
-                {day.responses.map((q, i) => (
-                  <li key={i} className="flex gap-1.5 text-xs text-stone-500 dark:text-[#D4CEC4] leading-relaxed">
-                    <span className="shrink-0 text-[#4F7358] dark:text-[#7AAF87] font-semibold">{i + 1}.</span>
-                    <span>{q}</span>
-                  </li>
-                ))}
-              </ol>
-            </DevotionalCollapsible>
-          )}
-          {day.hints.length > 0 && (
-            <DevotionalCollapsible title="經文亮光" defaultOpen={false}>
-              <div className="space-y-2">
-                {day.hints.map((p, i) => (
-                  <p key={i} className="text-xs text-stone-500 dark:text-[#D4CEC4] leading-relaxed">{p}</p>
-                ))}
-              </div>
-            </DevotionalCollapsible>
-          )}
-          {day.prayer && (
-            <DevotionalCollapsible title="禱告文">
-              <div className="px-2 py-2 rounded bg-[#4F7358]/5 dark:bg-[#7AAF87]/5 border-l-2 border-[#4F7358] dark:border-[#7AAF87]">
-                <p className="text-xs text-stone-500 dark:text-[#D4CEC4] leading-relaxed italic">{day.prayer}</p>
-              </div>
-            </DevotionalCollapsible>
-          )}
-
-          <div className="px-3 py-2 text-center">
-            <a
-              href="https://letsfollowjesus.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] transition-colors"
-            >
-              內容來源：跟隨耶穌 letsfollowjesus.org
-            </a>
-          </div>
-        </>
-      )}
     </div>
   )
 }

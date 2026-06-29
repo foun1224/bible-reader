@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
+import MainDevotional from './components/MainDevotional'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -97,6 +98,7 @@ function App() {
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
+  const [mainView, setMainView] = useState<'scripture' | 'devotional'>('scripture')
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -559,10 +561,6 @@ function App() {
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
             : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
         }
-        onNavigate={(book, chapter) => {
-          selectCkjvChapter(book, chapter)
-          setSidebarOpen(false)
-        }}
       />
       </div>
 
@@ -635,15 +633,40 @@ function App() {
               </svg>
             </button>
 
-            <span className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
-              {source === 'ckjv' && activeBook
-                ? `${activeBook.name} · ${activeChapter?.number ?? ''}`
-                : source === 'jasher' && activeChapter
-                ? `雅煞珥書 · ${activeChapter.number}`
-                : ''}
-            </span>
+            <div className="flex rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-100/70 dark:bg-[#22242C]/70 p-0.5">
+              {(['scripture', 'devotional'] as const).map(view => (
+                <button
+                  key={view}
+                  onClick={() => {
+                    setMainView(view)
+                    setSettingsOpen(false)
+                    setSearchOpen(false)
+                    if (view === 'devotional') setChapterGridOpen(false)
+                  }}
+                  className={`px-2.5 py-1 text-xs rounded transition-colors ${
+                    mainView === view
+                      ? 'bg-stone-50 dark:bg-[#17191E] text-[#4F7358] dark:text-[#7AAF87] shadow-sm'
+                      : 'text-stone-400 dark:text-[#A09890] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
+                  }`}
+                >
+                  {view === 'scripture' ? '經文' : '領受'}
+                </button>
+              ))}
+            </div>
+
+            {mainView === 'scripture' && (
+              <span className="hidden sm:inline text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
+                {source === 'ckjv' && activeBook
+                  ? `${activeBook.name} · ${activeChapter?.number ?? ''}`
+                  : source === 'jasher' && activeChapter
+                  ? `雅煞珥書 · ${activeChapter.number}`
+                  : ''}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1.5">
+            {mainView === 'scripture' && (
+              <>
             {/* 搜尋 */}
             <button
               onClick={() => setSearchOpen(o => !o)}
@@ -681,6 +704,8 @@ function App() {
                 <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.2 3.2l1.4 1.4M15.4 15.4l1.4 1.4M3.2 16.8l1.4-1.4M15.4 4.6l1.4-1.4"/>
               </svg>
             </button>
+              </>
+            )}
             {/* 更多 */}
             <button
               onClick={() => setMoreOpen(o => !o)}
@@ -698,7 +723,7 @@ function App() {
         </div>
 
         {/* CompletionBanner (Tiny Habits) */}
-        {showBanner && activeChapter && (
+        {mainView === 'scripture' && showBanner && activeChapter && (
           <CompletionBanner
             chapterLabel={
               source === 'ckjv' && activeBook
@@ -717,53 +742,65 @@ function App() {
           />
         )}
 
-        {/* Reader */}
-        <Reader
-          chapter={activeChapter}
-          fontSize={FONT_SIZES[fontSize]}
-          onPrevChapter={handlePrevChapter}
-          onNextChapter={handleNextChapter}
-          hasPrev={hasPrev}
-          hasNext={hasNext}
-          chapterTitle={
-            source === 'ckjv' && activeBook
-              ? `${activeBook.name}·第${activeChapter?.number}章`
-              : source === 'jasher' && activeChapter
-              ? `雅煞珥·第${activeChapter.number}章`
-              : ''
-          }
-          bookName={
-            source === 'ckjv' && activeBook
-              ? activeBook.name
-              : '雅煞珥書'
-          }
-          onMarkComplete={handleMarkComplete}
-          isCompleted={isCurrentCompleted}
-          showResumeCTA={showResumeCTA && !isAtBookmark}
-          resumeBookName={resumeBookName}
-          resumeChapter={resumeChapter}
-          onDismissResumeCTA={() => setShowResumeCTA(false)}
-          onScrollProgress={setScrollProgress}
-          isImmersive={isImmersive}
-          onToggleImmersive={() => setIsImmersive(v => !v)}
-          onOpenChapterGrid={() => setChapterGridOpen(true)}
-          highlights={highlights.filter(h =>
-            h.sourceId === source &&
-            h.bookId === (activeBook?.id as number | undefined) &&
-            h.chapter === (activeChapter?.number ?? -1)
-          )}
-          onHighlight={saveHighlight}
-          onRemoveHighlight={removeHighlight}
-          currentSource={source}
-          currentBookId={activeBook?.id as number | undefined}
-          verseNumStyle={verseNumStyle}
-          lineSpacing={lineSpacing}
-        />
-        {/* Mobile spacer — reserves space for the fixed bottom nav bar so reader doesn't scroll under it */}
-        {!isImmersive && (
-          <div
-            className="sm:hidden shrink-0"
-            style={{ height: 'calc(44px + env(safe-area-inset-bottom))' }}
+        {mainView === 'scripture' ? (
+          <>
+            <Reader
+              chapter={activeChapter}
+              fontSize={FONT_SIZES[fontSize]}
+              onPrevChapter={handlePrevChapter}
+              onNextChapter={handleNextChapter}
+              hasPrev={hasPrev}
+              hasNext={hasNext}
+              chapterTitle={
+                source === 'ckjv' && activeBook
+                  ? `${activeBook.name}·第${activeChapter?.number}章`
+                  : source === 'jasher' && activeChapter
+                  ? `雅煞珥·第${activeChapter.number}章`
+                  : ''
+              }
+              bookName={
+                source === 'ckjv' && activeBook
+                  ? activeBook.name
+                  : '雅煞珥書'
+              }
+              onMarkComplete={handleMarkComplete}
+              isCompleted={isCurrentCompleted}
+              showResumeCTA={showResumeCTA && !isAtBookmark}
+              resumeBookName={resumeBookName}
+              resumeChapter={resumeChapter}
+              onDismissResumeCTA={() => setShowResumeCTA(false)}
+              onScrollProgress={setScrollProgress}
+              isImmersive={isImmersive}
+              onToggleImmersive={() => setIsImmersive(v => !v)}
+              onOpenChapterGrid={() => setChapterGridOpen(true)}
+              highlights={highlights.filter(h =>
+                h.sourceId === source &&
+                h.bookId === (activeBook?.id as number | undefined) &&
+                h.chapter === (activeChapter?.number ?? -1)
+              )}
+              onHighlight={saveHighlight}
+              onRemoveHighlight={removeHighlight}
+              currentSource={source}
+              currentBookId={activeBook?.id as number | undefined}
+              verseNumStyle={verseNumStyle}
+              lineSpacing={lineSpacing}
+            />
+            {/* Mobile spacer — reserves space for the fixed bottom nav bar so reader doesn't scroll under it */}
+            {!isImmersive && (
+              <div
+                className="sm:hidden shrink-0"
+                style={{ height: 'calc(44px + env(safe-area-inset-bottom))' }}
+              />
+            )}
+          </>
+        ) : (
+          <MainDevotional
+            ckjv={ckjv}
+            onNavigate={(book, chapter) => {
+              selectCkjvChapter(book, chapter)
+              setMainView('scripture')
+              setSidebarOpen(false)
+            }}
           />
         )}
       </div>
@@ -858,7 +895,8 @@ function App() {
       )}
 
       {/* Chapter grid (mobile bottom nav tap) */}
-      <ChapterGrid
+      {mainView === 'scripture' && (
+        <ChapterGrid
         isOpen={chapterGridOpen}
         onClose={() => setChapterGridOpen(false)}
         title={source === 'ckjv' && activeBook ? activeBook.name : '雅煞珥書'}
@@ -881,10 +919,11 @@ function App() {
           if (source === 'ckjv' && activeBook) selectCkjvChapter(activeBook, ch)
           else selectJasherChapter(ch)
         }}
-      />
+        />
+      )}
 
       {/* Mobile combined bottom bar: tool tab bar + chapter nav */}
-      {!isImmersive && (
+      {mainView === 'scripture' && !isImmersive && (
         <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {/* Chapter navigation */}
           <div className="flex items-center">
