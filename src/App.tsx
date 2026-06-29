@@ -531,6 +531,14 @@ function App() {
   const todayStr = today()
   const hasReadToday = streak.lastReadDate === todayStr
   const showStreak = streak.currentStreak > 0
+  const todayCount = completions.filter(r =>
+    new Date(r.completedAt).toLocaleDateString('sv-SE') === todayStr
+  ).length
+  const planChaptersPerDay = readingPlan
+    ? readingPlan.planId === 'yearly' ? Math.ceil(1189 / 365)
+    : readingPlan.planId === 'nt90' ? Math.ceil(260 / 90)
+    : (readingPlan.customChaptersPerDay ?? 3)
+    : null
 
   // Bookmark for Resume CTA
   let bookmark: BookMark | null = null
@@ -637,6 +645,13 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
+        streak={streak}
+        readingPlan={readingPlan}
+        todayCount={todayCount}
+        onOpenStats={() => setStatsDashboardOpen(true)}
+        onOpenSearch={() => setSearchOpen(true)}
+        onOpenNotes={() => setNotesPanelOpen(true)}
+        onOpenDevotion={() => setDevotionOpen(true)}
       />
       </div>
 
@@ -732,47 +747,7 @@ function App() {
                 : ''}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            {/* G1: Today's plan progress */}
-            {readingPlan && (() => {
-              const planChaptersPerDay =
-                readingPlan.planId === 'yearly' ? Math.ceil(1189 / 365)
-                : readingPlan.planId === 'nt90' ? Math.ceil(260 / 90)
-                : (readingPlan.customChaptersPerDay ?? 3)
-              const todayCount = completions.filter(r =>
-                new Date(r.completedAt).toLocaleDateString('sv-SE') === todayStr
-              ).length
-              const done = todayCount >= planChaptersPerDay
-              return (
-                <span className={`text-xs select-none ${done ? 'text-green-500 dark:text-green-400' : 'text-stone-400 dark:text-[#A09890]'}`}>
-                  {done
-                    ? '✓ 今日達標'
-                    : <><span className="text-[#4F7358] dark:text-[#7AAF87] font-medium">{todayCount}/{planChaptersPerDay}</span>章</>
-                  }
-                </span>
-              )
-            })()}
-            {/* Stats Dashboard button */}
-            <button
-              onClick={() => setStatsDashboardOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="閱讀統計"
-            >
-              📊
-            </button>
-            {/* History button */}
-            <button
-              onClick={() => setHistoryOpen(o => !o)}
-              className="relative px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="已讀記錄"
-            >
-              📖 已讀
-              {completions.length > 0 && (
-                <span className="ml-1 text-[10px] text-sage dark:text-sage-dark font-medium">
-                  {completions.length}
-                </span>
-              )}
-            </button>
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => setFontSize(s => (s + 1) % 3)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
@@ -783,38 +758,9 @@ function App() {
             <button
               onClick={() => setDark(d => !d)}
               className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title={dark ? '切換淺色模式' : '切換深色模式'}
             >
-              {dark ? '☀ 淺色' : '☽ 深色'}
-            </button>
-            {/* Search */}
-            <button
-              onClick={() => setSearchOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="搜尋經文（/）"
-              aria-label="搜尋"
-            >
-              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" style={{ display: 'inline', verticalAlign: 'middle' }}>
-                <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </button>
-            {/* Daily devotion toggle */}
-            <button
-              onClick={() => setDevotionOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="今日靈修（跟隨耶穌）"
-              aria-label="今日靈修"
-            >
-              🕊
-            </button>
-            {/* Notes Panel toggle */}
-            <button
-              onClick={() => setNotesPanelOpen(o => !o)}
-              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              title="筆記回顧"
-              aria-label="開啟筆記回顧"
-            >
-              📝
+              {dark ? '☀' : '☽'}
             </button>
             {/* Immersive mode toggle */}
             <button
