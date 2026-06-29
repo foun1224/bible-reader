@@ -6,7 +6,7 @@ import StatsDashboard from './components/StatsDashboard'
 import AchievementModal from './components/AchievementModal'
 import NotesPanel from './components/NotesPanel'
 import CompletionBanner from './components/CompletionBanner'
-import DailyDevotionPanel from './components/DailyDevotionPanel'
+import DailyDevotional from './components/DailyDevotional'
 import SearchModal from './components/SearchModal'
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
@@ -605,12 +605,15 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
-      {/* Daily Devotion Panel */}
-      <DailyDevotionPanel
+      {/* Daily Devotional Panel */}
+      <DailyDevotional
         isOpen={devotionOpen}
         onClose={() => setDevotionOpen(false)}
         ckjv={ckjv}
-        onJumpTo={handleJumpTo}
+        onNavigate={(book, chapter) => {
+          selectCkjvChapter(book, chapter)
+          setDevotionOpen(false)
+        }}
       />
 
       {/* Search Modal */}
