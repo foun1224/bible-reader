@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
-import ReflectionPanel from './components/ReflectionPanel'
 import SearchModal from './components/SearchModal'
 import MoreMenu from './components/MoreMenu'
 import ChapterGrid from './components/ChapterGrid'
@@ -149,9 +148,8 @@ function App() {
     catch { return [] }
   })
 
-  // Reflection panel
-  const [reflectionPanelOpen, setReflectionPanelOpen] = useState(false)
-  const [reflectionInitialTab, setReflectionInitialTab] = useState<'領受' | '默想' | '筆記'>('領受')
+  // Reading settings popover (toolbar)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   // Search modal
   const [searchOpen, setSearchOpen] = useState(false)
@@ -530,32 +528,6 @@ function App() {
         onClearPlan={handleClearPlan}
       />
 
-      {/* Reflection Panel */}
-      <ReflectionPanel
-        isOpen={reflectionPanelOpen}
-        onClose={() => setReflectionPanelOpen(false)}
-        initialTab={reflectionInitialTab}
-        ckjv={ckjv}
-        onNavigate={(book, chapter) => {
-          selectCkjvChapter(book, chapter)
-          setReflectionPanelOpen(false)
-        }}
-        currentSource={source}
-        currentBookId={activeBook?.id as number | undefined}
-        currentChapter={activeChapter?.number ?? 0}
-        currentChapterLabel={
-          source === 'ckjv' && activeBook && activeChapter
-            ? `${activeBook.name} · 第 ${activeChapter.number} 章`
-            : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
-        }
-        highlights={highlights}
-        onJumpTo={handleJumpTo}
-        verseNumStyle={verseNumStyle}
-        onVerseNumStyle={setVerseNumStyle}
-        lineSpacing={lineSpacing}
-        onLineSpacing={setLineSpacing}
-      />
-
       {/* Search Modal */}
       <SearchModal
         isOpen={searchOpen}
@@ -577,6 +549,20 @@ function App() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
+        highlights={highlights}
+        onJumpTo={handleJumpTo}
+        currentSource={source}
+        currentBookId={activeBook?.id as number | undefined}
+        currentChapter={activeChapter?.number ?? 0}
+        currentChapterLabel={
+          source === 'ckjv' && activeBook && activeChapter
+            ? `${activeBook.name} · 第 ${activeChapter.number} 章`
+            : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
+        }
+        onNavigate={(book, chapter) => {
+          selectCkjvChapter(book, chapter)
+          setSidebarOpen(false)
+        }}
       />
       </div>
 
@@ -709,6 +695,21 @@ function App() {
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
             </button>
+            {/* 閱讀設定 */}
+            <button
+              onClick={() => setSettingsOpen(o => !o)}
+              className={`px-2.5 py-1 text-xs rounded border transition-colors ${
+                settingsOpen
+                  ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#22242C]'
+                  : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
+              }`}
+              title="閱讀設定"
+            >
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                <circle cx="10" cy="10" r="3"/>
+                <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.2 3.2l1.4 1.4M15.4 15.4l1.4 1.4M3.2 16.8l1.4-1.4M15.4 4.6l1.4-1.4"/>
+              </svg>
+            </button>
             {/* 更多 */}
             <button
               onClick={() => setMoreOpen(o => !o)}
@@ -718,6 +719,47 @@ function App() {
               ⋯
             </button>
           </div>
+          {/* 閱讀設定 popover */}
+          {settingsOpen && (
+            <div className="absolute top-full right-0 z-30 mt-1 mr-2 w-64 bg-stone-50 dark:bg-[#22242C] border border-stone-200 dark:border-[#2E3240] rounded-lg shadow-lg p-4 space-y-4">
+              <div>
+                <div className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">節號顯示</div>
+                <div className="flex gap-1">
+                  {(['show', 'fade', 'hide'] as const).map(v => (
+                    <button
+                      key={v}
+                      onClick={() => setVerseNumStyle(v)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        verseNumStyle === v
+                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                      }`}
+                    >
+                      {{ show: '顯示', fade: '淡化', hide: '隱藏' }[v]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-wide">行距</div>
+                <div className="flex gap-1">
+                  {(['comfortable', 'loose'] as const).map(v => (
+                    <button
+                      key={v}
+                      onClick={() => setLineSpacing(v)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        lineSpacing === v
+                          ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                          : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                      }`}
+                    >
+                      {{ comfortable: '舒適', loose: '寬鬆' }[v]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           {/* G4: Scroll progress bar inside toolbar */}
           <div
             className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#4F7358] dark:bg-[#7AAF87] pointer-events-none transition-none"
@@ -793,9 +835,6 @@ function App() {
       <MoreMenu
         isOpen={moreOpen}
         onClose={() => setMoreOpen(false)}
-        onSearch={() => { setSearchOpen(true); setMoreOpen(false) }}
-        onReflection={() => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true); setMoreOpen(false) }}
-        onNotes={() => { setReflectionInitialTab('筆記'); setReflectionPanelOpen(true); setMoreOpen(false) }}
         onHistory={() => { setHistoryOpen(true); setMoreOpen(false) }}
         onStats={() => { setStatsDashboardOpen(true); setMoreOpen(false) }}
       />
@@ -829,24 +868,7 @@ function App() {
       {/* Mobile combined bottom bar: tool tab bar + chapter nav */}
       {!isImmersive && (
         <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
-          {/* Row 1: Tool shortcuts */}
-          <div className="flex border-b border-stone-100 dark:border-[#2E3240]">
-            {[
-              { label: '搜尋', icon: <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: () => setSearchOpen(true) },
-              { label: '反思', icon: '✍️', fn: () => { setReflectionInitialTab('默想'); setReflectionPanelOpen(true) } },
-              { label: '更多', icon: '⋯', fn: () => setMoreOpen(true) },
-            ].map(({ label, icon, fn }) => (
-              <button
-                key={label}
-                onClick={fn}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              >
-                <span className="text-sm leading-none">{icon}</span>
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-          {/* Row 2: Chapter navigation */}
+          {/* Chapter navigation */}
           <div className="flex items-center">
             <button
               onClick={handlePrevChapter}
