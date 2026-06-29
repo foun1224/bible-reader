@@ -117,6 +117,9 @@ function App() {
   // Scroll progress (lifted from Reader)
   const [scrollProgress, setScrollProgress] = useState(0)
 
+  // Immersive reading mode
+  const [isImmersive, setIsImmersive] = useState(false)
+
   useEffect(() => {
     const base = import.meta.env.BASE_URL
     Promise.all([
@@ -334,6 +337,29 @@ function App() {
     }
   }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter, recordCompletion])
 
+  // Keyboard shortcuts: f/F = toggle immersive, ArrowLeft/Right = chapter nav
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
+      if (e.key === 'f' || e.key === 'F') {
+        setIsImmersive(v => !v)
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevChapter()
+      } else if (e.key === 'ArrowRight') {
+        handleNextChapter()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [handlePrevChapter, handleNextChapter])
+
+  // When entering immersive mode, close sidebar
+  useEffect(() => {
+    if (isImmersive) {
+      setSidebarOpen(false)
+    }
+  }, [isImmersive])
+
   // Check if current chapter is already completed
   const isCurrentCompleted = (() => {
     if (!activeChapter) return false
@@ -455,7 +481,8 @@ function App() {
         onClearPlan={handleClearPlan}
       />
 
-      {/* Sidebar — desktop: always visible; mobile: overlay */}
+      {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
+      <div className={`transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
       <Sidebar
         ckjv={ckjv}
         jasher={jasher}
@@ -468,6 +495,7 @@ function App() {
         onClose={() => setSidebarOpen(false)}
         completions={completions}
       />
+      </div>
 
       {/* Mobile overlay backdrop */}
       {sidebarOpen && (
@@ -523,7 +551,7 @@ function App() {
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
-        <div className="relative flex items-center justify-between px-4 py-2.5 border-b border-stone-200 dark:border-[#2E3240] bg-stone-50/80 dark:bg-[#17191E]/80 backdrop-blur-sm shrink-0">
+        <div className={`relative flex items-center justify-between px-4 py-2.5 border-b border-stone-200 dark:border-[#2E3240] bg-stone-50/80 dark:bg-[#17191E]/80 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
             <button
@@ -614,6 +642,18 @@ function App() {
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
+            {/* Immersive mode toggle */}
+            <button
+              onClick={() => setIsImmersive(v => !v)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="沈浸閱讀模式（快捷鍵 F）"
+              aria-label="進入沈浸閱讀模式"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </button>
           </div>
           {/* G4: Scroll progress bar inside toolbar */}
           <div
@@ -645,6 +685,8 @@ function App() {
           onDismissResumeCTA={() => setShowResumeCTA(false)}
           showCompletionOverlay={showCompletionOverlay}
           onScrollProgress={setScrollProgress}
+          isImmersive={isImmersive}
+          onToggleImmersive={() => setIsImmersive(v => !v)}
         />
       </div>
     </div>

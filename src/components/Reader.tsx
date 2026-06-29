@@ -20,6 +20,9 @@ interface Props {
   showCompletionOverlay: boolean
   // Scroll progress callback (lifted to App)
   onScrollProgress: (v: number) => void
+  // Immersive mode
+  isImmersive: boolean
+  onToggleImmersive: () => void
 }
 
 export default function Reader({
@@ -27,15 +30,46 @@ export default function Reader({
   onMarkComplete, isCompleted,
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
   showCompletionOverlay, onScrollProgress,
+  isImmersive, onToggleImmersive,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const touchStartY = useRef<number>(0)
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
     onScrollProgress(0)
     scrollRef.current?.scrollTo(0, 0)
   }, [chapter])
+
+  // Scroll to top when entering immersive mode
+  useEffect(() => {
+    if (isImmersive) {
+      scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [isImmersive])
+
+  // Touch gesture: swipe up > 80px to exit immersive
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY
+    }
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!isImmersive) return
+      const deltaY = touchStartY.current - e.changedTouches[0].clientY
+      if (deltaY > 80) {
+        onToggleImmersive()
+      }
+    }
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [isImmersive, onToggleImmersive])
 
   // Track scroll progress — report to parent via callback
   useEffect(() => {
@@ -94,10 +128,33 @@ export default function Reader({
         </div>
       )}
 
+      {/* Immersive exit button */}
+      {isImmersive && (
+        <button
+          onClick={onToggleImmersive}
+          className="fixed top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center bg-stone-200/40 hover:bg-stone-200/80 dark:bg-stone-700/40 dark:hover:bg-stone-700/80 transition-colors text-stone-500 dark:text-stone-300"
+          title="退出沈浸模式（快捷鍵 F）"
+          aria-label="退出沈浸模式"
+        >
+          <svg width="12" height="12" viewBox="0 0 18 18" fill="none">
+            <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+      )}
+
       {/* Scroll progress bar moved to toolbar (App.tsx G4) */}
 
-      <div className="max-w-[680px] mx-auto px-10 pt-8 pb-32 sm:pb-24">
+      <div className={`mx-auto px-8 pt-16 pb-32 sm:pb-24 transition-all duration-300 ${isImmersive ? 'max-w-[720px] sm:px-16' : 'max-w-[680px] px-10 pt-8'}`}>
         <div ref={topRef} />
+
+        {/* Immersive watermark */}
+        {isImmersive && (
+          <div className="text-center mb-8 select-none pointer-events-none">
+            <span className="text-sm text-stone-400 dark:text-stone-500 opacity-10 tracking-widest">
+              {chapterTitle}
+            </span>
+          </div>
+        )}
 
         {/* Resume CTA */}
         {showResumeCTA && (
@@ -127,8 +184,8 @@ export default function Reader({
         })()}
 
         <div
-          className={`${fontSize} text-stone-500 dark:text-[#E4DDD0]`}
-          style={{ lineHeight: '2.1', letterSpacing: '0.02em' }}
+          className={`${isImmersive ? 'text-xl leading-9' : fontSize} text-stone-500 dark:text-[#E4DDD0]`}
+          style={{ letterSpacing: '0.02em', lineHeight: isImmersive ? undefined : '2.1' }}
         >
           {chapter.verses.map(v => (
             <p key={v.number} className="py-0.5 group">
@@ -144,7 +201,7 @@ export default function Reader({
         </div>
 
         {/* Chapter navigation + complete button */}
-        <div className="flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240]">
+        <div className={`flex justify-between items-center mt-16 pt-6 border-t border-stone-200 dark:border-[#2E3240] ${isImmersive ? 'hidden' : ''}`}>
           <button
             onClick={onPrevChapter}
             disabled={!hasPrev}
@@ -179,7 +236,7 @@ export default function Reader({
       </div>
 
       {/* Mobile bottom nav bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
+      <div className={`${isImmersive ? 'hidden' : 'sm:hidden'} fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]`}>
         <button
           onClick={onPrevChapter}
           disabled={!hasPrev}
