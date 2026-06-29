@@ -178,7 +178,7 @@ function ScriptureContent({
             setShowJasher(false)
           }}
           title={book.name}
-          className={`w-full text-left px-3 py-2.5 text-sm rounded-md transition-colors
+          className={`w-full text-left pl-6 pr-3 py-2.5 text-sm rounded-md transition-colors
             ${isActive
               ? 'bg-stone-200 dark:bg-[#2E3240] text-sage dark:text-sage-dark font-medium'
               : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
@@ -190,7 +190,7 @@ function ScriptureContent({
           </span>
         </button>
         {isExpanded && (
-          <div className="flex flex-wrap gap-1 px-3 py-1 pb-2">
+          <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
             {book.chapters.map(ch => {
               const completed = isCkjvCompleted(book, ch.number)
               const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
@@ -233,7 +233,7 @@ function ScriptureContent({
         {/* 目前位置 */}
         {currentChapterLabel && (
           <div className="px-3 py-2">
-            <p className="text-[11px] text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-1">目前</p>
+            <p className="text-[11px] font-semibold text-stone-300 dark:text-[#6B6460] uppercase tracking-widest mb-1">目前</p>
             <p className="text-sm font-medium text-stone-500 dark:text-[#E4DDD0]">{currentChapterLabel}</p>
           </div>
         )}
@@ -275,7 +275,7 @@ function ScriptureContent({
                 <span>{showJasher ? '▾' : '▸'}</span>次經 · 雅煞珥書
               </button>
               {showJasher && (
-                <div className="flex flex-wrap gap-1 px-3 pb-2 pt-1">
+                <div className="flex flex-wrap gap-1 pl-6 pr-3 pb-2 pt-1">
                   {jasher.chapters.map(ch => {
                     const completed = isJasherCompleted(ch.number)
                     const active = source === 'jasher' && activeChapter?.number === ch.number
