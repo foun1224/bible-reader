@@ -1,6 +1,7 @@
 # Current Design Review And Action Plan
 
 日期：2026-06-29
+Last reviewed commit: 2f4a447
 依據：Sean 要求以心理學與 UI/UX 原則重新檢視目前版本，目標是少干擾、深度反思經文。
 
 ## 1. Current State
