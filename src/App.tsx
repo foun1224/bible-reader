@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import StatsDashboard from './components/StatsDashboard'
 import AchievementModal from './components/AchievementModal'
+import NotesPanel from './components/NotesPanel'
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -126,6 +127,9 @@ function App() {
     try { return JSON.parse(localStorage.getItem(HIGHLIGHTS_KEY) || '[]') }
     catch { return [] }
   })
+
+  // Notes Panel
+  const [notesPanelOpen, setNotesPanelOpen] = useState(false)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -318,6 +322,23 @@ function App() {
     setSidebarOpen(false)
   }, [saveBookmark])
 
+  const handleJumpTo = useCallback((
+    sourceId: 'ckjv' | 'jasher',
+    bookId: number | undefined,
+    chapter: number
+  ) => {
+    if (sourceId === 'jasher' && jasher) {
+      const ch = jasher.chapters.find(c => c.number === chapter)
+      if (ch) selectJasherChapter(ch)
+    } else if (sourceId === 'ckjv' && ckjv && bookId != null) {
+      const book = ckjv.books.find(b => b.id === bookId)
+      if (book) {
+        const ch = book.chapters.find(c => c.number === chapter)
+        if (ch) selectCkjvChapter(book, ch)
+      }
+    }
+  }, [ckjv, jasher, selectCkjvChapter, selectJasherChapter])
+
   // --- Chapter navigation logic ---
   const handlePrevChapter = useCallback(() => {
     if (source === 'jasher' && jasher && activeChapter) {
@@ -505,6 +526,23 @@ function App() {
         onClearPlan={handleClearPlan}
       />
 
+      {/* Notes Panel backdrop */}
+      {notesPanelOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40"
+          onClick={() => setNotesPanelOpen(false)}
+        />
+      )}
+
+      {/* Notes Panel */}
+      <NotesPanel
+        isOpen={notesPanelOpen}
+        onClose={() => setNotesPanelOpen(false)}
+        highlights={highlights}
+        ckjv={ckjv}
+        onJumpTo={handleJumpTo}
+      />
+
       {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
       <div className={`transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
       <Sidebar
@@ -666,6 +704,15 @@ function App() {
             >
               {dark ? '☀ 淺色' : '☽ 深色'}
             </button>
+            {/* Notes Panel toggle */}
+            <button
+              onClick={() => setNotesPanelOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              title="筆記回顧"
+              aria-label="開啟筆記回顧"
+            >
+              📝
+            </button>
             {/* Immersive mode toggle */}
             <button
               onClick={() => setIsImmersive(v => !v)}
@@ -700,6 +747,11 @@ function App() {
               : source === 'jasher' && activeChapter
               ? `雅煞珥·第${activeChapter.number}章`
               : ''
+          }
+          bookName={
+            source === 'ckjv' && activeBook
+              ? activeBook.name
+              : '雅煞珥書'
           }
           onMarkComplete={handleMarkComplete}
           isCompleted={isCurrentCompleted}

@@ -32,6 +32,7 @@ interface Props {
   hasPrev: boolean
   hasNext: boolean
   chapterTitle: string
+  bookName: string
   onMarkComplete: () => void
   isCompleted: boolean
   // Resume CTA
@@ -60,7 +61,7 @@ interface PickerState {
 }
 
 export default function Reader({
-  chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle,
+  chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle, bookName,
   onMarkComplete, isCompleted,
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
   showCompletionOverlay, onScrollProgress,
@@ -76,6 +77,7 @@ export default function Reader({
   const [picker, setPicker] = useState<PickerState | null>(null)
   const [pickerColor, setPickerColor] = useState<HighlightColor>('yellow')
   const [pickerNote, setPickerNote] = useState('')
+  const [copied, setCopied] = useState(false)
 
   // Reset scroll and progress when chapter changes
   useEffect(() => {
@@ -167,6 +169,31 @@ export default function Reader({
     if (!picker || !chapter) return
     onRemoveHighlight(currentSource, currentBookId, chapter.number, picker.verse)
     closePicker()
+  }
+
+  const getVerseShareText = () => {
+    if (!picker || !chapter) return { title: '', text: '' }
+    const label = currentSource === 'ckjv' ? '（CKJV）' : '（雅煞珥書）'
+    const text = `「${picker.verseText}」\n${bookName} 第 ${chapter.number}章第 ${picker.verse}節${label}`
+    const title = `${bookName} ${chapter.number}:${picker.verse}`
+    return { title, text }
+  }
+
+  const handleCopy = () => {
+    const { text } = getVerseShareText()
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1000)
+    })
+  }
+
+  const handleShare = () => {
+    const { title, text } = getVerseShareText()
+    if (navigator.share) {
+      navigator.share({ title, text })
+    } else {
+      handleCopy()
+    }
   }
 
   if (!chapter) {
@@ -294,11 +321,23 @@ export default function Reader({
               className="w-full rounded-lg border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] text-sm px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-stone-300 dark:focus:ring-[#4F7358] placeholder-stone-300 dark:placeholder-[#6B6460]"
             />
 
-            {/* Save button */}
-            <div className="flex justify-end mt-3">
+            {/* Copy / Share / Save buttons */}
+            <div className="flex items-center gap-2 mt-3">
+              <button
+                onClick={handleCopy}
+                className="flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors"
+              >
+                {copied ? '✓ 已複製' : '複製經文'}
+              </button>
+              <button
+                onClick={handleShare}
+                className={`flex-1 px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#2E3240] transition-colors ${typeof navigator !== 'undefined' && !navigator.share ? 'hidden' : ''}`}
+              >
+                分享經文
+              </button>
               <button
                 onClick={handleSave}
-                className="px-5 py-2 text-sm rounded-lg bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
+                className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#4F7358] dark:bg-[#7AAF87] text-white dark:text-[#17191E] font-medium hover:opacity-90 transition-opacity"
               >
                 儲存
               </button>
