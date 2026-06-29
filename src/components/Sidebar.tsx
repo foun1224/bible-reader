@@ -244,7 +244,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setOldExpanded(!oldExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{oldExpanded ? '▾' : '▸'}</span>舊約
               </button>
@@ -255,7 +255,7 @@ function ScriptureContent({
             <>
               <button
                 onClick={() => setNewExpanded(!newExpanded)}
-                className="w-full flex items-center gap-1.5 px-3 py-2.5 mt-1 text-[11px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                className="w-full flex items-center gap-1.5 px-3 py-2.5 mt-1 text-[13px] font-semibold text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
               >
                 <span>{newExpanded ? '▾' : '▸'}</span>新約
               </button>
@@ -266,7 +266,7 @@ function ScriptureContent({
             <div className="mt-1">
               <button
                 onClick={() => setShowJasher(!showJasher)}
-                className={`w-full flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold uppercase tracking-widest transition-colors
+                className={`w-full flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold uppercase tracking-widest transition-colors
                   ${source === 'jasher'
                     ? 'text-[#4F7358] dark:text-[#7AAF87]'
                     : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
