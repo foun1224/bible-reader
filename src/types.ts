@@ -48,3 +48,16 @@ export interface StreakData {
   currentStreak: number
   longestStreak: number
 }
+
+// 閱讀計劃
+export interface ReadingPlan {
+  planId: 'yearly' | 'nt90' | 'custom'
+  startDate: string  // 'YYYY-MM-DD'
+  customChaptersPerDay?: number
+}
+
+// 成就
+export interface Achievement {
+  id: string
+  unlockedAt: string  // ISO 8601
+}

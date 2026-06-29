@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData } from './types'
+import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
+import StatsDashboard from './components/StatsDashboard'
+import AchievementModal from './components/AchievementModal'
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
 const COMPLETIONS_KEY = 'bible-reader-completions'
 const STREAK_KEY = 'bible-reader-streak'
+const PLAN_KEY = 'bible-reader-plan'
+const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -90,6 +94,23 @@ function App() {
   // Resume CTA: show on first load if bookmark exists
   const [showResumeCTA, setShowResumeCTA] = useState(false)
 
+  // Stats dashboard
+  const [statsDashboardOpen, setStatsDashboardOpen] = useState(false)
+
+  // Reading plan
+  const [readingPlan, setReadingPlan] = useState<ReadingPlan | null>(() => {
+    try { return JSON.parse(localStorage.getItem(PLAN_KEY) || 'null') } catch { return null }
+  })
+
+  // Achievements
+  const [achievements, setAchievements] = useState<Achievement[]>(() => {
+    try { return JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '[]') } catch { return [] }
+  })
+  const [pendingAchievement, setPendingAchievement] = useState<string | null>(null)
+
+  // Completion overlay
+  const [showCompletionOverlay, setShowCompletionOverlay] = useState(false)
+
   useEffect(() => {
     const base = import.meta.env.BASE_URL
     Promise.all([
@@ -172,6 +193,68 @@ function App() {
     })
   }, [])
 
+  // Achievement check effect — runs whenever completions or streak changes
+  useEffect(() => {
+    if (completions.length === 0) return
+
+    const unlockedIds = new Set(achievements.map(a => a.id))
+    const newlyUnlocked: Achievement[] = []
+    const now = new Date().toISOString()
+
+    const check = (id: string, condition: boolean) => {
+      if (condition && !unlockedIds.has(id)) {
+        newlyUnlocked.push({ id, unlockedAt: now })
+        unlockedIds.add(id)
+      }
+    }
+
+    const ckjvCompletions = completions.filter(r => r.sourceId === 'ckjv')
+
+    check('first_chapter', completions.length >= 1)
+
+    const firstBookDone = ckjv?.books.some(book => {
+      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
+      return bookComps.length >= book.chapters.length
+    }) ?? false
+    check('first_book', firstBookDone)
+
+    check('streak_7', streak.currentStreak >= 7)
+    check('streak_30', streak.currentStreak >= 30)
+    check('century', completions.length >= 100)
+
+    const ntBooks = ckjv?.books.filter(b => b.testament === '新約') ?? []
+    const ntDone = ntBooks.length > 0 && ntBooks.every(book => {
+      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
+      return bookComps.length >= book.chapters.length
+    })
+    check('nt_complete', ntDone)
+
+    const otBooks = ckjv?.books.filter(b => b.testament === '舊約') ?? []
+    const otDone = otBooks.length > 0 && otBooks.every(book => {
+      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
+      return bookComps.length >= book.chapters.length
+    })
+    check('ot_complete', otDone)
+
+    if (newlyUnlocked.length > 0) {
+      const next = [...achievements, ...newlyUnlocked]
+      setAchievements(next)
+      localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(next))
+      setPendingAchievement(newlyUnlocked[0].id)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completions, streak.currentStreak, ckjv])
+
+  const handleSetPlan = useCallback((plan: ReadingPlan) => {
+    setReadingPlan(plan)
+    localStorage.setItem(PLAN_KEY, JSON.stringify(plan))
+  }, [])
+
+  const handleClearPlan = useCallback(() => {
+    setReadingPlan(null)
+    localStorage.removeItem(PLAN_KEY)
+  }, [])
+
   const selectCkjvChapter = useCallback((book: Book, chapter: Chapter) => {
     setSource('ckjv')
     setActiveBook(book)
@@ -231,11 +314,23 @@ function App() {
     }
   }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter, recordCompletion])
 
+  // Check if current chapter is already completed
+  const isCurrentCompleted = (() => {
+    if (!activeChapter) return false
+    return completions.some(
+      r => r.sourceId === source &&
+        r.chapter === activeChapter.number &&
+        (source === 'jasher' ? true : r.bookId === (activeBook?.id as number | undefined))
+    )
+  })()
+
   const handleMarkComplete = useCallback(() => {
-    if (activeChapter) {
+    if (activeChapter && !isCurrentCompleted) {
       recordCompletion(source, activeChapter, activeBook)
+      setShowCompletionOverlay(true)
+      setTimeout(() => setShowCompletionOverlay(false), 2000)
     }
-  }, [source, activeChapter, activeBook, recordCompletion])
+  }, [source, activeChapter, activeBook, recordCompletion, isCurrentCompleted])
 
   const hasPrev = (() => {
     if (!activeChapter) return false
@@ -265,16 +360,6 @@ function App() {
       return bIdx < ckjv.books.length - 1
     }
     return false
-  })()
-
-  // Check if current chapter is already completed
-  const isCurrentCompleted = (() => {
-    if (!activeChapter) return false
-    return completions.some(
-      r => r.sourceId === source &&
-        r.chapter === activeChapter.number &&
-        (source === 'jasher' ? true : r.bookId === (activeBook?.id as number | undefined))
-    )
   })()
 
   // Format a completion record for display
@@ -322,6 +407,27 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-parchment-50 dark:bg-[#1A1410]">
+      {/* Achievement Modal */}
+      {pendingAchievement && (
+        <AchievementModal
+          achievementId={pendingAchievement}
+          onClose={() => setPendingAchievement(null)}
+        />
+      )}
+
+      {/* Stats Dashboard */}
+      <StatsDashboard
+        isOpen={statsDashboardOpen}
+        onClose={() => setStatsDashboardOpen(false)}
+        streak={streak}
+        completions={completions}
+        ckjv={ckjv}
+        achievements={achievements}
+        readingPlan={readingPlan}
+        onSetPlan={handleSetPlan}
+        onClearPlan={handleClearPlan}
+      />
+
       {/* Sidebar — desktop: always visible; mobile: overlay */}
       <Sidebar
         ckjv={ckjv}
@@ -389,7 +495,7 @@ function App() {
 
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Toolbar — light, non-intrusive */}
+        {/* Toolbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-parchment-200 dark:border-[#3A3028] bg-parchment-50/80 dark:bg-[#1A1410]/80 backdrop-blur-sm shrink-0">
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only */}
@@ -405,7 +511,7 @@ function App() {
               </svg>
             </button>
 
-            {/* Streak counter — 功能 A */}
+            {/* Streak counter */}
             {showStreak && (
               <span
                 className={`text-sm font-medium select-none ${
@@ -428,6 +534,14 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Stats Dashboard button */}
+            <button
+              onClick={() => setStatsDashboardOpen(o => !o)}
+              className="px-2.5 py-1 text-xs rounded border border-parchment-200 dark:border-[#3A3028] text-parchment-400 dark:text-[#A8906E] hover:bg-parchment-100 dark:hover:bg-[#2E261E] transition-colors"
+              title="閱讀統計"
+            >
+              📊
+            </button>
             {/* History button */}
             <button
               onClick={() => setHistoryOpen(o => !o)}
@@ -478,6 +592,7 @@ function App() {
           resumeBookName={resumeBookName}
           resumeChapter={resumeChapter}
           onDismissResumeCTA={() => setShowResumeCTA(false)}
+          showCompletionOverlay={showCompletionOverlay}
         />
       </div>
     </div>

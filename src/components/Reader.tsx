@@ -11,52 +11,42 @@ interface Props {
   chapterTitle: string
   onMarkComplete: () => void
   isCompleted: boolean
-  // Resume CTA (功能 C)
+  // Resume CTA
   showResumeCTA: boolean
   resumeBookName: string
   resumeChapter: number
   onDismissResumeCTA: () => void
+  // Completion overlay
+  showCompletionOverlay: boolean
 }
 
 export default function Reader({
   chapter, fontSize, onPrevChapter, onNextChapter, hasPrev, hasNext, chapterTitle,
   onMarkComplete, isCompleted,
   showResumeCTA, resumeBookName, resumeChapter, onDismissResumeCTA,
+  showCompletionOverlay,
 }: Props) {
   const topRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
-  // 功能 D：完成 Toast
-  const [showToast, setShowToast] = useState(false)
-  const [toastFading, setToastFading] = useState(false)
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
+  // Reset scroll and progress when chapter changes
   useEffect(() => {
-    topRef.current?.parentElement?.scrollTo(0, 0)
+    setScrollProgress(0)
+    scrollRef.current?.scrollTo(0, 0)
   }, [chapter])
 
-  const handleMarkComplete = () => {
-    onMarkComplete()
-    if (!isCompleted) {
-      // Trigger toast
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-      setShowToast(true)
-      setToastFading(false)
-      toastTimerRef.current = setTimeout(() => {
-        setToastFading(true)
-        toastTimerRef.current = setTimeout(() => {
-          setShowToast(false)
-          setToastFading(false)
-        }, 800)
-      }, 1000)
-    }
-  }
-
-  // Cleanup timer on unmount
+  // Track scroll progress
   useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    const el = scrollRef.current
+    if (!el) return
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el
+      const max = scrollHeight - clientHeight
+      setScrollProgress(max > 0 ? scrollTop / max : 0)
     }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
   const handleResumeCTA = () => {
@@ -72,9 +62,13 @@ export default function Reader({
     )
   }
 
+  // Estimated reading time
+  const totalChars = chapter.verses.reduce((sum, v) => sum + v.text.length, 0)
+  const readingMins = Math.ceil(totalChars / 300)
+
   const completeBtn = (
     <button
-      onClick={handleMarkComplete}
+      onClick={onMarkComplete}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors border
         ${isCompleted
           ? 'border-green-400/60 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 cursor-default'
@@ -90,22 +84,25 @@ export default function Reader({
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
-      {/* 功能 D：完成 Toast */}
-      {showToast && (
-        <div
-          className={`fixed top-14 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2
-            bg-[#8B6418] dark:bg-[#C9A84C] text-white rounded-lg px-4 py-2 shadow-lg
-            transition-opacity duration-700 ${toastFading ? 'opacity-0' : 'opacity-100'}`}
-        >
-          <span className="animate-bounce inline-block">✓</span>
-          <span className="text-sm font-medium">第 {chapter.number} 章完成</span>
+      {/* Completion full-screen overlay */}
+      {showCompletionOverlay && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex flex-col items-center justify-center pointer-events-none">
+          <div className="text-8xl mb-4 animate-bounce">✓</div>
+          <div className="text-2xl font-bold text-white">{chapterTitle}</div>
+          <div className="text-parchment-200 mt-2 text-sm">章節完成</div>
         </div>
       )}
+
+      {/* Scroll progress bar */}
+      <div
+        className="fixed top-[44px] left-0 z-30 h-0.5 bg-[#8B6418] dark:bg-[#C9A84C] transition-none pointer-events-none"
+        style={{ width: `${scrollProgress * 100}%` }}
+      />
 
       <div className="max-w-[680px] mx-auto px-10 pt-8 pb-32 sm:pb-24">
         <div ref={topRef} />
 
-        {/* 功能 C：Resume CTA */}
+        {/* Resume CTA */}
         {showResumeCTA && (
           <div className="mb-6 flex items-center justify-between rounded-lg border border-[#8B6418]/30 dark:border-[#C9A84C]/30 bg-[#8B6418]/10 dark:bg-[#C9A84C]/10 px-4 py-3">
             <div>
@@ -122,6 +119,15 @@ export default function Reader({
             </button>
           </div>
         )}
+
+        {/* Estimated reading time */}
+        {(() => {
+          return (
+            <div className="text-xs text-parchment-300 dark:text-[#5A4838] mb-6 text-right">
+              約 {readingMins} 分鐘
+            </div>
+          )
+        })()}
 
         <div
           className={`${fontSize} text-parchment-500 dark:text-[#EDE0C4]`}
