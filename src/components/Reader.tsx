@@ -538,7 +538,9 @@ export default function Reader({
                   aria-label={`標記第 ${v.number} 節`}
                   tabIndex={-1}
                 >
-                  🔖
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 2.5h8v11L8 10.8l-4 2.7v-11z" />
+                  </svg>
                 </button>
                 <span className={hl ? `rounded ${COLOR_BG[hl.color]}` : ''}>
                   {v.text}
