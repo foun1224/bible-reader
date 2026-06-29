@@ -108,14 +108,11 @@ export default function Sidebar({
                     ${active
                       ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                       : completed
-                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                      ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-stone-200/60 dark:ring-stone-600/30'
                       : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
                     }`}
                 >
                   {ch.number}
-                  {completed && !active && (
-                    <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
-                  )}
                 </button>
               )
             })}
@@ -321,14 +318,11 @@ function SidebarContent({
                       ${active
                         ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
                         : completed
-                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-stone-200/60 dark:ring-stone-600/30'
                         : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
                       }`}
                   >
                     {ch.number}
-                    {completed && !active && (
-                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
-                    )}
                   </button>
                 )
               })}

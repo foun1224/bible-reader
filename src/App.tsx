@@ -47,17 +47,6 @@ function saveStreak(data: StreakData) {
   localStorage.setItem(STREAK_KEY, JSON.stringify(data))
 }
 
-function getMidnightCountdown(): string {
-  const now = new Date()
-  const midnight = new Date(now)
-  midnight.setDate(midnight.getDate() + 1)
-  midnight.setHours(0, 0, 0, 0)
-  const diff = Math.max(0, midnight.getTime() - now.getTime())
-  const h = Math.floor(diff / 3600000)
-  const m = Math.floor((diff % 3600000) / 60000)
-  return `${h}h${m}m`
-}
-
 /** Returns 'YYYY-MM-DD' in local time (sv-SE locale mimics ISO date format) */
 function today(): string {
   return new Date().toLocaleDateString('sv-SE')
@@ -126,20 +115,13 @@ function App() {
     try { return JSON.parse(localStorage.getItem(PLAN_KEY) || 'null') } catch { return null }
   })
 
-  // Achievements
+  // Achievements — 保留資料但不顯示彈窗
   const [achievements, setAchievements] = useState<Achievement[]>(() => {
     try { return JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '[]') } catch { return [] }
   })
-  const [achievementQueue, setAchievementQueue] = useState<string[]>([])
 
-  // CompletionBanner (Tiny Habits)
+  // CompletionBanner
   const [showBanner, setShowBanner] = useState(false)
-  // Loss Aversion countdown
-  const [countdown, setCountdown] = useState(() => getMidnightCountdown())
-  useEffect(() => {
-    const t = setInterval(() => setCountdown(getMidnightCountdown()), 60000)
-    return () => clearInterval(t)
-  }, [])
 
   // Book complete toast
   const [bookCompleteMessage, setBookCompleteMessage] = useState<string | null>(null)
@@ -266,58 +248,6 @@ function App() {
       return next
     })
   }, [ckjv])
-
-  // Achievement check effect — runs whenever completions or streak changes
-  useEffect(() => {
-    if (completions.length === 0) return
-
-    const unlockedIds = new Set(achievements.map(a => a.id))
-    const newlyUnlocked: Achievement[] = []
-    const now = new Date().toISOString()
-
-    const check = (id: string, condition: boolean) => {
-      if (condition && !unlockedIds.has(id)) {
-        newlyUnlocked.push({ id, unlockedAt: now })
-        unlockedIds.add(id)
-      }
-    }
-
-    const ckjvCompletions = completions.filter(r => r.sourceId === 'ckjv')
-
-    check('first_chapter', completions.length >= 1)
-
-    const firstBookDone = ckjv?.books.some(book => {
-      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
-      return bookComps.length >= book.chapters.length
-    }) ?? false
-    check('first_book', firstBookDone)
-
-    check('streak_7', streak.currentStreak >= 7)
-    check('streak_30', streak.currentStreak >= 30)
-    check('century', completions.length >= 100)
-
-    const ntBooks = ckjv?.books.filter(b => b.testament === '新約') ?? []
-    const ntDone = ntBooks.length > 0 && ntBooks.every(book => {
-      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
-      return bookComps.length >= book.chapters.length
-    })
-    check('nt_complete', ntDone)
-
-    const otBooks = ckjv?.books.filter(b => b.testament === '舊約') ?? []
-    const otDone = otBooks.length > 0 && otBooks.every(book => {
-      const bookComps = ckjvCompletions.filter(r => r.bookId === (book.id as number))
-      return bookComps.length >= book.chapters.length
-    })
-    check('ot_complete', otDone)
-
-    if (newlyUnlocked.length > 0) {
-      const next = [...achievements, ...newlyUnlocked]
-      setAchievements(next)
-      localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(next))
-      setAchievementQueue(q => [...q, ...newlyUnlocked.map(a => a.id)])
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [completions, streak.currentStreak, ckjv])
 
   const handleSetPlan = useCallback((plan: ReadingPlan) => {
     setReadingPlan(plan)
@@ -569,14 +499,6 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50 dark:bg-[#17191E]">
-      {/* Achievement Modal — queue-based */}
-      {achievementQueue.length > 0 && (
-        <AchievementModal
-          achievementId={achievementQueue[0]}
-          onClose={() => setAchievementQueue(q => q.slice(1))}
-        />
-      )}
-
       {/* Book complete toast */}
       {bookCompleteMessage && (
         <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">

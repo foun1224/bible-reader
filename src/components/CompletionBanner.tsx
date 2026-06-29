@@ -45,7 +45,7 @@ export default function CompletionBanner({ chapterLabel, bookName, hasNext, onCo
                 <p className="text-sm text-stone-400 dark:text-[#A09890]">恭喜完成整卷書卷</p>
               </>
             ) : (
-              <p className="text-xl font-semibold text-sage dark:text-sage-dark">章節完成！</p>
+              <p className="text-xl font-semibold text-sage dark:text-sage-dark">已記錄這次閱讀</p>
             )}
           </div>
         )}
@@ -54,7 +54,7 @@ export default function CompletionBanner({ chapterLabel, bookName, hasNext, onCo
             <div className="text-4xl mb-4">{bookName ? '🎉' : '✅'}</div>
             <p className="text-sm text-stone-300 dark:text-[#A09890] mb-1">{chapterLabel}</p>
             <p className="text-base font-semibold text-stone-500 dark:text-[#E4DDD0] mb-4">
-              {bookName ? `${bookName} 讀完了！` : '章節完成！'}
+              {bookName ? `${bookName} 讀完了` : '已記錄這次閱讀'}
             </p>
             <div className="mb-5 px-3 py-3 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border-l-2 border-amber-300 dark:border-amber-600 text-left">
               <p className="text-sm text-stone-500 dark:text-[#E4DDD0] leading-relaxed italic">「{closingVerse.text}」</p>
