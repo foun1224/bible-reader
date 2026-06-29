@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
-import StatsDashboard from './components/StatsDashboard'
+import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import ReflectionPanel from './components/ReflectionPanel'
 import SearchModal from './components/SearchModal'
@@ -519,11 +519,10 @@ function App() {
         </div>
       )}
 
-      {/* Stats Dashboard */}
-      <StatsDashboard
+      {/* Reading Review */}
+      <ReadingReview
         isOpen={statsDashboardOpen}
         onClose={() => setStatsDashboardOpen(false)}
-        streak={streak}
         completions={completions}
         ckjv={ckjv}
         readingPlan={readingPlan}

@@ -13,7 +13,7 @@ const menuItems = [
   { key: 'reflection', label: '反思面板',        emoji: '✍️' },
   { key: 'notes',      label: '我的筆記',        emoji: '📝' },
   { key: 'history',   label: '已讀記錄',        emoji: '📖' },
-  { key: 'stats',     label: '閱讀統計 & 計劃', emoji: '📊' },
+  { key: 'stats',     label: '閱讀回顧 & 計劃',  emoji: '📖' },
 ] as const
 
 type MenuKey = typeof menuItems[number]['key']
