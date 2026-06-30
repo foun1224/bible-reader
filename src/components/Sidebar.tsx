@@ -54,53 +54,30 @@ export default function Sidebar({
   const isJasherCompleted = (chNum: number) =>
     completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
 
-  const NAV_ITEMS = [
-    {
-      id: 'scripture' as const,
-      label: '經文',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
-      ),
-    },
-    {
-      id: 'revelation' as const,
-      label: '領受',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 20h9"/>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-        </svg>
-      ),
-    },
-  ]
-
-  const iconNav = (
-    <div className="shrink-0 w-11 border-r border-stone-200 dark:border-[#2E3240] flex flex-col items-center pt-2 pb-2 gap-1">
-      {NAV_ITEMS.map(({ id, label, icon }) => (
-        <button
-          key={id}
-          title={label}
-          onClick={() => setSidebarTab(id)}
-          className={`w-9 h-9 flex flex-col items-center justify-center gap-0.5 rounded-md transition-colors
-            ${sidebarTab === id
-              ? 'bg-stone-200 dark:bg-[#2E3240] text-[#4F7358] dark:text-[#7AAF87]'
-              : 'text-stone-300 dark:text-[#6B6460] hover:bg-stone-200 dark:hover:bg-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890]'
-            }`}
-        >
-          {icon}
-          <span className="text-[9px] font-semibold leading-none tracking-wide">{label}</span>
-        </button>
-      ))}
+  const segmentedControl = (
+    <div className="shrink-0 px-3 py-2.5 border-b border-stone-200 dark:border-[#2E3240]">
+      <div className="flex rounded-lg bg-stone-200 dark:bg-[#17191E] p-0.5">
+        {(['scripture', 'revelation'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setSidebarTab(tab)}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all duration-150
+              ${sidebarTab === tab
+                ? 'bg-stone-50 dark:bg-[#2E3240] text-[#4F7358] dark:text-[#7AAF87] shadow-sm'
+                : 'text-stone-400 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890]'
+              }`}
+          >
+            {tab === 'scripture' ? '經文' : '領受'}
+          </button>
+        ))}
+      </div>
     </div>
   )
 
   const sidebarContent = (
-    <div className="flex-1 min-h-0 overflow-hidden flex flex-row">
-      {iconNav}
-      <div className="flex-1 min-w-0 overflow-hidden">
+    <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+      {segmentedControl}
+      <div className="flex-1 min-h-0 overflow-hidden">
         {sidebarTab === 'scripture' && (
           <ScriptureContent
             ckjv={ckjv}

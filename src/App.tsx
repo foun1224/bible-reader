@@ -646,7 +646,7 @@ function App() {
                       : 'text-stone-400 dark:text-[#A09890] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
                   }`}
                 >
-                  {view === 'scripture' ? '經文' : '領受'}
+                  {view === 'scripture' ? '經文' : '靈修'}
                 </button>
               ))}
             </div>
