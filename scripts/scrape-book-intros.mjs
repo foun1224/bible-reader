@@ -106,7 +106,23 @@ function fetchBook(engs) {
   })
 }
 
-function extractIntro(html) {
+function normalizeIntroText(bookName, intro) {
+  return intro
+    .replace(new RegExp(`^${bookName}(研經資料|查經資料)\\s*`), '')
+    .replace(/\s*經文：[\s\S]*$/, '')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/\s+(?=(零、|壹、|貳、|參、|肆、|伍、|陸、|柒、|捌、|玖、|拾、))/g, '\n\n')
+    .replace(/\s+(?=([一二三四五六七八九十]+、))/g, '\n')
+    .replace(/\s+(?=（[一二三四五六七八九十]+）)/g, '\n')
+    .replace(/\s+(?=\d+\.)/g, '\n')
+    .replace(/\s+(?=\(\d+\))/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+function extractIntro(bookName, html) {
   const preMatch = html.match(/<pre>([\s\S]*?)<\/pre>/)
   if (!preMatch) return null
   let text = preMatch[1]
@@ -138,13 +154,13 @@ function extractIntro(html) {
     .replace(/\n{4,}/g, '\n\n\n')
     .trim()
 
-  return text || null
+  return normalizeIntroText(bookName, text) || null
 }
 
 async function scrapeBook(name, engs) {
   try {
     const html = await fetchBook(engs)
-    const intro = extractIntro(html)
+    const intro = extractIntro(name, html)
     return intro
   } catch (e) {
     return null
