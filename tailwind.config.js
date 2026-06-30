@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"TASA Orbiter"', '"Noto Sans TC"', 'sans-serif'],
+        sans: ['"TASA Orbiter"', '"Noto Serif TC"', 'serif'],
       },
       colors: {
         stone: {

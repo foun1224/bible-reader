@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: 'TASA Orbiter', 'Noto Sans TC', sans-serif;
+  font-family: 'TASA Orbiter', 'Noto Serif TC', serif;
   background-color: #F5F2EC;
   color: #2A2725;
 }
