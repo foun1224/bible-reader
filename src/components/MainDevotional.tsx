@@ -186,7 +186,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
 
             {day.relatedVerse && (
               <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4">
-                <p className="text-sm italic leading-7 text-stone-400 dark:text-[#6B6460]">
+                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
                   {day.relatedVerse}
                 </p>
               </div>
