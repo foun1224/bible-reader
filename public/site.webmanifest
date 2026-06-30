@@ -1,0 +1,25 @@
+{
+  "name": "你的人生",
+  "short_name": "你的人生",
+  "description": "聖經閱讀 app — CKJV",
+  "start_url": "/bible-reader/",
+  "scope": "/bible-reader/",
+  "display": "standalone",
+  "background_color": "#17191E",
+  "theme_color": "#4F7358",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/bible-reader/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/bible-reader/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
