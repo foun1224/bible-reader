@@ -90,7 +90,7 @@ export default function SearchModal({ isOpen, onClose, ckjv, onJumpTo }: Props) 
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="搜尋經文…"
-            className="flex-1 text-sm bg-transparent text-stone-600 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#6B6460] outline-none font-serif"
+            className="flex-1 text-sm bg-transparent text-stone-600 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#6B6460] outline-none"
           />
           {query && (
             <button onClick={() => setQuery('')} className="text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890] text-lg leading-none">
@@ -131,7 +131,7 @@ export default function SearchModal({ isOpen, onClose, ckjv, onJumpTo }: Props) 
                       <span className="text-[10px] font-medium text-sage dark:text-sage-dark mr-2 shrink-0">
                         {h.bookName} {h.chapter}:{h.verse}
                       </span>
-                      <span className="text-sm text-stone-500 dark:text-[#E4DDD0] leading-snug font-serif">
+                      <span className="text-sm text-stone-500 dark:text-[#E4DDD0] leading-snug">
                         {highlight(h.text, query.trim())}
                       </span>
                     </button>
