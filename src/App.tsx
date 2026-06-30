@@ -634,8 +634,8 @@ function App() {
             <span className="text-[10px] text-stone-300 dark:text-[#6B6460]" style={{ fontFamily: 'cursive', fontStyle: 'italic' }}>Your Life</span>
           </div>
           <div className="flex items-center gap-3">
-            {/* Hamburger — mobile only, scripture mode only */}
-            {mainView === 'scripture' && (
+            {/* Hamburger — mobile only, scripture/book-background mode */}
+            {(mainView === 'scripture' || mainView === 'book-background') && (
               <button
                 onClick={() => setSidebarOpen(o => !o)}
                 className="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
