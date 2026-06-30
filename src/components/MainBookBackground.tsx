@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react'
+
+type BookIntros = Record<string, string>
+
 const BOOK_ENGS: Record<string, string> = {
   '創世記': 'Gen',
   '出埃及記': 'Ex',
@@ -78,7 +82,22 @@ export default function MainBookBackground({ bookName, onBack }: {
   bookName: string
   onBack: () => void
 }) {
+  const [intros, setIntros] = useState<BookIntros | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
   const sourceUrl = bookBackgroundUrl(bookName)
+
+  useEffect(() => {
+    if (intros) return
+    setLoading(true)
+    setError(false)
+    fetch(import.meta.env.BASE_URL + 'book-intros.json')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((data: BookIntros) => { setIntros(data); setLoading(false) })
+      .catch(() => { setError(true); setLoading(false) })
+  }, [intros])
+
+  const intro = intros?.[bookName]
 
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
@@ -97,23 +116,32 @@ export default function MainBookBackground({ bookName, onBack }: {
           </div>
         </div>
 
-        <section className="rounded-lg border border-stone-200/80 dark:border-[#2E3240] bg-stone-100/60 dark:bg-[#22242C]/50 px-5 py-5">
-          <p className="text-sm leading-7 text-stone-600 dark:text-[#D4CEC4]">
-            書卷背景由信望愛聖經資源中心提供。為尊重原始內容授權，這裡不複製全文；請前往原站閱讀完整介紹、背景資料與參考書目。
-          </p>
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center justify-center rounded-md border border-[#4F7358] px-4 py-2 text-sm font-medium text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 dark:border-[#7AAF87] dark:text-[#7AAF87] dark:hover:bg-[#7AAF87]/10"
-          >
-            前往 FHL 查看完整書卷背景 ↗
-          </a>
-        </section>
+        {loading && (
+          <div className="flex h-40 items-center justify-center text-sm text-stone-300 dark:text-[#6B6460]">
+            <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-stone-200 border-t-[#4F7358]" />
+            載入書卷背景…
+          </div>
+        )}
+
+        {error && (
+          <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">無法載入書卷背景</p>
+        )}
+
+        {intros && !intro && !loading && (
+          <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">此書卷暫無背景資料</p>
+        )}
+
+        {intro && (
+          <section className="border-t border-stone-200/70 dark:border-[#2E3240] pt-6">
+            <pre className="whitespace-pre-wrap font-[inherit] text-sm leading-8 text-stone-600 dark:text-[#D4CEC4]">
+              {intro}
+            </pre>
+          </section>
+        )}
 
         <div className="mt-8 pt-4 border-t border-stone-200/70 dark:border-[#2E3240]">
           <a
-            href="https://a2z.fhl.net/bible/"
+            href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[11px] text-stone-300 transition-colors hover:text-stone-400 dark:text-[#6B6460] dark:hover:text-[#A09890]"
