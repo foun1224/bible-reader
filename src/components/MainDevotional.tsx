@@ -184,6 +184,14 @@ export default function MainDevotional({ ckjv, onNavigate }: {
               </div>
             </header>
 
+            {day.relatedVerse && (
+              <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4">
+                <p className="text-sm italic leading-7 text-stone-400 dark:text-[#6B6460]">
+                  {day.relatedVerse}
+                </p>
+              </div>
+            )}
+
             {day.meditation.length > 0 && (
               <Section title="觀察默想">
                 <ol className="space-y-3">
@@ -223,12 +231,6 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                 <p className="rounded-md bg-[#4F7358]/10 px-4 py-5 text-base italic leading-8 text-stone-600 dark:bg-[#7AAF87]/8 dark:text-[#D4CEC4]">
                   {day.prayer}
                 </p>
-              </Section>
-            )}
-
-            {day.relatedVerse && (
-              <Section title="相關經文" muted>
-                <p className="text-sm leading-7">{day.relatedVerse}</p>
               </Section>
             )}
 
