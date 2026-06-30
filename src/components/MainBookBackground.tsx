@@ -176,9 +176,10 @@ function bookBackgroundUrl(bookName: string) {
   return 'https://a2z.fhl.net/php/pcom.php?' + params.toString()
 }
 
-export default function MainBookBackground({ bookName, onBack }: {
+export default function MainBookBackground({ bookName, onBack, onOpenFirstChapter }: {
   bookName: string
   onBack: () => void
+  onOpenFirstChapter: () => void
 }) {
   const [intros, setIntros] = useState<BookIntros | null>(null)
   const [loading, setLoading] = useState(false)
@@ -235,7 +236,13 @@ export default function MainBookBackground({ bookName, onBack }: {
           </section>
         )}
 
-        <div className="mt-8 pt-4 border-t border-stone-200/70 dark:border-[#2E3240]">
+        <div className="mt-10 pt-6 border-t border-stone-200/70 dark:border-[#2E3240] flex flex-col gap-4">
+          <button
+            onClick={onOpenFirstChapter}
+            className="self-start rounded-md border border-[#4F7358] px-4 py-2 text-sm font-medium text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 dark:border-[#7AAF87] dark:text-[#7AAF87] dark:hover:bg-[#7AAF87]/10"
+          >
+            開始閱讀第 1 章 →
+          </button>
           <a
             href={sourceUrl}
             target="_blank"
