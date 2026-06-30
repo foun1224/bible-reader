@@ -45,7 +45,7 @@ function Section({ title, children, muted = false }: {
   return (
     <section className="border-t border-stone-200/70 dark:border-[#2E3240] pt-5">
       <h3 className="mb-3 text-xs font-semibold tracking-[0.18em] text-stone-400 dark:text-[#A09890] uppercase">{title}</h3>
-      <div className={muted ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-600 dark:text-[#D4CEC4]'}>
+      <div className={muted ? 'text-stone-500 dark:text-[#A09890]' : 'text-stone-600 dark:text-[#D4CEC4]'}>
         {children}
       </div>
     </section>
@@ -134,7 +134,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
               <div>
                 <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
                 {day.verseText && (
-                  <p className="mt-4 border-l-2 border-[#4F7358]/40 pl-4 text-base leading-8 text-stone-500 dark:text-[#D4CEC4] sm:text-lg">
+                  <p className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl">
                     {day.verseText}
                   </p>
                 )}
@@ -177,7 +177,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                 <ol className="space-y-3">
                   {day.responses.map((q, i) => (
                     <li key={i} className="flex gap-3 text-sm leading-7 sm:text-base">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-200 text-xs font-semibold text-stone-500 dark:bg-[#2E3240] dark:text-[#A09890]">{i + 1}</span>
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#4F7358]/10 text-xs font-semibold text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">{i + 1}</span>
                       <span>{q}</span>
                     </li>
                   ))}
@@ -195,7 +195,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
 
             {day.prayer && (
               <Section title="禱告文">
-                <p className="rounded-md bg-[#4F7358]/5 px-4 py-4 text-sm italic leading-7 text-stone-600 dark:bg-[#7AAF87]/5 dark:text-[#D4CEC4] sm:text-base">
+                <p className="rounded-md bg-[#4F7358]/10 px-4 py-5 text-base italic leading-8 text-stone-600 dark:bg-[#7AAF87]/8 dark:text-[#D4CEC4]">
                   {day.prayer}
                 </p>
               </Section>
