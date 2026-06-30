@@ -17,57 +17,7 @@ interface Props {
   onClose: () => void
   completions: CompletionRecord[]
   currentChapterLabel: string
-}
-
-// ── Book-background modal ──────────────────────────────────────────────────────
-function BookBackgroundModal({ bookName, text, onClose }: {
-  bookName: string
-  text: string
-  onClose: () => void
-}) {
-  // Close on Escape key
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [onClose])
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full sm:max-w-lg max-h-[85dvh] sm:max-h-[80vh] flex flex-col
-          bg-stone-50 dark:bg-[#1E2028] rounded-t-2xl sm:rounded-2xl shadow-xl
-          border border-stone-200 dark:border-[#2E3240]"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
-          <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-stone-300 dark:text-[#6B6460]">書卷背景</p>
-            <p className="text-sm font-medium text-stone-600 dark:text-[#E4DDD0]">{bookName}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded text-stone-300 dark:text-[#6B6460] hover:bg-stone-200 dark:hover:bg-[#2E3240] transition-colors"
-            aria-label="關閉"
-          >
-            <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
-              <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
-        </div>
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4 py-3">
-          <pre className="text-xs leading-relaxed text-stone-600 dark:text-[#A09890] font-sans whitespace-pre-wrap break-words">
-            {text}
-          </pre>
-        </div>
-      </div>
-    </div>
-  )
+  onSelectBookBackground: (bookName: string) => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -76,21 +26,13 @@ export default function Sidebar({
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
   currentChapterLabel,
+  onSelectBookBackground,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
   const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
   const [newExpanded, setNewExpanded] = useState(true)
-  const [backgrounds, setBackgrounds] = useState<Record<string, string>>({})
-  const [bgModal, setBgModal] = useState<{ bookName: string; text: string } | null>(null)
-
-  useEffect(() => {
-    fetch(import.meta.env.BASE_URL + 'book-backgrounds.json')
-      .then(r => r.json())
-      .then(setBackgrounds)
-      .catch(() => {/* silently ignore if file not present */})
-  }, [])
 
   useEffect(() => {
     if (activeBook?.id != null) setExpandedBook(activeBook.id)
@@ -103,11 +45,6 @@ export default function Sidebar({
     completions.some(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number) && r.chapter === chNum)
   const isJasherCompleted = (chNum: number) =>
     completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
-
-  const handleShowBackground = (bookName: string) => {
-    const text = backgrounds[bookName]
-    if (text) setBgModal({ bookName, text })
-  }
 
   const sidebarContent = (
     <div className="flex-1 min-h-0 overflow-hidden">
@@ -133,21 +70,13 @@ export default function Sidebar({
         onSelectJasherChapter={onSelectJasherChapter}
         onClose={onClose}
         currentChapterLabel={currentChapterLabel}
-        backgrounds={backgrounds}
-        onShowBackground={handleShowBackground}
+        onSelectBookBackground={onSelectBookBackground}
       />
     </div>
   )
 
   return (
     <>
-      {bgModal && (
-        <BookBackgroundModal
-          bookName={bgModal.bookName}
-          text={bgModal.text}
-          onClose={() => setBgModal(null)}
-        />
-      )}
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-72 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-3">
@@ -213,8 +142,7 @@ interface ScriptureProps {
   onSelectJasherChapter: (chapter: Chapter) => void
   onClose: () => void
   currentChapterLabel: string
-  backgrounds: Record<string, string>
-  onShowBackground: (bookName: string) => void
+  onSelectBookBackground: (bookName: string) => void
 }
 
 function ScriptureContent({
@@ -228,7 +156,7 @@ function ScriptureContent({
   onSelectCkjvChapter, onSelectJasherChapter,
   onClose,
   currentChapterLabel,
-  backgrounds, onShowBackground,
+  onSelectBookBackground,
 }: ScriptureProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -325,18 +253,16 @@ function ScriptureContent({
           </button>
           {isExpanded && (
             <div className="pl-6 pr-3 py-1 pb-2">
-              {backgrounds[book.name] && (
-                <button
-                  onClick={() => onShowBackground(book.name)}
-                  className="mb-2 flex w-full items-center gap-1.5 text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
-                >
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
-                    <path d="M3.5 2.5h4A2.5 2.5 0 0 1 10 5v8.5a2 2 0 0 0-2-2H3.5v-9Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-                    <path d="M10 5a2.5 2.5 0 0 1 2.5-2.5h.5v9h-.5a2 2 0 0 0-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>書卷背景</span>
-                </button>
-              )}
+              <button
+                onClick={() => onSelectBookBackground(book.name)}
+                className="mb-2 flex w-full items-center gap-1.5 text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
+              >
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
+                  <path d="M3.5 2.5h4A2.5 2.5 0 0 1 10 5v8.5a2 2 0 0 0-2-2H3.5v-9Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                  <path d="M10 5a2.5 2.5 0 0 1 2.5-2.5h.5v9h-.5a2 2 0 0 0-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>書卷背景</span>
+              </button>
               <div className="flex flex-wrap gap-1">
                 {book.chapters.map(ch => {
                   const completed = isCkjvCompleted(book, ch.number)
