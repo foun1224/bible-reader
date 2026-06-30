@@ -77,8 +77,23 @@ type IntroBlock =
   | { type: 'item'; text: string; level: 1 | 2 | 3 }
   | { type: 'paragraph'; text: string }
 
+const introLineMarkerPattern = /^(零、|壹、|貳、|參、|肆、|伍、|陸、|柒、|捌、|玖、|拾、|[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|\(\d+\)|◎)/
+
+function mergeContinuationLines(text: string) {
+  const lines = text.split('\n').map(line => line.trim()).filter(Boolean)
+  const merged: string[] = []
+  for (const line of lines) {
+    if (!merged.length || introLineMarkerPattern.test(line)) {
+      merged.push(line)
+    } else {
+      merged[merged.length - 1] += ' ' + line
+    }
+  }
+  return merged.join('\n')
+}
+
 function normalizeIntroText(bookName: string, intro: string) {
-  return intro
+  const normalized = intro
     .replace(new RegExp(`^${bookName}(研經資料|查經資料)\\s*`), '')
     .replace(/\s*經文：[\s\S]*$/, '')
     .replace(/\r/g, '')
@@ -90,7 +105,9 @@ function normalizeIntroText(bookName: string, intro: string) {
     .replace(/\s+(?=\d+\.)/g, '\n')
     .replace(/\s+(?=\(\d+\))/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
+    .replace(/\s+(?=◎)/g, '\n')
     .trim()
+  return mergeContinuationLines(normalized)
 }
 
 function parseIntroBlocks(bookName: string, intro: string): IntroBlock[] {
@@ -123,7 +140,7 @@ function IntroContent({ bookName, intro }: { bookName: string; intro: string }) 
   const blocks = parseIntroBlocks(bookName, intro)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {blocks.map((block, index) => {
         if (block.type === 'section') {
           return (
