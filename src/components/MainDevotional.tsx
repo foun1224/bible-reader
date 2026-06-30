@@ -212,11 +212,13 @@ export default function MainDevotional({ ckjv, onNavigate }: {
             </header>
 
             {day.relatedVerse && (
-              <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4">
-                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
-                  {day.relatedVerse}
-                </p>
-              </div>
+              <Section title="相關經文" muted>
+                <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4">
+                  <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+                    {day.relatedVerse}
+                  </p>
+                </div>
+              </Section>
             )}
 
             {day.meditation.length > 0 && (
