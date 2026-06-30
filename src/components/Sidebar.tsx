@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import type {
   BibleData, JasherData, Book, Chapter, CompletionRecord,
 } from '../types'
@@ -220,7 +221,7 @@ function ScriptureContent({
   }
 
   function renderBookList(books: Book[]) {
-    const items: React.ReactNode[] = []
+    const items: ReactNode[] = []
     let lastCategory = ''
     for (const book of books) {
       const category = BOOK_CATEGORY[book.name] ?? ''

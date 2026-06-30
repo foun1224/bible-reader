@@ -733,7 +733,7 @@ function App() {
           />
         )}
 
-        {mainView === 'scripture' ? (
+        {mainView === 'scripture' && (
           <>
             <Reader
               chapter={activeChapter}
@@ -808,7 +808,9 @@ function App() {
               </div>
             )}
           </>
-        ) : mainView === 'book-intro' && introBook ? (
+        )}
+
+        {mainView === 'book-intro' && introBook && (
           <MainBookIntro
             book={introBook}
             onOpenChapter={() => {
@@ -817,7 +819,9 @@ function App() {
               setMainView('scripture')
             }}
           />
-        ) : (
+        )}
+
+        {mainView === 'devotional' && (
           <MainDevotional
             ckjv={ckjv}
             onNavigate={(book, chapter) => {
