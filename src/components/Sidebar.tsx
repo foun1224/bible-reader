@@ -25,6 +25,8 @@ interface Props {
   currentChapterLabel: string
   highlights: Highlight[]
   onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  mainView: 'scripture' | 'devotional'
+  onMainViewChange: (view: 'scripture' | 'devotional') => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -34,13 +36,13 @@ export default function Sidebar({
   isOpen, onClose, completions,
   currentChapterLabel,
   highlights, onJumpTo,
+  mainView, onMainViewChange,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
   const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
   const [newExpanded, setNewExpanded] = useState(true)
-  const [sidebarTab, setSidebarTab] = useState<'scripture' | 'revelation'>('scripture')
 
   useEffect(() => {
     if (activeBook?.id != null) setExpandedBook(activeBook.id)
@@ -57,17 +59,17 @@ export default function Sidebar({
   const segmentedControl = (
     <div className="shrink-0 px-3 py-2.5 border-b border-stone-200 dark:border-[#2E3240]">
       <div className="flex rounded-lg bg-stone-200 dark:bg-[#17191E] p-0.5">
-        {(['scripture', 'revelation'] as const).map(tab => (
+        {(['scripture', 'devotional'] as const).map(view => (
           <button
-            key={tab}
-            onClick={() => setSidebarTab(tab)}
+            key={view}
+            onClick={() => onMainViewChange(view)}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all duration-150
-              ${sidebarTab === tab
+              ${mainView === view
                 ? 'bg-stone-50 dark:bg-[#2E3240] text-[#4F7358] dark:text-[#7AAF87] shadow-sm'
                 : 'text-stone-400 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890]'
               }`}
           >
-            {tab === 'scripture' ? '經文' : '領受'}
+            {view === 'scripture' ? '經文' : '靈修'}
           </button>
         ))}
       </div>
@@ -78,7 +80,7 @@ export default function Sidebar({
     <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
       {segmentedControl}
       <div className="flex-1 min-h-0 overflow-hidden">
-        {sidebarTab === 'scripture' && (
+        {mainView === 'scripture' && (
           <ScriptureContent
             ckjv={ckjv}
             oldTestament={oldTestament}
@@ -103,11 +105,14 @@ export default function Sidebar({
             currentChapterLabel={currentChapterLabel}
           />
         )}
-        {sidebarTab === 'revelation' && (
+        {mainView === 'devotional' && (
           <RevelationContent
             highlights={highlights}
             ckjv={ckjv}
-            onJumpTo={onJumpTo}
+            onJumpTo={(sourceId, bookId, chapter) => {
+              onMainViewChange('scripture')
+              onJumpTo(sourceId, bookId, chapter)
+            }}
             onClose={onClose}
           />
         )}
