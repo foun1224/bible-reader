@@ -298,6 +298,7 @@ function App() {
     setActiveChapter(chapter)
     saveBookmark({ sourceId: 'ckjv', bookId: book.id as number, chapter: chapter.number, verse: 1 })
     setSidebarOpen(false)
+    setMainView('scripture')
   }, [saveBookmark])
 
   const selectJasherChapter = useCallback((chapter: Chapter) => {
@@ -306,6 +307,7 @@ function App() {
     setActiveChapter(chapter)
     saveBookmark({ sourceId: 'jasher', chapter: chapter.number, verse: 1 })
     setSidebarOpen(false)
+    setMainView('scripture')
   }, [saveBookmark])
 
   const selectBookBackground = useCallback((bookName: string) => {
