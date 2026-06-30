@@ -252,37 +252,32 @@ function ScriptureContent({
             </span>
           </button>
           {isExpanded && (
-            <div className="pl-6 pr-3 py-1 pb-2">
+            <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
+              {/* 書卷背景 tile — same style as chapter tiles */}
               <button
                 onClick={() => onSelectBookBackground(book.name)}
-                className="mb-2 flex w-full items-center gap-1.5 text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-[10px] font-medium transition-colors bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] text-[#4F7358] dark:text-[#7AAF87]"
               >
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
-                  <path d="M3.5 2.5h4A2.5 2.5 0 0 1 10 5v8.5a2 2 0 0 0-2-2H3.5v-9Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-                  <path d="M10 5a2.5 2.5 0 0 1 2.5-2.5h.5v9h-.5a2 2 0 0 0-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>書卷背景</span>
+                簡介
               </button>
-              <div className="flex flex-wrap gap-1">
-                {book.chapters.map(ch => {
-                  const completed = isCkjvCompleted(book, ch.number)
-                  const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
-                  return (
-                    <button
-                      key={ch.number}
-                      onClick={() => onSelectCkjvChapter(book, ch)}
-                      className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
-                        ${active
-                          ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
-                          : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
-                            (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-500 dark:text-[#A09890]')
-                        }`}
-                    >
-                      {ch.number}
-                    </button>
-                  )
-                })}
-              </div>
+              {book.chapters.map(ch => {
+                const completed = isCkjvCompleted(book, ch.number)
+                const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
+                return (
+                  <button
+                    key={ch.number}
+                    onClick={() => onSelectCkjvChapter(book, ch)}
+                    className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
+                      ${active
+                        ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                        : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
+                          (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-500 dark:text-[#A09890]')
+                      }`}
+                  >
+                    {ch.number}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
