@@ -71,6 +71,104 @@ const BOOK_ENGS: Record<string, string> = {
   '啟示錄': 'Rev',
 }
 
+type IntroBlock =
+  | { type: 'section'; text: string }
+  | { type: 'subsection'; text: string }
+  | { type: 'item'; text: string; level: 1 | 2 | 3 }
+  | { type: 'paragraph'; text: string }
+
+function normalizeIntroText(bookName: string, intro: string) {
+  return intro
+    .replace(new RegExp(`^${bookName}(研經資料|查經資料)\\s*`), '')
+    .replace(/\s*經文：[\s\S]*$/, '')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/\s+(?=(零、|壹、|貳、|參、|肆、|伍、|陸、|柒、|捌、|玖、|拾、))/g, '\n\n')
+    .replace(/\s+(?=([一二三四五六七八九十]+、))/g, '\n')
+    .replace(/\s+(?=（[一二三四五六七八九十]+）)/g, '\n')
+    .replace(/\s+(?=\d+\.)/g, '\n')
+    .replace(/\s+(?=\(\d+\))/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+function parseIntroBlocks(bookName: string, intro: string): IntroBlock[] {
+  const text = normalizeIntroText(bookName, intro)
+  return text
+    .split(/\n+/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      if (/^(零、|壹、|貳、|參、|肆、|伍、|陸、|柒、|捌、|玖、|拾、)/.test(line)) {
+        return { type: 'section', text: line } as IntroBlock
+      }
+      if (/^[一二三四五六七八九十]+、/.test(line)) {
+        return { type: 'subsection', text: line } as IntroBlock
+      }
+      if (/^（[一二三四五六七八九十]+）/.test(line)) {
+        return { type: 'item', level: 1, text: line } as IntroBlock
+      }
+      if (/^\d+\./.test(line)) {
+        return { type: 'item', level: 2, text: line } as IntroBlock
+      }
+      if (/^\(\d+\)/.test(line)) {
+        return { type: 'item', level: 3, text: line } as IntroBlock
+      }
+      return { type: 'paragraph', text: line } as IntroBlock
+    })
+}
+
+function IntroContent({ bookName, intro }: { bookName: string; intro: string }) {
+  const blocks = parseIntroBlocks(bookName, intro)
+
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, index) => {
+        if (block.type === 'section') {
+          return (
+            <h2
+              key={index}
+              className="pt-3 text-base font-semibold leading-8 text-stone-700 dark:text-[#E4DDD0]"
+            >
+              {block.text}
+            </h2>
+          )
+        }
+
+        if (block.type === 'subsection') {
+          return (
+            <h3
+              key={index}
+              className="pt-2 text-sm font-semibold leading-7 text-stone-600 dark:text-[#D4CEC4]"
+            >
+              {block.text}
+            </h3>
+          )
+        }
+
+        if (block.type === 'item') {
+          const indent = block.level === 1 ? 'pl-4' : block.level === 2 ? 'pl-7' : 'pl-10'
+          return (
+            <p
+              key={index}
+              className={`${indent} text-sm leading-8 text-stone-500 dark:text-[#A09890]`}
+            >
+              {block.text}
+            </p>
+          )
+        }
+
+        return (
+          <p key={index} className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">
+            {block.text}
+          </p>
+        )
+      })}
+    </div>
+  )
+}
+
 function bookBackgroundUrl(bookName: string) {
   const engs = BOOK_ENGS[bookName]
   if (!engs) return 'https://a2z.fhl.net/bible/'
@@ -133,9 +231,7 @@ export default function MainBookBackground({ bookName, onBack }: {
 
         {intro && (
           <section className="border-t border-stone-200/70 dark:border-[#2E3240] pt-6">
-            <pre className="whitespace-pre-wrap font-[inherit] text-sm leading-8 text-stone-600 dark:text-[#D4CEC4]">
-              {intro}
-            </pre>
+            <IntroContent bookName={bookName} intro={intro} />
           </section>
         )}
 
