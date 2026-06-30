@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import type {
-  BibleData, JasherData, Book, Chapter, CompletionRecord,
+  BibleData, JasherData, Book, Chapter, CompletionRecord, Highlight, HighlightColor,
 } from '../types'
+
+const COLOR_DOT: Record<HighlightColor, string> = {
+  important: 'bg-amber-400',
+  comfort:   'bg-green-400',
+  question:  'bg-blue-400',
+  prayer:    'bg-red-400',
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
@@ -16,6 +23,8 @@ interface Props {
   onClose: () => void
   completions: CompletionRecord[]
   currentChapterLabel: string
+  highlights: Highlight[]
+  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -24,12 +33,14 @@ export default function Sidebar({
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
   currentChapterLabel,
+  highlights, onJumpTo,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
   const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
   const [newExpanded, setNewExpanded] = useState(true)
+  const [sidebarTab, setSidebarTab] = useState<'scripture' | 'revelation'>('scripture')
 
   useEffect(() => {
     if (activeBook?.id != null) setExpandedBook(activeBook.id)
@@ -43,31 +54,60 @@ export default function Sidebar({
   const isJasherCompleted = (chNum: number) =>
     completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
 
+  const tabBar = (
+    <div className="flex shrink-0 border-b border-stone-200 dark:border-[#2E3240]">
+      {(['scripture', 'revelation'] as const).map(tab => (
+        <button
+          key={tab}
+          onClick={() => setSidebarTab(tab)}
+          className={`flex-1 py-2.5 text-[13px] font-semibold tracking-wide transition-colors
+            ${sidebarTab === tab
+              ? 'text-[#4F7358] dark:text-[#7AAF87] border-b-2 border-[#4F7358] dark:border-[#7AAF87] -mb-px'
+              : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
+            }`}
+        >
+          {tab === 'scripture' ? '經文' : '領受'}
+        </button>
+      ))}
+    </div>
+  )
+
   const sidebarContent = (
-    <div className="flex-1 min-h-0 overflow-hidden">
-      <ScriptureContent
-        ckjv={ckjv}
-        oldTestament={oldTestament}
-        newTestament={newTestament}
-        oldExpanded={oldExpanded}
-        setOldExpanded={setOldExpanded}
-        newExpanded={newExpanded}
-        setNewExpanded={setNewExpanded}
-        jasher={jasher}
-        source={source}
-        activeBook={activeBook}
-        activeChapter={activeChapter}
-        showJasher={showJasher}
-        setShowJasher={setShowJasher}
-        expandedBook={expandedBook}
-        setExpandedBook={setExpandedBook}
-        isCkjvCompleted={isCkjvCompleted}
-        isJasherCompleted={isJasherCompleted}
-        onSelectCkjvChapter={onSelectCkjvChapter}
-        onSelectJasherChapter={onSelectJasherChapter}
-        onClose={onClose}
-        currentChapterLabel={currentChapterLabel}
-      />
+    <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+      {tabBar}
+      {sidebarTab === 'scripture' && (
+        <ScriptureContent
+          ckjv={ckjv}
+          oldTestament={oldTestament}
+          newTestament={newTestament}
+          oldExpanded={oldExpanded}
+          setOldExpanded={setOldExpanded}
+          newExpanded={newExpanded}
+          setNewExpanded={setNewExpanded}
+          jasher={jasher}
+          source={source}
+          activeBook={activeBook}
+          activeChapter={activeChapter}
+          showJasher={showJasher}
+          setShowJasher={setShowJasher}
+          expandedBook={expandedBook}
+          setExpandedBook={setExpandedBook}
+          isCkjvCompleted={isCkjvCompleted}
+          isJasherCompleted={isJasherCompleted}
+          onSelectCkjvChapter={onSelectCkjvChapter}
+          onSelectJasherChapter={onSelectJasherChapter}
+          onClose={onClose}
+          currentChapterLabel={currentChapterLabel}
+        />
+      )}
+      {sidebarTab === 'revelation' && (
+        <RevelationContent
+          highlights={highlights}
+          ckjv={ckjv}
+          onJumpTo={onJumpTo}
+          onClose={onClose}
+        />
+      )}
     </div>
   )
 
@@ -76,8 +116,7 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <div className="hidden sm:flex w-72 shrink-0 flex-col border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C] overflow-hidden">
         <div className="shrink-0 border-b border-stone-200 dark:border-[#2E3240] px-3 py-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">目錄</p>
-          <p className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">經文書卷</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">你的人生</p>
         </div>
         {sidebarContent}
       </div>
@@ -300,6 +339,59 @@ function ScriptureContent({
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+// ── 領受 tab ──────────────────────────────────────────────────────────────────
+interface RevelationProps {
+  highlights: Highlight[]
+  ckjv: BibleData | null
+  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  onClose: () => void
+}
+
+function RevelationContent({ highlights, ckjv, onJumpTo, onClose }: RevelationProps) {
+  const sorted = [...highlights].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
+
+  if (sorted.length === 0) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-xs text-stone-300 dark:text-[#6B6460]">尚無劃線記錄</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-1 min-h-0 overflow-y-auto py-3 px-3 space-y-2">
+      {sorted.map(h => {
+        const bookName =
+          h.sourceId === 'jasher'
+            ? '雅煞珥書'
+            : ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
+        const preview = h.highlightText.slice(0, 40) + (h.highlightText.length > 40 ? '…' : '')
+
+        return (
+          <button
+            key={h.id}
+            onClick={() => { onJumpTo(h.sourceId, h.bookId, h.chapter); onClose() }}
+            className="w-full text-left rounded-lg border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] px-3 py-2.5 space-y-1.5 hover:border-[#4F7358]/50 dark:hover:border-[#7AAF87]/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${COLOR_DOT[h.color]}`} />
+              <span className="text-[11px] font-medium text-stone-400 dark:text-[#A09890] truncate">
+                {bookName} {h.chapter}:{h.verse}
+              </span>
+            </div>
+            <p className="text-xs text-stone-400 dark:text-[#6B6460] leading-relaxed">「{preview}」</p>
+            {h.note && (
+              <p className="text-xs text-stone-500 dark:text-[#A09890] leading-relaxed">{h.note}</p>
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }

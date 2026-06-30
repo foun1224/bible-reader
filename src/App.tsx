@@ -556,6 +556,8 @@ function App() {
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
             : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
         }
+        highlights={highlights}
+        onJumpTo={handleJumpTo}
       />
       </div>
 
