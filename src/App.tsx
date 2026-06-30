@@ -620,6 +620,11 @@ function App() {
       <div className="flex flex-col flex-1 min-w-0">
         {/* Toolbar */}
         <div className={`relative flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-[#2E3240]/60 bg-stone-50/90 dark:bg-[#17191E]/90 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          {/* Center site title */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none select-none leading-none">
+            <span className="text-[11px] font-semibold tracking-[0.2em] text-stone-500 dark:text-[#A09890]">你的人生</span>
+            <span className="text-[10px] text-stone-300 dark:text-[#6B6460]" style={{ fontFamily: 'cursive', fontStyle: 'italic' }}>Your Life</span>
+          </div>
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only, scripture mode only */}
             {mainView === 'scripture' && (
