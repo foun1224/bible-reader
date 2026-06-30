@@ -630,8 +630,9 @@ function App() {
         onClose={() => setSidebarOpen(false)}
         completions={completions}
         onOpenSearch={() => setSearchOpen(true)}
-        onOpenNotes={() => setNotesPanelOpen(true)}
         onOpenDevotion={() => setDevotionOpen(true)}
+        highlights={highlights}
+        onJumpTo={handleJumpTo}
       />
       </div>
 
@@ -887,7 +888,6 @@ function App() {
           <div className="flex border-b border-stone-100 dark:border-[#2E3240]">
             {[
               { label: '搜尋', icon: <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: () => setSearchOpen(true) },
-              { label: '筆記', icon: '📝', fn: () => setNotesPanelOpen(true) },
               { label: '靈修', icon: '🕊', fn: () => setDevotionOpen(true) },
             ].map(({ label, icon, fn }) => (
               <button

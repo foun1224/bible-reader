@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import type { BibleData, JasherData, Book, Chapter, CompletionRecord } from '../types'
+import type { BibleData, JasherData, Book, Chapter, CompletionRecord, Highlight } from '../types'
+
+const COLOR_DOT: Record<string, string> = {
+  yellow: 'bg-yellow-400',
+  red: 'bg-red-400',
+  green: 'bg-green-400',
+  blue: 'bg-blue-400',
+}
 
 interface Props {
   ckjv: BibleData | null
@@ -13,15 +20,17 @@ interface Props {
   onClose: () => void
   completions: CompletionRecord[]
   onOpenSearch: () => void
-  onOpenNotes: () => void
   onOpenDevotion: () => void
+  highlights: Highlight[]
+  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
 }
 
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
-  onOpenSearch, onOpenNotes, onOpenDevotion,
+  onOpenSearch, onOpenDevotion,
+  highlights, onJumpTo,
 }: Props) {
   const [expandedBook, setExpandedBook] = useState<number | string | null>(
     activeBook?.id ?? null
@@ -29,6 +38,7 @@ export default function Sidebar({
   const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
   const [newExpanded, setNewExpanded] = useState(true)
+  const [sidebarTab, setSidebarTab] = useState<'scripture' | 'revelation'>('scripture')
 
   // sync expandedBook when bookmark restores a different book
   useEffect(() => {
@@ -50,7 +60,6 @@ export default function Sidebar({
     const isExpanded = expandedBook === book.id
     const isActive = source === 'ckjv' && activeBook?.id === book.id
 
-    // 功能 B：書卷完成進度
     const completedChapters = completions.filter(
       c => c.sourceId === 'ckjv' && c.bookId === (book.id as number)
     ).length
@@ -78,7 +87,6 @@ export default function Sidebar({
           <span className="flex items-center gap-1.5">
             <span className="text-[10px] opacity-50">{isExpanded ? '▾' : '▸'}</span>
             <span className="truncate flex-shrink min-w-0">{book.name}</span>
-            {/* 進度條 */}
             {completedRatio > 0 && (
               <span className="flex-1 min-w-0 ml-1">
                 <span className="block w-full h-0.5 rounded-full bg-stone-200 dark:bg-[#2E3240] overflow-hidden">
@@ -142,6 +150,12 @@ export default function Sidebar({
       setExpandedBook={setExpandedBook}
       onSelectJasherChapter={onSelectJasherChapter}
       isJasherCompleted={isJasherCompleted}
+      sidebarTab={sidebarTab}
+      setSidebarTab={setSidebarTab}
+      highlights={highlights}
+      ckjv={ckjv}
+      onJumpTo={onJumpTo}
+      onClose={onClose}
     />
   )
 
@@ -154,7 +168,6 @@ export default function Sidebar({
         <div className="shrink-0 flex items-center border-t border-stone-200 dark:border-[#2E3240]">
           {[
             { label: '搜尋', icon: <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, fn: onOpenSearch },
-            { label: '筆記', icon: '📝', fn: onOpenNotes },
             { label: '靈修', icon: '🕊', fn: onOpenDevotion },
           ].map(({ label, icon, fn }) => (
             <button
@@ -177,9 +190,9 @@ export default function Sidebar({
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        {/* Close button */}
+        {/* Mobile header */}
         <div className="flex items-center justify-between px-3 py-2.5 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
-          <span className="text-xs font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">目錄</span>
+          <span className="text-xs font-medium text-stone-400 dark:text-[#A09890] uppercase tracking-widest">你的人生</span>
           <button
             onClick={onClose}
             className="p-1.5 rounded text-stone-300 dark:text-[#2E3240] hover:bg-stone-200 dark:hover:bg-[#22242C] transition-colors"
@@ -212,6 +225,12 @@ interface ContentProps {
   setExpandedBook: (v: number | string | null) => void
   onSelectJasherChapter: (chapter: Chapter) => void
   isJasherCompleted: (chNum: number) => boolean
+  sidebarTab: 'scripture' | 'revelation'
+  setSidebarTab: (t: 'scripture' | 'revelation') => void
+  highlights: Highlight[]
+  ckjv: BibleData | null
+  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  onClose: () => void
 }
 
 function SidebarContent({
@@ -222,6 +241,8 @@ function SidebarContent({
   jasher, source, activeChapter,
   showJasher, setShowJasher, setExpandedBook, onSelectJasherChapter,
   isJasherCompleted,
+  sidebarTab, setSidebarTab,
+  highlights, ckjv, onJumpTo, onClose,
 }: ContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -237,102 +258,163 @@ function SidebarContent({
     }
   }, [q, allFiltered.length])
 
+  const sortedHighlights = [...highlights].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
+
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      {/* Search box */}
-      <div className="px-3 py-2 shrink-0">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          placeholder="搜尋書卷…"
-          className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
-        />
-      </div>
-      <div className="flex-1 overflow-y-auto py-2">
-        {/* 舊約 group header */}
-        {filteredOld.length > 0 && (
-          <>
-            <button
-              onClick={() => setOldExpanded(!oldExpanded)}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
-            >
-              <span className="text-[9px]">{oldExpanded ? '▾' : '▸'}</span>
-              舊約
-            </button>
-            {oldExpanded && (
-              <div className="pb-1">
-                {filteredOld.map(renderBook)}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* 新約 group header */}
-        {filteredNew.length > 0 && (
-          <>
-            <button
-              onClick={() => setNewExpanded(!newExpanded)}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
-            >
-              <span className="text-[9px]">{newExpanded ? '▾' : '▸'}</span>
-              新約
-            </button>
-            {newExpanded && (
-              <div className="pb-1">
-                {filteredNew.map(renderBook)}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Jasher — pinned to bottom */}
-      {jasher && (
-        <div className="shrink-0 border-t border-stone-200 dark:border-[#2E3240] py-2">
+      {/* Tab switcher */}
+      <div className="flex shrink-0 border-b border-stone-200 dark:border-[#2E3240]">
+        {(['scripture', 'revelation'] as const).map(tab => (
           <button
-            onClick={() => {
-              if (!showJasher) {
-                setShowJasher(true)
-                setExpandedBook(null)
-              } else {
-                setShowJasher(false)
-              }
-            }}
-            className={`w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors
-              ${source === 'jasher'
-                ? 'text-sage dark:text-sage-dark'
-                : 'text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890]'
+            key={tab}
+            onClick={() => setSidebarTab(tab)}
+            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors
+              ${sidebarTab === tab
+                ? 'text-sage dark:text-sage-dark border-b-2 border-sage dark:border-sage-dark -mb-px'
+                : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
               }`}
           >
-            <span className="text-[9px]">{showJasher ? '▾' : '▸'}</span>
-            次經 · 雅煞珥書
+            {tab === 'scripture' ? '經文' : '領受'}
           </button>
-          {showJasher && (
-            <div className="flex flex-wrap gap-1 px-3 pb-2 pt-1">
-              {jasher.chapters.map(ch => {
-                const completed = isJasherCompleted(ch.number)
-                const active = source === 'jasher' && activeChapter?.number === ch.number
-                return (
-                  <button
-                    key={ch.number}
-                    onClick={() => onSelectJasherChapter(ch)}
-                    className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
-                      ${active
-                        ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
-                        : completed
-                        ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
-                        : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
-                      }`}
-                  >
-                    {ch.number}
-                    {completed && !active && (
-                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
-                    )}
-                  </button>
-                )
-              })}
+        ))}
+      </div>
+
+      {sidebarTab === 'scripture' && (
+        <>
+          {/* Search box */}
+          <div className="px-3 py-2 shrink-0">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="搜尋書卷…"
+              className="w-full px-2.5 py-1.5 text-xs rounded border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] text-stone-500 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#2E3240] focus:outline-none focus:border-sage dark:focus:border-sage-dark transition-colors"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto py-2">
+            {filteredOld.length > 0 && (
+              <>
+                <button
+                  onClick={() => setOldExpanded(!oldExpanded)}
+                  className="w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                >
+                  <span className="text-[9px]">{oldExpanded ? '▾' : '▸'}</span>
+                  舊約
+                </button>
+                {oldExpanded && (
+                  <div className="pb-1">
+                    {filteredOld.map(renderBook)}
+                  </div>
+                )}
+              </>
+            )}
+
+            {filteredNew.length > 0 && (
+              <>
+                <button
+                  onClick={() => setNewExpanded(!newExpanded)}
+                  className="w-full flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890] uppercase tracking-widest transition-colors"
+                >
+                  <span className="text-[9px]">{newExpanded ? '▾' : '▸'}</span>
+                  新約
+                </button>
+                {newExpanded && (
+                  <div className="pb-1">
+                    {filteredNew.map(renderBook)}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Jasher — pinned to bottom */}
+          {jasher && (
+            <div className="shrink-0 border-t border-stone-200 dark:border-[#2E3240] py-2">
+              <button
+                onClick={() => {
+                  if (!showJasher) {
+                    setShowJasher(true)
+                    setExpandedBook(null)
+                  } else {
+                    setShowJasher(false)
+                  }
+                }}
+                className={`w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors
+                  ${source === 'jasher'
+                    ? 'text-sage dark:text-sage-dark'
+                    : 'text-stone-300 dark:text-[#2E3240] hover:text-stone-400 dark:hover:text-[#A09890]'
+                  }`}
+              >
+                <span className="text-[9px]">{showJasher ? '▾' : '▸'}</span>
+                次經 · 雅煞珥書
+              </button>
+              {showJasher && (
+                <div className="flex flex-wrap gap-1 px-3 pb-2 pt-1">
+                  {jasher.chapters.map(ch => {
+                    const completed = isJasherCompleted(ch.number)
+                    const active = source === 'jasher' && activeChapter?.number === ch.number
+                    return (
+                      <button
+                        key={ch.number}
+                        onClick={() => onSelectJasherChapter(ch)}
+                        className={`relative flex items-center justify-center w-8 h-8 rounded text-xs transition-colors
+                          ${active
+                            ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                            : completed
+                            ? 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240] ring-1 ring-green-400/60 dark:ring-green-500/40'
+                            : 'bg-stone-100 dark:bg-[#22242C] text-stone-400 dark:text-[#A09890] hover:bg-stone-200 dark:hover:bg-[#2E3240]'
+                          }`}
+                      >
+                        {ch.number}
+                        {completed && !active && (
+                          <span className="absolute bottom-0.5 right-0.5 text-[7px] text-green-500 dark:text-green-400 leading-none">✓</span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
+          )}
+        </>
+      )}
+
+      {sidebarTab === 'revelation' && (
+        <div className="flex-1 overflow-y-auto py-3 px-2.5 space-y-2">
+          {sortedHighlights.length === 0 ? (
+            <p className="text-center text-xs text-stone-300 dark:text-[#6B6460] pt-10">尚無劃線記錄</p>
+          ) : (
+            sortedHighlights.map(h => {
+              const bookName =
+                h.sourceId === 'jasher'
+                  ? '雅煞珥書'
+                  : ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
+              const preview = h.highlightText.slice(0, 36) + (h.highlightText.length > 36 ? '…' : '')
+
+              return (
+                <button
+                  key={h.id}
+                  onClick={() => {
+                    onJumpTo(h.sourceId, h.bookId, h.chapter)
+                    onClose()
+                  }}
+                  className="w-full text-left rounded-lg border border-stone-200 dark:border-[#2E3240] bg-white dark:bg-[#17191E] px-3 py-2.5 space-y-1.5 hover:border-sage/60 dark:hover:border-sage-dark/60 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${COLOR_DOT[h.color] ?? 'bg-yellow-400'}`} />
+                    <span className="text-[10px] text-stone-400 dark:text-[#A09890] truncate">
+                      {bookName} {h.chapter}:{h.verse}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-stone-400 dark:text-[#6B6460] leading-relaxed">「{preview}」</p>
+                  {h.note && (
+                    <p className="text-[11px] text-stone-500 dark:text-[#A09890] leading-relaxed">{h.note}</p>
+                  )}
+                </button>
+              )
+            })
           )}
         </div>
       )}
