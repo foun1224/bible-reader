@@ -37,6 +37,18 @@ function findBookByRef(ref: string, books: Book[]): Book | null {
   return null
 }
 
+// Split "15:39 中文... 16:1 中文... 2 中文..." into [{num, text}, ...]
+// Lookahead [一-鿿（【] ensures only verse refs are matched (CKJV body text uses Chinese numerals).
+function parseVerseText(raw: string): Array<{num: string; text: string}> {
+  const parts = raw.split(/(?<!\d)(\d+(?::\d+)?)\s+(?=[一-鿿（【])/)
+  // split with capture group → ['prefix', 'num', 'text', 'num', 'text', ...]
+  const result: Array<{num: string; text: string}> = []
+  for (let i = 1; i < parts.length; i += 2) {
+    result.push({ num: parts[i], text: parts[i + 1]?.trim() ?? '' })
+  }
+  return result.length > 0 ? result : [{ num: '', text: raw }]
+}
+
 function Section({ title, children, muted = false }: {
   title: string
   children: React.ReactNode
@@ -134,9 +146,21 @@ export default function MainDevotional({ ckjv, onNavigate }: {
               <div>
                 <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
                 {day.verseText && (
-                  <p className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl">
-                    {day.verseText}
-                  </p>
+                  <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
+                    {parseVerseText(day.verseText).map(({ num, text }) => (
+                      <p key={num} className="text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl">
+                        {num && (
+                          <sup
+                            className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
+                            style={{ fontSize: '9px', fontWeight: 400 }}
+                          >
+                            {num}
+                          </sup>
+                        )}
+                        {text}
+                      </p>
+                    ))}
+                  </div>
                 )}
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
