@@ -91,7 +91,7 @@ export default function Sidebar({
       >
         <div className="flex items-center justify-between px-3 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">聖經閱讀器</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">你的人生</p>
             <p className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">目錄</p>
           </div>
           <button
