@@ -501,6 +501,7 @@ export default function Reader({
               <p
                 key={v.number}
                 className="py-0.5 group"
+                style={{ paddingLeft: '1.4em', textIndent: '-1.4em' }}
                 onPointerDown={() => {
                   longPressTimer.current = setTimeout(() => openPicker(v.number, v.text), 500)
                 }}
