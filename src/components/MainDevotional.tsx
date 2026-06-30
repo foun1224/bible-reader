@@ -265,10 +265,20 @@ export default function MainDevotional({ ckjv, onNavigate }: {
 
             {day.relatedVerse && (
               <Section title="相關經文" muted>
-                <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4">
-                  <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
-                    {day.relatedVerse}
-                  </p>
+                <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
+                  {parseVerseText(day.relatedVerse).map(({ num, text }, i) => (
+                    <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+                      {num && (
+                        <sup
+                          className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
+                          style={{ fontSize: '9px', fontWeight: 400 }}
+                        >
+                          {num}
+                        </sup>
+                      )}
+                      {text}
+                    </p>
+                  ))}
                 </div>
               </Section>
             )}
