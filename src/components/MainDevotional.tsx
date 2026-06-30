@@ -9,6 +9,7 @@ interface DevotionalDay {
   responses: string[]
   hints: string[]
   prayer: string
+  relatedVerse?: string
 }
 
 type DevotionalPlan = Record<string, DevotionalDay>
@@ -222,6 +223,12 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                 <p className="rounded-md bg-[#4F7358]/10 px-4 py-5 text-base italic leading-8 text-stone-600 dark:bg-[#7AAF87]/8 dark:text-[#D4CEC4]">
                   {day.prayer}
                 </p>
+              </Section>
+            )}
+
+            {day.relatedVerse && (
+              <Section title="相關經文" muted>
+                <p className="text-sm leading-7">{day.relatedVerse}</p>
               </Section>
             )}
 
