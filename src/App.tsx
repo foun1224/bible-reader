@@ -3,6 +3,7 @@ import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, 
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import MainDevotional from './components/MainDevotional'
+import MainBookBackground from './components/MainBookBackground'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -99,7 +100,8 @@ function App() {
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
-  const [mainView, setMainView] = useState<'scripture' | 'devotional'>('scripture')
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background'>('scripture')
+  const [bgBookName, setBgBookName] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -305,6 +307,11 @@ function App() {
     saveBookmark({ sourceId: 'jasher', chapter: chapter.number, verse: 1 })
     setSidebarOpen(false)
   }, [saveBookmark])
+
+  const selectBookBackground = useCallback((bookName: string) => {
+    setBgBookName(bookName)
+    setMainView('book-background')
+  }, [])
 
   const handleJumpTo = useCallback((
     sourceId: 'ckjv' | 'jasher',
@@ -562,6 +569,7 @@ function App() {
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
             : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
         }
+        onSelectBookBackground={selectBookBackground}
       />
       </div>
 
@@ -729,7 +737,7 @@ function App() {
           />
         )}
 
-        {mainView === 'scripture' ? (
+        {mainView === 'scripture' && (
           <>
             <Reader
               chapter={activeChapter}
@@ -804,7 +812,9 @@ function App() {
               </div>
             )}
           </>
-        ) : (
+        )}
+
+        {mainView === 'devotional' && (
           <MainDevotional
             ckjv={ckjv}
             onNavigate={(book, chapter) => {
@@ -813,6 +823,10 @@ function App() {
               setSidebarOpen(false)
             }}
           />
+        )}
+
+        {mainView === 'book-background' && bgBookName && (
+          <MainBookBackground bookName={bgBookName} onBack={() => setMainView('scripture')} />
         )}
       </div>
 
@@ -942,7 +956,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={mainView}
+          mainView={mainView === 'book-background' ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import type {
   BibleData, JasherData, Book, Chapter, CompletionRecord,
 } from '../types'
@@ -16,6 +17,7 @@ interface Props {
   onClose: () => void
   completions: CompletionRecord[]
   currentChapterLabel: string
+  onSelectBookBackground: (bookName: string) => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -24,6 +26,7 @@ export default function Sidebar({
   onSelectCkjvChapter, onSelectJasherChapter,
   isOpen, onClose, completions,
   currentChapterLabel,
+  onSelectBookBackground,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
@@ -67,6 +70,7 @@ export default function Sidebar({
         onSelectJasherChapter={onSelectJasherChapter}
         onClose={onClose}
         currentChapterLabel={currentChapterLabel}
+        onSelectBookBackground={onSelectBookBackground}
       />
     </div>
   )
@@ -138,6 +142,7 @@ interface ScriptureProps {
   onSelectJasherChapter: (chapter: Chapter) => void
   onClose: () => void
   currentChapterLabel: string
+  onSelectBookBackground: (bookName: string) => void
 }
 
 function ScriptureContent({
@@ -151,6 +156,7 @@ function ScriptureContent({
   onSelectCkjvChapter, onSelectJasherChapter,
   onClose,
   currentChapterLabel,
+  onSelectBookBackground,
 }: ScriptureProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -212,7 +218,7 @@ function ScriptureContent({
   }
 
   function renderBookList(books: Book[]) {
-    const items: React.ReactNode[] = []
+    const items: ReactNode[] = []
     let lastCategory = ''
     for (const book of books) {
       const category = BOOK_CATEGORY[book.name] ?? ''
@@ -246,25 +252,37 @@ function ScriptureContent({
             </span>
           </button>
           {isExpanded && (
-            <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
-              {book.chapters.map(ch => {
-                const completed = isCkjvCompleted(book, ch.number)
-                const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
-                return (
-                  <button
-                    key={ch.number}
-                    onClick={() => onSelectCkjvChapter(book, ch)}
-                    className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
-                      ${active
-                        ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
-                        : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
-                          (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-500 dark:text-[#A09890]')
-                      }`}
-                  >
-                    {ch.number}
-                  </button>
-                )
-              })}
+            <div className="pl-6 pr-3 py-1 pb-2">
+              <button
+                onClick={() => onSelectBookBackground(book.name)}
+                className="mb-2 flex w-full items-center gap-1.5 text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
+              >
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
+                  <path d="M3.5 2.5h4A2.5 2.5 0 0 1 10 5v8.5a2 2 0 0 0-2-2H3.5v-9Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                  <path d="M10 5a2.5 2.5 0 0 1 2.5-2.5h.5v9h-.5a2 2 0 0 0-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>書卷背景</span>
+              </button>
+              <div className="flex flex-wrap gap-1">
+                {book.chapters.map(ch => {
+                  const completed = isCkjvCompleted(book, ch.number)
+                  const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
+                  return (
+                    <button
+                      key={ch.number}
+                      onClick={() => onSelectCkjvChapter(book, ch)}
+                      className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
+                        ${active
+                          ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                          : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
+                            (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-500 dark:text-[#A09890]')
+                        }`}
+                    >
+                      {ch.number}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>
