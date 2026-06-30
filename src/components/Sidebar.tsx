@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import type {
   BibleData, JasherData, Book, Chapter, CompletionRecord,
 } from '../types'
@@ -85,7 +86,7 @@ export default function Sidebar({
   const [bgModal, setBgModal] = useState<{ bookName: string; text: string } | null>(null)
 
   useEffect(() => {
-    fetch('/book-backgrounds.json')
+    fetch(import.meta.env.BASE_URL + 'book-backgrounds.json')
       .then(r => r.json())
       .then(setBackgrounds)
       .catch(() => {/* silently ignore if file not present */})
@@ -289,7 +290,7 @@ function ScriptureContent({
   }
 
   function renderBookList(books: Book[]) {
-    const items: React.ReactNode[] = []
+    const items: ReactNode[] = []
     let lastCategory = ''
     for (const book of books) {
       const category = BOOK_CATEGORY[book.name] ?? ''
@@ -327,9 +328,13 @@ function ScriptureContent({
               {backgrounds[book.name] && (
                 <button
                   onClick={() => onShowBackground(book.name)}
-                  className="mb-2 w-full text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
+                  className="mb-2 flex w-full items-center gap-1.5 text-left text-xs text-stone-400 dark:text-[#6B6460] hover:text-[#4F7358] dark:hover:text-[#7AAF87] transition-colors py-0.5"
                 >
-                  📖 書卷背景
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
+                    <path d="M3.5 2.5h4A2.5 2.5 0 0 1 10 5v8.5a2 2 0 0 0-2-2H3.5v-9Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                    <path d="M10 5a2.5 2.5 0 0 1 2.5-2.5h.5v9h-.5a2 2 0 0 0-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>書卷背景</span>
                 </button>
               )}
               <div className="flex flex-wrap gap-1">
