@@ -558,6 +558,13 @@ function App() {
         }
         highlights={highlights}
         onJumpTo={handleJumpTo}
+        mainView={mainView}
+        onMainViewChange={(view) => {
+          setMainView(view)
+          setSettingsOpen(false)
+          setSearchOpen(false)
+          if (view === 'devotional') setChapterGridOpen(false)
+        }}
       />
       </div>
 
@@ -629,27 +636,6 @@ function App() {
                 <rect y="15" width="20" height="2" rx="1"/>
               </svg>
             </button>
-
-            <div className="flex rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-100/70 dark:bg-[#22242C]/70 p-0.5">
-              {(['scripture', 'devotional'] as const).map(view => (
-                <button
-                  key={view}
-                  onClick={() => {
-                    setMainView(view)
-                    setSettingsOpen(false)
-                    setSearchOpen(false)
-                    if (view === 'devotional') setChapterGridOpen(false)
-                  }}
-                  className={`h-8 px-3 text-xs rounded transition-colors ${
-                    mainView === view
-                      ? 'bg-stone-50 dark:bg-[#17191E] text-[#4F7358] dark:text-[#7AAF87] shadow-sm'
-                      : 'text-stone-400 dark:text-[#A09890] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
-                  }`}
-                >
-                  {view === 'scripture' ? '經文' : '靈修'}
-                </button>
-              ))}
-            </div>
 
             {mainView === 'scripture' && (
               <span className="hidden sm:inline text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
