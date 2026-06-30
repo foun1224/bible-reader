@@ -8,6 +8,7 @@ import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
 import MoreMenu from './components/MoreMenu'
 import ChapterGrid from './components/ChapterGrid'
+import BottomNav from './components/BottomNav'
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -511,7 +512,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-stone-50 dark:bg-[#17191E]">
+    <div className="flex flex-col h-dvh overflow-hidden bg-stone-50 dark:bg-[#17191E]">
       {/* Book complete toast */}
       {bookCompleteMessage && (
         <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
@@ -538,8 +539,13 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
-      {/* Sidebar — desktop: always visible; mobile: overlay; hidden in immersive */}
-      <div className={`flex h-full shrink-0 transition-all duration-300 ${isImmersive ? 'sm:hidden' : ''}`}>
+      {/* Inner layout row */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+
+      {/* Sidebar — desktop: always visible; mobile: overlay; hidden in devotional/immersive */}
+      <div className={`flex h-full shrink-0 transition-all duration-300 ${
+        mainView === 'devotional' ? 'hidden' : isImmersive ? 'sm:hidden' : ''
+      }`}>
       <Sidebar
         ckjv={ckjv}
         jasher={jasher}
@@ -556,15 +562,6 @@ function App() {
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
             : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
         }
-        highlights={highlights}
-        onJumpTo={handleJumpTo}
-        mainView={mainView}
-        onMainViewChange={(view) => {
-          setMainView(view)
-          setSettingsOpen(false)
-          setSearchOpen(false)
-          if (view === 'devotional') setChapterGridOpen(false)
-        }}
       />
       </div>
 
@@ -624,18 +621,20 @@ function App() {
         {/* Toolbar */}
         <div className={`relative flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-[#2E3240]/60 bg-stone-50/90 dark:bg-[#17191E]/90 backdrop-blur-sm shrink-0 transition-opacity duration-300 ${isImmersive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex items-center gap-3">
-            {/* Hamburger — mobile only */}
-            <button
-              onClick={() => setSidebarOpen(o => !o)}
-              className="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-              aria-label="開啟目錄"
-            >
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                <rect y="3" width="20" height="2" rx="1"/>
-                <rect y="9" width="20" height="2" rx="1"/>
-                <rect y="15" width="20" height="2" rx="1"/>
-              </svg>
-            </button>
+            {/* Hamburger — mobile only, scripture mode only */}
+            {mainView === 'scripture' && (
+              <button
+                onClick={() => setSidebarOpen(o => !o)}
+                className="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+                aria-label="開啟目錄"
+              >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                  <rect y="3" width="20" height="2" rx="1"/>
+                  <rect y="9" width="20" height="2" rx="1"/>
+                  <rect y="15" width="20" height="2" rx="1"/>
+                </svg>
+              </button>
+            )}
 
             {mainView === 'scripture' && (
               <span className="hidden sm:inline text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
@@ -768,12 +767,36 @@ function App() {
               verseNumStyle={verseNumStyle}
               lineSpacing={lineSpacing}
             />
-            {/* Mobile spacer — reserves space for the fixed bottom nav bar so reader doesn't scroll under it */}
+            {/* Mobile chapter nav — in-flow, above bottom nav */}
             {!isImmersive && (
-              <div
-                className="sm:hidden shrink-0"
-                style={{ height: 'calc(44px + env(safe-area-inset-bottom))' }}
-              />
+              <div className="sm:hidden shrink-0 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]">
+                <div className="flex items-center">
+                  <button
+                    onClick={handlePrevChapter}
+                    disabled={!hasPrev}
+                    className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
+                      ${hasPrev ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => setChapterGridOpen(true)}
+                    className="flex-1 h-11 flex items-center justify-center text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+                  >
+                    {source === 'ckjv' && activeBook && activeChapter
+                      ? `${activeBook.name} · 第 ${activeChapter.number} 章`
+                      : activeChapter ? `雅煞珥 · 第 ${activeChapter.number} 章` : ''}
+                  </button>
+                  <button
+                    onClick={handleNextChapter}
+                    disabled={!hasNext}
+                    className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
+                      ${hasNext ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
             )}
           </>
         ) : (
@@ -909,37 +932,20 @@ function App() {
         />
       )}
 
-      {/* Mobile combined bottom bar: tool tab bar + chapter nav */}
-      {mainView === 'scripture' && !isImmersive && (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-col bg-stone-50/95 dark:bg-[#17191E]/95 backdrop-blur-sm border-t border-stone-200 dark:border-[#2E3240]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          {/* Chapter navigation */}
-          <div className="flex items-center">
-            <button
-              onClick={handlePrevChapter}
-              disabled={!hasPrev}
-              className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
-                ${hasPrev ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
-            >
-              ‹
-            </button>
-            <button
-              onClick={() => setChapterGridOpen(true)}
-              className="flex-1 h-11 flex items-center justify-center text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-            >
-              {source === 'ckjv' && activeBook && activeChapter
-                ? `${activeBook.name} · 第 ${activeChapter.number} 章`
-                : activeChapter ? `雅煞珥 · 第 ${activeChapter.number} 章` : ''}
-            </button>
-            <button
-              onClick={handleNextChapter}
-              disabled={!hasNext}
-              className={`flex items-center justify-center w-14 h-11 text-xl shrink-0 transition-colors
-                ${hasNext ? 'text-stone-400 dark:text-[#A09890]' : 'text-stone-200 dark:text-[#2E3240]'}`}
-            >
-              ›
-            </button>
-          </div>
-        </div>
+      </div> {/* end inner layout row */}
+
+      {/* Bottom nav */}
+      {!isImmersive && (
+        <BottomNav
+          mainView={mainView}
+          onMainViewChange={(view) => {
+            setMainView(view)
+            setSidebarOpen(false)
+            setSettingsOpen(false)
+            setSearchOpen(false)
+            if (view === 'devotional') setChapterGridOpen(false)
+          }}
+        />
       )}
     </div>
   )
