@@ -60,6 +60,58 @@ function parseVerseText(raw: string): Array<{num: string; text: string}> {
   return result.length > 0 ? result : [{ num: '', text: raw }]
 }
 
+const DEVOTIONAL_NOTE_KEY = (mmdd: string) => `devotional-note-${mmdd}`
+
+function DevotionalReflection({ mmdd }: { mmdd: string }) {
+  const [draft, setDraft] = useState(() => {
+    try { return localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '' } catch { return '' }
+  })
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    try { setDraft(localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '') } catch { setDraft('') }
+    setSaved(false)
+  }, [mmdd])
+
+  function save() {
+    try {
+      if (draft.trim()) localStorage.setItem(DEVOTIONAL_NOTE_KEY(mmdd), draft)
+      else localStorage.removeItem(DEVOTIONAL_NOTE_KEY(mmdd))
+    } catch { /* ignore */ }
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
+
+  return (
+    <section className="border-t border-stone-200/70 dark:border-[#2E3240] pt-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">今日默想</p>
+      <h2 className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">寫下你的領受</h2>
+      <p className="mt-1 text-xs leading-relaxed text-stone-400 dark:text-[#A09890]">
+        讀完靈修內容後再寫，讓注意力先留在神的話語，再整理你的感動。
+      </p>
+      <textarea
+        rows={5}
+        value={draft}
+        onChange={e => { setDraft(e.target.value); setSaved(false) }}
+        placeholder="今天的靈修讓我看見什麼？我想帶到禱告或生活裡的是什麼？"
+        className="mt-3 w-full rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] px-4 py-3 text-sm leading-7 text-stone-600 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#6B6460] resize-none focus:outline-none focus:ring-1 focus:ring-[#4F7358] dark:focus:ring-[#7AAF87]"
+      />
+      <div className="mt-2 flex justify-end">
+        <button
+          onClick={save}
+          className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
+            saved
+              ? 'text-[#4F7358] dark:text-[#7AAF87]'
+              : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
+          }`}
+        >
+          {saved ? '已儲存' : '儲存默想'}
+        </button>
+      </div>
+    </section>
+  )
+}
+
 function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?: string }; tag: string }) {
   const inner = (
     <div className="flex gap-2 items-start">
@@ -291,6 +343,8 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                 </div>
               </Section>
             ) : null}
+
+            <DevotionalReflection mmdd={mmdd} />
 
             <footer className="pt-2 text-center">
               <a
