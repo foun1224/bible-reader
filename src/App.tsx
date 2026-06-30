@@ -3,6 +3,7 @@ import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, 
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import MainDevotional from './components/MainDevotional'
+import MainBookIntro from './components/MainBookIntro'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -99,7 +100,8 @@ function App() {
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
-  const [mainView, setMainView] = useState<'scripture' | 'devotional'>('scripture')
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-intro'>('scripture')
+  const [introBook, setIntroBook] = useState<Book | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -554,6 +556,8 @@ function App() {
         activeChapter={activeChapter}
         onSelectCkjvChapter={selectCkjvChapter}
         onSelectJasherChapter={selectJasherChapter}
+        onSelectBookIntro={(book) => { setIntroBook(book); setMainView('book-intro'); setSidebarOpen(false) }}
+        introBook={introBook}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
@@ -804,6 +808,15 @@ function App() {
               </div>
             )}
           </>
+        ) : mainView === 'book-intro' && introBook ? (
+          <MainBookIntro
+            book={introBook}
+            onOpenChapter={() => {
+              const ch = introBook.chapters[0]
+              if (ch) selectCkjvChapter(introBook, ch)
+              setMainView('scripture')
+            }}
+          />
         ) : (
           <MainDevotional
             ckjv={ckjv}
@@ -942,7 +955,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={mainView}
+          mainView={mainView === 'book-intro' ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)

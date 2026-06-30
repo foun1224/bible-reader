@@ -12,6 +12,8 @@ interface Props {
   activeChapter: Chapter | null
   onSelectCkjvChapter: (book: Book, chapter: Chapter) => void
   onSelectJasherChapter: (chapter: Chapter) => void
+  onSelectBookIntro: (book: Book) => void
+  introBook: Book | null
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
@@ -22,6 +24,7 @@ interface Props {
 export default function Sidebar({
   ckjv, jasher, source, activeBook, activeChapter,
   onSelectCkjvChapter, onSelectJasherChapter,
+  onSelectBookIntro, introBook,
   isOpen, onClose, completions,
   currentChapterLabel,
 }: Props) {
@@ -65,6 +68,8 @@ export default function Sidebar({
         isJasherCompleted={isJasherCompleted}
         onSelectCkjvChapter={onSelectCkjvChapter}
         onSelectJasherChapter={onSelectJasherChapter}
+        onSelectBookIntro={onSelectBookIntro}
+        introBook={introBook}
         onClose={onClose}
         currentChapterLabel={currentChapterLabel}
       />
@@ -136,6 +141,8 @@ interface ScriptureProps {
   isJasherCompleted: (chNum: number) => boolean
   onSelectCkjvChapter: (book: Book, chapter: Chapter) => void
   onSelectJasherChapter: (chapter: Chapter) => void
+  onSelectBookIntro: (book: Book) => void
+  introBook: Book | null
   onClose: () => void
   currentChapterLabel: string
 }
@@ -149,6 +156,7 @@ function ScriptureContent({
   showJasher, setShowJasher, expandedBook, setExpandedBook,
   isCkjvCompleted, isJasherCompleted,
   onSelectCkjvChapter, onSelectJasherChapter,
+  onSelectBookIntro, introBook,
   onClose,
   currentChapterLabel,
 }: ScriptureProps) {
@@ -247,6 +255,16 @@ function ScriptureContent({
           </button>
           {isExpanded && (
             <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
+              <button
+                onClick={() => { onSelectBookIntro(book); onClose() }}
+                className={`flex items-center justify-center h-9 px-2 rounded-md text-xs font-medium transition-colors
+                  ${introBook?.id === book.id
+                    ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
+                    : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] text-stone-500 dark:text-[#A09890]'
+                  }`}
+              >
+                簡介
+              </button>
               {book.chapters.map(ch => {
                 const completed = isCkjvCompleted(book, ch.number)
                 const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
