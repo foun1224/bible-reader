@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { BibleData, Book, Chapter } from '../types'
 
 interface SuppItem {
@@ -23,6 +23,53 @@ interface DevotionalDay {
 }
 
 type DevotionalPlan = Record<string, DevotionalDay>
+
+type DevHighlightColor = 'important' | 'comfort' | 'question' | 'prayer'
+
+interface DevotionalHighlight {
+  mmdd: string
+  verseRef: string
+  color: DevHighlightColor
+  verseText: string
+}
+
+const DEV_COLOR_BG: Record<DevHighlightColor, string> = {
+  important: 'bg-amber-200/70 dark:bg-amber-300/25',
+  comfort:   'bg-green-200/70 dark:bg-green-400/25',
+  question:  'bg-blue-200/70 dark:bg-blue-400/25',
+  prayer:    'bg-red-200/70 dark:bg-red-400/25',
+}
+
+const DEV_COLOR_DOT: Record<DevHighlightColor, string> = {
+  important: 'bg-amber-300',
+  comfort:   'bg-green-400',
+  question:  'bg-blue-400',
+  prayer:    'bg-red-400',
+}
+
+const DEV_COLOR_LABEL: Record<DevHighlightColor, string> = {
+  important: '重要',
+  comfort:   '安慰',
+  question:  '疑問',
+  prayer:    '禱告',
+}
+
+const HL_COLORS: DevHighlightColor[] = ['important', 'comfort', 'question', 'prayer']
+
+const HL_STORE_KEY = 'devotional-highlights'
+
+function loadHighlights(): DevotionalHighlight[] {
+  try {
+    const raw = localStorage.getItem(HL_STORE_KEY)
+    return raw ? (JSON.parse(raw) as DevotionalHighlight[]) : []
+  } catch {
+    return []
+  }
+}
+
+function saveHighlights(hs: DevotionalHighlight[]) {
+  try { localStorage.setItem(HL_STORE_KEY, JSON.stringify(hs)) } catch { /* ignore */ }
+}
 
 function todayMMDD(): string {
   const d = new Date()
@@ -60,58 +107,6 @@ function parseVerseText(raw: string): Array<{num: string; text: string}> {
   return result.length > 0 ? result : [{ num: '', text: raw }]
 }
 
-const DEVOTIONAL_NOTE_KEY = (mmdd: string) => `devotional-note-${mmdd}`
-
-function DevotionalReflection({ mmdd }: { mmdd: string }) {
-  const [draft, setDraft] = useState(() => {
-    try { return localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '' } catch { return '' }
-  })
-  const [saved, setSaved] = useState(false)
-
-  useEffect(() => {
-    try { setDraft(localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '') } catch { setDraft('') }
-    setSaved(false)
-  }, [mmdd])
-
-  function save() {
-    try {
-      if (draft.trim()) localStorage.setItem(DEVOTIONAL_NOTE_KEY(mmdd), draft)
-      else localStorage.removeItem(DEVOTIONAL_NOTE_KEY(mmdd))
-    } catch { /* ignore */ }
-    setSaved(true)
-    setTimeout(() => setSaved(false), 1500)
-  }
-
-  return (
-    <section className="border-t border-stone-200/70 dark:border-[#2E3240] pt-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">今日默想</p>
-      <h2 className="mt-1 text-base font-medium text-stone-600 dark:text-[#E4DDD0]">寫下你的領受</h2>
-      <p className="mt-1 text-xs leading-relaxed text-stone-400 dark:text-[#A09890]">
-        讀完靈修內容後再寫，讓注意力先留在神的話語，再整理你的感動。
-      </p>
-      <textarea
-        rows={5}
-        value={draft}
-        onChange={e => { setDraft(e.target.value); setSaved(false) }}
-        placeholder="今天的靈修讓我看見什麼？我想帶到禱告或生活裡的是什麼？"
-        className="mt-3 w-full rounded-md border border-stone-200 dark:border-[#2E3240] bg-stone-50 dark:bg-[#17191E] px-4 py-3 text-sm leading-7 text-stone-600 dark:text-[#E4DDD0] placeholder-stone-300 dark:placeholder-[#6B6460] resize-none focus:outline-none focus:ring-1 focus:ring-[#4F7358] dark:focus:ring-[#7AAF87]"
-      />
-      <div className="mt-2 flex justify-end">
-        <button
-          onClick={save}
-          className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
-            saved
-              ? 'text-[#4F7358] dark:text-[#7AAF87]'
-              : 'text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] hover:text-stone-600 dark:hover:text-[#E4DDD0]'
-          }`}
-        >
-          {saved ? '已儲存' : '儲存默想'}
-        </button>
-      </div>
-    </section>
-  )
-}
-
 function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?: string }; tag: string }) {
   const inner = (
     <div className="flex gap-2 items-start">
@@ -144,6 +139,51 @@ function Section({ title, children, muted = false }: {
   )
 }
 
+const DEVOTIONAL_NOTE_KEY = (mmdd: string) => `devotional-note-${mmdd}`
+
+function DevotionalReflection({ mmdd }: { mmdd: string }) {
+  const [draft, setDraft] = useState(() => {
+    try { return localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '' } catch { return '' }
+  })
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    try { setDraft(localStorage.getItem(DEVOTIONAL_NOTE_KEY(mmdd)) ?? '') } catch { setDraft('') }
+    setSaved(false)
+  }, [mmdd])
+
+  function save() {
+    try {
+      if (draft.trim()) localStorage.setItem(DEVOTIONAL_NOTE_KEY(mmdd), draft)
+      else localStorage.removeItem(DEVOTIONAL_NOTE_KEY(mmdd))
+    } catch { /* ignore */ }
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
+
+  return (
+    <Section title="默想筆記">
+      <textarea
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') save() }}
+        placeholder="記錄今天的感動、領受、或禱告…"
+        rows={4}
+        className="w-full resize-none rounded-md border border-stone-200 dark:border-[#2E3240] bg-transparent px-3 py-2 text-sm leading-7 text-stone-600 dark:text-[#D4CEC4] placeholder:text-stone-300 dark:placeholder:text-[#6B6460] focus:outline-none focus:border-[#4F7358] dark:focus:border-[#7AAF87] transition-colors"
+      />
+      <div className="mt-2 flex items-center justify-end gap-3">
+        {saved && <span className="text-xs text-[#4F7358] dark:text-[#7AAF87]">已儲存</span>}
+        <button
+          onClick={save}
+          className="rounded-md border border-[#4F7358] dark:border-[#7AAF87] px-3 py-1.5 text-xs font-medium text-[#4F7358] dark:text-[#7AAF87] hover:bg-[#4F7358]/10 dark:hover:bg-[#7AAF87]/10 transition-colors"
+        >
+          儲存
+        </button>
+      </div>
+    </Section>
+  )
+}
+
 export default function MainDevotional({ ckjv, onNavigate }: {
   ckjv: BibleData | null
   onNavigate: (book: Book, chapter: Chapter) => void
@@ -153,6 +193,10 @@ export default function MainDevotional({ ckjv, onNavigate }: {
   const [error, setError] = useState(false)
   const [mmdd, setMmdd] = useState(todayMMDD)
   const todayKey = todayMMDD()
+
+  const [highlights, setHighlights] = useState<DevotionalHighlight[]>(loadHighlights)
+  const [picker, setPicker] = useState<{ verseRef: string; text: string } | null>(null)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (plan) return
@@ -166,6 +210,44 @@ export default function MainDevotional({ ckjv, onNavigate }: {
 
   const day = plan?.[mmdd]
 
+  const todayHighlights = highlights.filter(h => h.mmdd === mmdd)
+
+  function getVerseHL(verseRef: string): DevHighlightColor | null {
+    return highlights.find(h => h.mmdd === mmdd && h.verseRef === verseRef)?.color ?? null
+  }
+
+  function startLongPress(verseRef: string, text: string) {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current)
+    longPressTimer.current = setTimeout(() => {
+      setPicker({ verseRef, text })
+    }, 500)
+  }
+
+  function cancelLongPress() {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }
+
+  function applyHighlight(color: DevHighlightColor) {
+    if (!picker) return
+    const newHL: DevotionalHighlight = { mmdd, verseRef: picker.verseRef, color, verseText: picker.text }
+    const updated = [
+      ...highlights.filter(h => !(h.mmdd === mmdd && h.verseRef === picker.verseRef)),
+      newHL,
+    ]
+    setHighlights(updated)
+    saveHighlights(updated)
+    setPicker(null)
+  }
+
+  function removeHighlight(verseRef: string) {
+    const updated = highlights.filter(h => !(h.mmdd === mmdd && h.verseRef === verseRef))
+    setHighlights(updated)
+    saveHighlights(updated)
+  }
+
   function handleNavigate() {
     if (!day || !ckjv) return
     const book = findBookByRef(day.ref, ckjv.books)
@@ -176,59 +258,108 @@ export default function MainDevotional({ ckjv, onNavigate }: {
   }
 
   return (
-    <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
-      <div className="mx-auto w-full max-w-3xl">
-        <div className="mb-8 flex items-center justify-between gap-3">
-          <button
-            onClick={() => setMmdd(shiftMMDD(mmdd, -1))}
-            className="h-9 w-9 rounded-full border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-            aria-label="前一天"
-          >
-            ←
-          </button>
-          <div className="text-center">
-            <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">靈修</p>
-            <p className="mt-1 text-sm text-stone-500 dark:text-[#E4DDD0]">
-              {mmdd.slice(0, 2)}月{mmdd.slice(2, 4)}日
-              {mmdd === todayKey && (
-                <span className="ml-2 rounded-full bg-[#4F7358]/10 px-2 py-0.5 text-[10px] text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">今天</span>
-              )}
-            </p>
+    <>
+      <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
+        <div className="mx-auto w-full max-w-3xl">
+          <div className="mb-8 flex items-center justify-between gap-3">
+            <button
+              onClick={() => setMmdd(shiftMMDD(mmdd, -1))}
+              className="h-9 w-9 rounded-full border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              aria-label="前一天"
+            >
+              ←
+            </button>
+            <div className="text-center">
+              <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">靈修</p>
+              <p className="mt-1 text-sm text-stone-500 dark:text-[#E4DDD0]">
+                {mmdd.slice(0, 2)}月{mmdd.slice(2, 4)}日
+                {mmdd === todayKey && (
+                  <span className="ml-2 rounded-full bg-[#4F7358]/10 px-2 py-0.5 text-[10px] text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">今天</span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => setMmdd(shiftMMDD(mmdd, 1))}
+              className="h-9 w-9 rounded-full border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
+              aria-label="後一天"
+            >
+              →
+            </button>
           </div>
-          <button
-            onClick={() => setMmdd(shiftMMDD(mmdd, 1))}
-            className="h-9 w-9 rounded-full border border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
-            aria-label="後一天"
-          >
-            →
-          </button>
-        </div>
 
-        {loading && (
-          <div className="flex h-40 items-center justify-center text-sm text-stone-300 dark:text-[#6B6460]">
-            <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-stone-200 border-t-[#4F7358]" />
-            載入靈修內容…
-          </div>
-        )}
+          {loading && (
+            <div className="flex h-40 items-center justify-center text-sm text-stone-300 dark:text-[#6B6460]">
+              <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-stone-200 border-t-[#4F7358]" />
+              載入靈修內容…
+            </div>
+          )}
 
-        {error && (
-          <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">無法載入靈修資料</p>
-        )}
+          {error && (
+            <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">無法載入靈修資料</p>
+          )}
 
-        {plan && !day && (
-          <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">此日期暫無資料</p>
-        )}
+          {plan && !day && (
+            <p className="py-16 text-center text-sm text-stone-300 dark:text-[#6B6460]">此日期暫無資料</p>
+          )}
 
-        {day && (
-          <article className="space-y-7">
-            <header className="space-y-4">
-              <p className="text-xs font-medium tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87] uppercase">{day.title}</p>
-              <div>
-                <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
-                {day.verseText && (
-                  <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
-                    {parseVerseText(day.verseText).map(({ num, text }) => (
-                      <p key={num} className="text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl">
+          {day && (
+            <article className="space-y-7">
+              <header className="space-y-4">
+                <p className="text-xs font-medium tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87] uppercase">{day.title}</p>
+                <div>
+                  <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
+                  {day.verseText && (
+                    <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
+                      {parseVerseText(day.verseText).map(({ num, text }) => {
+                        const hl = getVerseHL(num)
+                        return (
+                          <p
+                            key={num}
+                            onPointerDown={() => startLongPress(num, text)}
+                            onPointerUp={cancelLongPress}
+                            onPointerLeave={cancelLongPress}
+                            className={`text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl select-none cursor-default rounded px-1 -mx-1 transition-colors ${hl ? DEV_COLOR_BG[hl] : ''}`}
+                          >
+                            {num && (
+                              <sup
+                                className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
+                                style={{ fontSize: '9px', fontWeight: 400 }}
+                              >
+                                {num}
+                              </sup>
+                            )}
+                            {text}
+                          </p>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {ckjv && (
+                    <button
+                      onClick={handleNavigate}
+                      className="rounded-md border border-[#4F7358] px-3 py-2 text-xs font-medium text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 dark:border-[#7AAF87] dark:text-[#7AAF87] dark:hover:bg-[#7AAF87]/10"
+                    >
+                      打開相關經文
+                    </button>
+                  )}
+                  <a
+                    href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-md border border-stone-300 px-3 py-2 text-xs text-stone-400 transition-colors hover:bg-stone-100 dark:border-[#3A3C42] dark:text-[#A09890] dark:hover:bg-[#22242C]"
+                  >
+                    完整靈修 ↗
+                  </a>
+                </div>
+              </header>
+
+              {day.relatedVerse && (
+                <Section title="相關經文" muted>
+                  <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
+                    {parseVerseText(day.relatedVerse).map(({ num, text }, i) => (
+                      <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
                         {num && (
                           <sup
                             className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
@@ -241,134 +372,157 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                       </p>
                     ))}
                   </div>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {ckjv && (
-                  <button
-                    onClick={handleNavigate}
-                    className="rounded-md border border-[#4F7358] px-3 py-2 text-xs font-medium text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 dark:border-[#7AAF87] dark:text-[#7AAF87] dark:hover:bg-[#7AAF87]/10"
-                  >
-                    打開相關經文
-                  </button>
-                )}
+                </Section>
+              )}
+
+              {day.meditation.length > 0 && (
+                <Section title="觀察默想">
+                  <ol className="space-y-3">
+                    {day.meditation.map((q, i) => (
+                      <li key={i} className="flex gap-3 text-sm leading-7 sm:text-base">
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#4F7358]/10 text-xs font-semibold text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">{i + 1}</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </Section>
+              )}
+
+              {day.responses.length > 0 && (
+                <Section title="靈修回應">
+                  <ol className="space-y-3">
+                    {day.responses.map((q, i) => (
+                      <li key={i} className="flex gap-3 text-sm leading-7 sm:text-base">
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#4F7358]/10 text-xs font-semibold text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">{i + 1}</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </Section>
+              )}
+
+              {day.hints.length > 0 && (
+                <Section title="經文亮光" muted>
+                  <div className="space-y-3 text-sm leading-7 sm:text-base">
+                    {day.hints.map((p, i) => <p key={i}>{p}</p>)}
+                  </div>
+                </Section>
+              )}
+
+              {day.prayer && (
+                <Section title="禱告文">
+                  <p className="rounded-md bg-[#4F7358]/10 px-4 py-5 text-base italic leading-8 text-stone-600 dark:bg-[#7AAF87]/8 dark:text-[#D4CEC4]">
+                    {day.prayer}
+                  </p>
+                </Section>
+              )}
+
+              {day.hymn && (
+                <Section title="詩歌欣賞" muted>
+                  <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+                    {day.hymn.title}
+                  </p>
+                  {day.hymn.description && (
+                    <p className="mt-1 text-sm leading-7 text-stone-400 dark:text-[#6B6460]">
+                      {day.hymn.description}
+                    </p>
+                  )}
+                </Section>
+              )}
+
+              {(day.lights?.length || day.messages?.length || day.testimonies?.length) ? (
+                <Section title="延伸閱讀" muted>
+                  <div className="space-y-2">
+                    {day.lights?.map((item, i) => (
+                      <SuppLink key={'l'+i} item={item} tag="亮光" />
+                    ))}
+                    {day.messages?.map((item, i) => (
+                      <SuppLink key={'m'+i} item={item} tag="信息" />
+                    ))}
+                    {day.testimonies?.map((item, i) => (
+                      <SuppLink key={'t'+i} item={item} tag="見證" />
+                    ))}
+                  </div>
+                </Section>
+              ) : null}
+
+              {todayHighlights.length > 0 && (
+                <Section title="本日劃線">
+                  <div className="space-y-3">
+                    {todayHighlights.map(h => (
+                      <div key={h.verseRef} className="flex items-start gap-2">
+                        <span className={`mt-1.5 shrink-0 w-2.5 h-2.5 rounded-full ${DEV_COLOR_DOT[h.color]}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] text-stone-400 dark:text-[#6B6460] mb-0.5">{h.verseRef} 節・{DEV_COLOR_LABEL[h.color]}</p>
+                          <p className="text-sm leading-6 text-stone-600 dark:text-[#D4CEC4] line-clamp-2">{h.verseText}</p>
+                        </div>
+                        <button
+                          onClick={() => removeHighlight(h.verseRef)}
+                          aria-label="移除劃線"
+                          className="shrink-0 mt-1 text-stone-300 dark:text-[#6B6460] hover:text-stone-500 dark:hover:text-[#A09890] transition-colors text-xs leading-none"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              <DevotionalReflection mmdd={mmdd} />
+
+              <footer className="pt-2 text-center">
                 <a
-                  href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`}
+                  href="https://letsfollowjesus.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-md border border-stone-300 px-3 py-2 text-xs text-stone-400 transition-colors hover:bg-stone-100 dark:border-[#3A3C42] dark:text-[#A09890] dark:hover:bg-[#22242C]"
+                  className="text-[11px] text-stone-300 transition-colors hover:text-stone-400 dark:text-[#6B6460] dark:hover:text-[#A09890]"
                 >
-                  完整靈修 ↗
+                  內容來源：跟隨耶穌 letsfollowjesus.org
                 </a>
+              </footer>
+            </article>
+          )}
+        </div>
+      </main>
+
+      {/* Long-press highlight color picker */}
+      {picker && (
+        <div
+          className="fixed inset-0 z-50"
+          onPointerDown={() => setPicker(null)}
+        >
+          <div
+            className="fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-[#22242C] border-t border-stone-200 dark:border-[#2E3240] px-6 pt-5 pb-10 shadow-2xl"
+            onPointerDown={e => e.stopPropagation()}
+          >
+            <p className="mb-1 text-[11px] font-semibold tracking-[0.18em] text-stone-300 dark:text-[#6B6460] uppercase text-center">標記經文</p>
+            <p className="mb-5 text-xs text-stone-500 dark:text-[#A09890] text-center line-clamp-1">{picker.text}</p>
+            <div className="flex justify-center gap-6">
+              {HL_COLORS.map(color => (
+                <button
+                  key={color}
+                  onClick={() => applyHighlight(color)}
+                  className="flex flex-col items-center gap-2 group"
+                >
+                  <span className={`w-10 h-10 rounded-full ${DEV_COLOR_DOT[color]} group-hover:scale-110 transition-transform`} />
+                  <span className="text-xs text-stone-500 dark:text-[#A09890]">{DEV_COLOR_LABEL[color]}</span>
+                </button>
+              ))}
+            </div>
+            {getVerseHL(picker.verseRef) && (
+              <div className="mt-5 flex justify-center">
+                <button
+                  onClick={() => { removeHighlight(picker.verseRef); setPicker(null) }}
+                  className="text-xs text-stone-400 dark:text-[#6B6460] hover:text-stone-600 dark:hover:text-[#A09890] transition-colors"
+                >
+                  移除劃線
+                </button>
               </div>
-            </header>
-
-            {day.relatedVerse && (
-              <Section title="相關經文" muted>
-                <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
-                  {parseVerseText(day.relatedVerse).map(({ num, text }, i) => (
-                    <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
-                      {num && (
-                        <sup
-                          className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
-                          style={{ fontSize: '9px', fontWeight: 400 }}
-                        >
-                          {num}
-                        </sup>
-                      )}
-                      {text}
-                    </p>
-                  ))}
-                </div>
-              </Section>
             )}
-
-            {day.meditation.length > 0 && (
-              <Section title="觀察默想">
-                <ol className="space-y-3">
-                  {day.meditation.map((q, i) => (
-                    <li key={i} className="flex gap-3 text-sm leading-7 sm:text-base">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#4F7358]/10 text-xs font-semibold text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">{i + 1}</span>
-                      <span>{q}</span>
-                    </li>
-                  ))}
-                </ol>
-              </Section>
-            )}
-
-            {day.responses.length > 0 && (
-              <Section title="靈修回應">
-                <ol className="space-y-3">
-                  {day.responses.map((q, i) => (
-                    <li key={i} className="flex gap-3 text-sm leading-7 sm:text-base">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#4F7358]/10 text-xs font-semibold text-[#4F7358] dark:bg-[#7AAF87]/10 dark:text-[#7AAF87]">{i + 1}</span>
-                      <span>{q}</span>
-                    </li>
-                  ))}
-                </ol>
-              </Section>
-            )}
-
-            {day.hints.length > 0 && (
-              <Section title="經文亮光" muted>
-                <div className="space-y-3 text-sm leading-7 sm:text-base">
-                  {day.hints.map((p, i) => <p key={i}>{p}</p>)}
-                </div>
-              </Section>
-            )}
-
-            {day.prayer && (
-              <Section title="禱告文">
-                <p className="rounded-md bg-[#4F7358]/10 px-4 py-5 text-base italic leading-8 text-stone-600 dark:bg-[#7AAF87]/8 dark:text-[#D4CEC4]">
-                  {day.prayer}
-                </p>
-              </Section>
-            )}
-
-            {day.hymn && (
-              <Section title="詩歌欣賞" muted>
-                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
-                  {day.hymn.title}
-                </p>
-                {day.hymn.description && (
-                  <p className="mt-1 text-sm leading-7 text-stone-400 dark:text-[#6B6460]">
-                    {day.hymn.description}
-                  </p>
-                )}
-              </Section>
-            )}
-
-            {(day.lights?.length || day.messages?.length || day.testimonies?.length) ? (
-              <Section title="延伸閱讀" muted>
-                <div className="space-y-2">
-                  {day.lights?.map((item, i) => (
-                    <SuppLink key={'l'+i} item={item} tag="亮光" />
-                  ))}
-                  {day.messages?.map((item, i) => (
-                    <SuppLink key={'m'+i} item={item} tag="信息" />
-                  ))}
-                  {day.testimonies?.map((item, i) => (
-                    <SuppLink key={'t'+i} item={item} tag="見證" />
-                  ))}
-                </div>
-              </Section>
-            ) : null}
-
-            <DevotionalReflection mmdd={mmdd} />
-
-            <footer className="pt-2 text-center">
-              <a
-                href="https://letsfollowjesus.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] text-stone-300 transition-colors hover:text-stone-400 dark:text-[#6B6460] dark:hover:text-[#A09890]"
-              >
-                內容來源：跟隨耶穌 letsfollowjesus.org
-              </a>
-            </footer>
-          </article>
-        )}
-      </div>
-    </main>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
