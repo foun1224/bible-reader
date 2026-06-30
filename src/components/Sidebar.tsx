@@ -91,7 +91,7 @@ export default function Sidebar({
             }`}
         >
           {icon}
-          <span className="text-[8px] font-semibold leading-none tracking-wide">{label}</span>
+          <span className="text-[9px] font-semibold leading-none tracking-wide">{label}</span>
         </button>
       ))}
     </div>
