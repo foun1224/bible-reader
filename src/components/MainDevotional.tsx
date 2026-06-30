@@ -95,7 +95,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
             ←
           </button>
           <div className="text-center">
-            <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">領受</p>
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-300 dark:text-[#6B6460] uppercase">靈修</p>
             <p className="mt-1 text-sm text-stone-500 dark:text-[#E4DDD0]">
               {mmdd.slice(0, 2)}月{mmdd.slice(2, 4)}日
               {mmdd === todayKey && (
@@ -115,7 +115,7 @@ export default function MainDevotional({ ckjv, onNavigate }: {
         {loading && (
           <div className="flex h-40 items-center justify-center text-sm text-stone-300 dark:text-[#6B6460]">
             <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-stone-200 border-t-[#4F7358]" />
-            載入領受內容…
+            載入靈修內容…
           </div>
         )}
 
