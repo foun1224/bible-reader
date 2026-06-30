@@ -828,7 +828,14 @@ function App() {
         )}
 
         {mainView === 'book-background' && bgBookName && (
-          <MainBookBackground bookName={bgBookName} onBack={() => setMainView('scripture')} />
+          <MainBookBackground
+            bookName={bgBookName}
+            onBack={() => setMainView('scripture')}
+            onOpenFirstChapter={() => {
+              const book = ckjv?.books.find(b => b.name === bgBookName)
+              if (book && book.chapters[0]) selectCkjvChapter(book, book.chapters[0])
+            }}
+          />
         )}
       </div>
 
