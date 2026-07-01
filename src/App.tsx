@@ -824,6 +824,9 @@ function App() {
               setMainView('scripture')
               setSidebarOpen(false)
             }}
+            fontSize={FONT_SIZES[fontSize]}
+            verseNumStyle={verseNumStyle}
+            lineSpacing={lineSpacing}
           />
         )}
 
