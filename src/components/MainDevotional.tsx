@@ -107,7 +107,7 @@ function parseVerseText(raw: string): Array<{num: string; text: string}> {
   return result.length > 0 ? result : [{ num: '', text: raw }]
 }
 
-function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?: string }; tag: string }) {
+function SuppLink({ item, tag, href }: { item: { title: string; excerpt: string; url?: string }; tag: string; href: string }) {
   const inner = (
     <div className="flex gap-2 items-start">
       <span className="shrink-0 mt-0.5 text-[10px] font-semibold tracking-wide text-stone-300 dark:text-[#6B6460] uppercase pt-0.5">{tag}</span>
@@ -119,7 +119,7 @@ function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?:
       </div>
     </div>
   )
-  return <div>{inner}</div>
+  return <a href={href} target="_blank" rel="noopener noreferrer" className="block hover:opacity-70 transition-opacity">{inner}</a>
 }
 
 function Section({ title, children, muted = false }: {
@@ -444,13 +444,13 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
                 <Section title="延伸閱讀" muted>
                   <div className="space-y-2">
                     {day.lights?.map((item, i) => (
-                      <SuppLink key={'l'+i} item={item} tag="亮光" />
+                      <SuppLink key={'l'+i} item={item} tag="亮光" href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`} />
                     ))}
                     {day.messages?.map((item, i) => (
-                      <SuppLink key={'m'+i} item={item} tag="信息" />
+                      <SuppLink key={'m'+i} item={item} tag="信息" href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`} />
                     ))}
                     {day.testimonies?.map((item, i) => (
-                      <SuppLink key={'t'+i} item={item} tag="見證" />
+                      <SuppLink key={'t'+i} item={item} tag="見證" href={`https://letsfollowjesus.org/main/daily/${mmdd}.html`} />
                     ))}
                   </div>
                 </Section>
