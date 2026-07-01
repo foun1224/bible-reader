@@ -54,6 +54,7 @@ interface Props {
   onSettings?: () => void
   onToggleImmersive?: () => void
   showScriptureTools?: boolean
+  showReadingSettings?: boolean
 }
 
 export default function MoreMenu({
@@ -65,6 +66,7 @@ export default function MoreMenu({
   onSettings,
   onToggleImmersive,
   showScriptureTools = false,
+  showReadingSettings = false,
 }: Props) {
   const scriptureTools = [
     { label: '搜尋經文', icon: 'search' as MenuIcon, fn: onSearch },
@@ -97,6 +99,17 @@ export default function MoreMenu({
                   <span>{label}</span>
                 </button>
               ))}
+            </div>
+          )}
+          {!showScriptureTools && showReadingSettings && onSettings && (
+            <div className="sm:hidden pb-2 mb-2 border-b border-stone-200 dark:border-[#2E3240]">
+              <button
+                onClick={() => { onSettings(); onClose() }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-stone-500 dark:text-[#E4DDD0] hover:bg-stone-100 dark:hover:bg-[#17191E] transition-colors text-left"
+              >
+                <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon="settings" /></span>
+                <span>閱讀設定</span>
+              </button>
             </div>
           )}
 

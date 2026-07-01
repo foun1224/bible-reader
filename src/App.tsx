@@ -686,7 +686,10 @@ function App() {
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
             </button>
-            {/* 閱讀設定 */}
+              </>
+            )}
+            {/* 閱讀設定 — scripture & devotional */}
+            {(mainView === 'scripture' || mainView === 'devotional') && (
             <button
               onClick={() => setSettingsOpen(o => !o)}
               className={`hidden sm:inline-flex h-8 items-center px-2.5 text-xs rounded border transition-colors ${
@@ -701,7 +704,6 @@ function App() {
                 <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.2 3.2l1.4 1.4M15.4 15.4l1.4 1.4M3.2 16.8l1.4-1.4M15.4 4.6l1.4-1.4"/>
               </svg>
             </button>
-              </>
             )}
             {/* 更多 */}
             <button
@@ -852,6 +854,7 @@ function App() {
         onSettings={() => setSettingsOpen(true)}
         onToggleImmersive={() => setIsImmersive(v => !v)}
         showScriptureTools={mainView === 'scripture'}
+        showReadingSettings={mainView === 'devotional'}
       />
 
       {/* 閱讀設定 popover — fixed to avoid iOS touch-event clipping */}
