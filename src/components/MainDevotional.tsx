@@ -347,7 +347,7 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
                       onClick={handleNavigate}
                       className="rounded-md border border-[#4F7358] px-3 py-2 text-xs font-medium text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 dark:border-[#7AAF87] dark:text-[#7AAF87] dark:hover:bg-[#7AAF87]/10"
                     >
-                      打開相關經文
+                      閱讀原文
                     </button>
                   )}
                   <a
