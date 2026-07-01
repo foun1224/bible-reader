@@ -119,9 +119,7 @@ function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?:
       </div>
     </div>
   )
-  return item.url
-    ? <a href={item.url} target="_blank" rel="noopener noreferrer" className="block hover:opacity-70 transition-opacity">{inner}</a>
-    : <div>{inner}</div>
+  return <div>{inner}</div>
 }
 
 function Section({ title, children, muted = false }: {
