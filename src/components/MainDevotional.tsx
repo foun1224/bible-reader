@@ -184,9 +184,12 @@ function DevotionalReflection({ mmdd }: { mmdd: string }) {
   )
 }
 
-export default function MainDevotional({ ckjv, onNavigate }: {
+export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumStyle, lineSpacing }: {
   ckjv: BibleData | null
   onNavigate: (book: Book, chapter: Chapter) => void
+  fontSize: string
+  verseNumStyle: 'show' | 'fade' | 'hide'
+  lineSpacing: 'comfortable' | 'loose'
 }) {
   const [plan, setPlan] = useState<DevotionalPlan | null>(null)
   const [loading, setLoading] = useState(false)
@@ -318,11 +321,16 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                             onPointerDown={() => startLongPress(num, text)}
                             onPointerUp={cancelLongPress}
                             onPointerLeave={cancelLongPress}
-                            className={`text-lg leading-8 text-stone-700 dark:text-[#E4DDD0] sm:text-xl select-none cursor-default rounded px-1 -mx-1 transition-colors ${hl ? DEV_COLOR_BG[hl] : ''}`}
+                            className={`${fontSize} text-stone-700 dark:text-[#E4DDD0] select-none cursor-default rounded px-1 -mx-1 transition-colors ${hl ? DEV_COLOR_BG[hl] : ''}`}
+                            style={{ lineHeight: lineSpacing === 'loose' ? '2.4' : '1.9' }}
                           >
                             {num && (
                               <sup
-                                className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
+                                className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
+                                  verseNumStyle === 'hide' ? 'opacity-0'
+                                  : verseNumStyle === 'fade' ? 'opacity-20'
+                                  : 'opacity-60'
+                                }`}
                                 style={{ fontSize: '9px', fontWeight: 400 }}
                               >
                                 {num}
@@ -362,7 +370,11 @@ export default function MainDevotional({ ckjv, onNavigate }: {
                       <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
                         {num && (
                           <sup
-                            className="text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 opacity-60"
+                            className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
+                              verseNumStyle === 'hide' ? 'opacity-0'
+                              : verseNumStyle === 'fade' ? 'opacity-20'
+                              : 'opacity-60'
+                            }`}
                             style={{ fontSize: '9px', fontWeight: 400 }}
                           >
                             {num}
