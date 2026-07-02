@@ -696,11 +696,11 @@ function App() {
             </button>
               </>
             )}
-            {/* 閱讀設定 — scripture (desktop only) & devotional (always) */}
+            {/* 閱讀設定 — always visible in scripture & devotional */}
             {(mainView === 'scripture' || mainView === 'devotional') && (
             <button
               onClick={() => setSettingsOpen(o => !o)}
-              className={`${mainView === 'devotional' ? 'inline-flex' : 'hidden sm:inline-flex'} h-8 items-center px-2.5 text-xs rounded border transition-colors ${
+              className={`inline-flex h-8 items-center px-2.5 text-xs rounded border transition-colors ${
                 settingsOpen
                   ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#22242C]'
                   : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C]'
