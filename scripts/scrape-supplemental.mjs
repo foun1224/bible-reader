@@ -24,6 +24,19 @@ function stripTags(html) {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+function resolveDailyUrl(rawUrl) {
+  if (!rawUrl || rawUrl === ".html") return ""
+  if (rawUrl.startsWith("http")) return rawUrl
+  if (rawUrl.startsWith("articles/")) {
+    const articlePath = rawUrl.replace("articles/", "")
+    const month = articlePath.slice(0, 2)
+    return /^\d{2}$/.test(month)
+      ? ARTICLE_BASE + "/" + month + "/" + articlePath
+      : ARTICLE_BASE + "/" + articlePath
+  }
+  return BASE_URL + "/" + rawUrl
+}
+
 // Extract all rows with a given alt type, return [{title, excerpt, url}]
 function extractSuppItems(html, altType) {
   const results = []
@@ -41,17 +54,17 @@ function extractSuppItems(html, altType) {
     const linkMatch = row.match(/<a\s+href="([^"]+)"[^>]*>([^<]+)<\/a>/)
     const title = linkMatch ? linkMatch[2].trim() : ''
     const rawUrl = linkMatch ? linkMatch[1].trim() : ''
-    // Resolve URL: relative paths like "articles/0701-L2-..."
-    let url = ''
-    if (rawUrl.startsWith('http')) url = rawUrl
-    else if (rawUrl.startsWith('articles/')) url = `${ARTICLE_BASE}/${rawUrl.replace('articles/', '')}`
-    else if (rawUrl) url = `${BASE_URL}/${rawUrl}`
+    const url = resolveDailyUrl(rawUrl)
 
     // Extract excerpt: text after the </a> tag
     const afterLink = linkMatch ? row.slice(row.indexOf(linkMatch[0]) + linkMatch[0].length) : row
     const excerpt = stripTags(afterLink).replace(/^\s*/, '').replace(/\s*\.\.\.\s*$/, '').trim()
 
-    if (title || excerpt) results.push({ title, excerpt, url })
+    if (title || excerpt) {
+      const item = { title, excerpt }
+      if (url) item.url = url
+      results.push(item)
+    }
     searchFrom = rowEnd + 5
   }
   return results.length > 0 ? results : undefined
