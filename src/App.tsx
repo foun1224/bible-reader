@@ -18,6 +18,7 @@ const STREAK_KEY = 'bible-reader-streak'
 const PLAN_KEY = 'bible-reader-plan'
 const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
 const HIGHLIGHTS_KEY = 'bible-reader-highlights'
+const DEFAULT_VIEW_KEY = 'bible-reader-default-view'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -100,7 +101,14 @@ function App() {
   const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background'>('scripture')
+  const [defaultView, setDefaultView] = useState<'scripture' | 'devotional'>(() => {
+    const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
+    return saved === 'devotional' ? 'devotional' : 'scripture'
+  })
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background'>(() => {
+    const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
+    return saved === 'devotional' ? 'devotional' : 'scripture'
+  })
   const [bgBookName, setBgBookName] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
@@ -930,6 +938,27 @@ function App() {
                     }`}
                   >
                     {{ comfortable: '舒適', loose: '寬鬆' }[v]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold text-stone-400 dark:text-[#A09890] mb-2 uppercase tracking-widest">預設頁面</div>
+              <div className="flex gap-1">
+                {(['scripture', 'devotional'] as const).map(v => (
+                  <button
+                    key={v}
+                    onClick={() => {
+                      setDefaultView(v)
+                      localStorage.setItem(DEFAULT_VIEW_KEY, v)
+                    }}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      defaultView === v
+                        ? 'border-[#4F7358] dark:border-[#7AAF87] text-[#4F7358] dark:text-[#7AAF87] bg-stone-100 dark:bg-[#17191E]'
+                        : 'border-stone-200 dark:border-[#2E3240] text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#17191E]'
+                    }`}
+                  >
+                    {{ scripture: '經文', devotional: '靈修' }[v]}
                   </button>
                 ))}
               </div>
