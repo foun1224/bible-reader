@@ -306,18 +306,18 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
           )}
 
           {day && (
-            <article className="space-y-7">
+            <article key={mmdd} className="space-y-7">
               <header className="space-y-4">
                 <p className="text-xs font-medium tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87] uppercase">{day.title}</p>
                 <div>
                   <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
                   {day.verseText && (
                     <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
-                      {parseVerseText(day.verseText).map(({ num, text }) => {
+                      {parseVerseText(day.verseText).map(({ num, text }, i) => {
                         const hl = getVerseHL(num)
                         return (
                           <p
-                            key={num}
+                            key={i}
                             onPointerDown={() => startLongPress(num, text)}
                             onPointerUp={cancelLongPress}
                             onPointerLeave={cancelLongPress}
