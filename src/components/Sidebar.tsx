@@ -260,18 +260,17 @@ function ScriptureContent({
           </button>
           {isExpanded && (
             <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
-              {/* 書卷背景 tile */}
+              {/* Context tiles — same weight, softer than chapter numbers */}
               <button
                 onClick={() => onSelectBookBackground(book.name)}
-                className="flex items-center justify-center w-9 h-9 rounded-md text-[10px] font-medium transition-colors bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] text-[#4F7358] dark:text-[#7AAF87]"
+                className="flex items-center justify-center w-9 h-9 rounded-md border border-[#4F7358]/20 bg-[#4F7358]/5 text-[10px] font-medium text-[#4F7358] transition-colors hover:border-[#4F7358]/35 hover:bg-[#4F7358]/10 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 dark:text-[#7AAF87] dark:hover:border-[#7AAF87]/35 dark:hover:bg-[#7AAF87]/10"
               >
                 簡介
               </button>
-              {/* 教材 tile — 僅在有對應課程的書卷顯示 */}
               {BOOK_COURSES[book.name] && (
                 <button
                   onClick={() => onSelectBookCourses(book.name)}
-                  className="flex items-center justify-center w-9 h-9 rounded-md text-[10px] font-medium transition-colors bg-stone-100 dark:bg-[#22242C] hover:bg-stone-200 dark:hover:bg-[#2E3240] text-stone-400 dark:text-[#6B6460]"
+                  className="flex items-center justify-center w-9 h-9 rounded-md border border-[#4F7358]/20 bg-[#4F7358]/5 text-[10px] font-medium text-[#4F7358] transition-colors hover:border-[#4F7358]/35 hover:bg-[#4F7358]/10 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 dark:text-[#7AAF87] dark:hover:border-[#7AAF87]/35 dark:hover:bg-[#7AAF87]/10"
                 >
                   教材
                 </button>
