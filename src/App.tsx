@@ -6,6 +6,7 @@ import MainDevotional from './components/MainDevotional'
 import MainBookBackground from './components/MainBookBackground'
 import MainBookCourses from './components/MainBookCourses'
 import MainCurriculum from './components/MainCurriculum'
+import MainTimeline from './components/MainTimeline'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -107,7 +108,7 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
@@ -868,7 +869,20 @@ function App() {
         )}
 
         {mainView === 'curriculum' && (
-          <MainCurriculum onBack={() => setMainView('scripture')} />
+          <MainCurriculum
+            onBack={() => setMainView('scripture')}
+            onTimeline={() => setMainView('timeline')}
+          />
+        )}
+
+        {mainView === 'timeline' && (
+          <MainTimeline
+            ckjv={ckjv}
+            onBack={() => setMainView('curriculum')}
+            onOpenBook={(book) => {
+              if (book.chapters[0]) selectCkjvChapter(book, book.chapters[0])
+            }}
+          />
         )}
       </div>
 
@@ -1021,7 +1035,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
