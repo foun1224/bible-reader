@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { BibleData, JasherData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
+import type { BibleData, Book, Chapter, BookMark, CompletionRecord, StreakData, ReadingPlan, Achievement, Highlight, LegacyHighlightColor, HighlightColor } from './types'
 import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import MainDevotional from './components/MainDevotional'
@@ -93,12 +93,9 @@ function App() {
   const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   const [fontSize, setFontSize] = useState(0)
   const [ckjv, setCkjv] = useState<BibleData | null>(null)
-  const [jasher, setJasher] = useState<JasherData | null>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
-
-  const [source, setSource] = useState<'ckjv' | 'jasher'>('ckjv')
   const [activeBook, setActiveBook] = useState<Book | null>(null)
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null)
   const [defaultView, setDefaultView] = useState<'scripture' | 'devotional'>(() => {
@@ -179,29 +176,17 @@ function App() {
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
-    Promise.all([
-      fetch(`${base}data/ckjv.json`).then(r => r.json()),
-      fetch(`${base}data/jasher.json`).then(r => r.json()).catch(() => null),
-    ]).then(([c, j]) => {
+    fetch(`${base}data/ckjv.json`).then(r => r.json()).then(c => {
       setCkjv(c)
-      setJasher(j)
       let restored = false
       if (c && Array.isArray(c.books) && c.books.length > 0) {
         try {
           const bm: BookMark = JSON.parse(localStorage.getItem(BOOKMARK_KEY) || 'null')
-          if (bm) {
-            if (bm.sourceId === 'ckjv' && bm.bookId != null) {
-              const book = c.books.find((b: Book) => b.id === bm.bookId)
-              if (book && Array.isArray(book.chapters) && book.chapters.length > 0) {
-                setSource('ckjv')
-                setActiveBook(book)
-                setActiveChapter(book.chapters[bm.chapter - 1] ?? book.chapters[0])
-                restored = true
-                setShowResumeCTA(true)
-              }
-            } else if (bm.sourceId === 'jasher' && j && Array.isArray(j.chapters) && j.chapters.length > 0) {
-              setSource('jasher')
-              setActiveChapter(j.chapters[bm.chapter - 1] ?? j.chapters[0])
+          if (bm && bm.sourceId === 'ckjv' && bm.bookId != null) {
+            const book = c.books.find((b: Book) => b.id === bm.bookId)
+            if (book && Array.isArray(book.chapters) && book.chapters.length > 0) {
+              setActiveBook(book)
+              setActiveChapter(book.chapters[bm.chapter - 1] ?? book.chapters[0])
               restored = true
               setShowResumeCTA(true)
             }
@@ -226,7 +211,6 @@ function App() {
 
   // Record completion for the current chapter
   const recordCompletion = useCallback((
-    src: 'ckjv' | 'jasher',
     chapter: Chapter,
     book?: Book | null
   ) => {
@@ -235,7 +219,7 @@ function App() {
 
     setCompletions(prev => {
       const record: CompletionRecord = {
-        sourceId: src,
+        sourceId: 'ckjv',
         bookId: book?.id as number | undefined,
         bookName: book?.name,
         chapter: chapter.number,
@@ -243,9 +227,9 @@ function App() {
       }
       // Update existing or append
       const idx = prev.findIndex(
-        r => r.sourceId === src &&
+        r => r.sourceId === 'ckjv' &&
           r.chapter === chapter.number &&
-          (src === 'jasher' ? true : r.bookId === (book?.id as number | undefined))
+          r.bookId === (book?.id as number | undefined)
       )
       let next: CompletionRecord[]
       if (idx >= 0) {
@@ -256,8 +240,8 @@ function App() {
       }
       saveCompletions(next)
 
-      // Check book completion (CKJV only)
-      if (src === 'ckjv' && book && ckjv) {
+      // Check book completion
+      if (book && ckjv) {
         const bookComps = next.filter(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number))
         if (bookComps.length >= book.chapters.length) {
           // Was it just completed now? (prev didn't have enough)
@@ -301,19 +285,9 @@ function App() {
   }, [])
 
   const selectCkjvChapter = useCallback((book: Book, chapter: Chapter) => {
-    setSource('ckjv')
     setActiveBook(book)
     setActiveChapter(chapter)
     saveBookmark({ sourceId: 'ckjv', bookId: book.id as number, chapter: chapter.number, verse: 1 })
-    setSidebarOpen(false)
-    setMainView('scripture')
-  }, [saveBookmark])
-
-  const selectJasherChapter = useCallback((chapter: Chapter) => {
-    setSource('jasher')
-    setActiveBook(null)
-    setActiveChapter(chapter)
-    saveBookmark({ sourceId: 'jasher', chapter: chapter.number, verse: 1 })
     setSidebarOpen(false)
     setMainView('scripture')
   }, [saveBookmark])
@@ -324,28 +298,22 @@ function App() {
   }, [])
 
   const handleJumpTo = useCallback((
-    sourceId: 'ckjv' | 'jasher',
+    sourceId: 'ckjv',
     bookId: number | undefined,
     chapter: number
   ) => {
-    if (sourceId === 'jasher' && jasher) {
-      const ch = jasher.chapters.find(c => c.number === chapter)
-      if (ch) selectJasherChapter(ch)
-    } else if (sourceId === 'ckjv' && ckjv && bookId != null) {
+    if (sourceId === 'ckjv' && ckjv && bookId != null) {
       const book = ckjv.books.find(b => b.id === bookId)
       if (book) {
         const ch = book.chapters.find(c => c.number === chapter)
         if (ch) selectCkjvChapter(book, ch)
       }
     }
-  }, [ckjv, jasher, selectCkjvChapter, selectJasherChapter])
+  }, [ckjv, selectCkjvChapter])
 
   // --- Chapter navigation logic ---
   const handlePrevChapter = useCallback(() => {
-    if (source === 'jasher' && jasher && activeChapter) {
-      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
-      if (idx > 0) selectJasherChapter(jasher.chapters[idx - 1])
-    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+    if (ckjv && activeBook && activeChapter) {
       const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
       if (chIdx > 0) {
         selectCkjvChapter(activeBook, activeBook.chapters[chIdx - 1])
@@ -358,17 +326,14 @@ function App() {
         }
       }
     }
-  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+  }, [ckjv, activeBook, activeChapter, selectCkjvChapter])
 
   const handleNextChapter = useCallback(() => {
     // Record completion for current chapter before navigating
     if (activeChapter) {
-      recordCompletion(source, activeChapter, activeBook)
+      recordCompletion(activeChapter, activeBook)
     }
-    if (source === 'jasher' && jasher && activeChapter) {
-      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
-      if (idx < jasher.chapters.length - 1) selectJasherChapter(jasher.chapters[idx + 1])
-    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+    if (ckjv && activeBook && activeChapter) {
       const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
       if (chIdx < activeBook.chapters.length - 1) {
         selectCkjvChapter(activeBook, activeBook.chapters[chIdx + 1])
@@ -381,7 +346,7 @@ function App() {
         }
       }
     }
-  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter, recordCompletion])
+  }, [ckjv, activeBook, activeChapter, selectCkjvChapter, recordCompletion])
 
   // Keyboard shortcuts: f/F = toggle immersive, ArrowLeft/Right = chapter nav
   useEffect(() => {
@@ -416,17 +381,14 @@ function App() {
   const isCurrentCompleted = (() => {
     if (!activeChapter) return false
     return completions.some(
-      r => r.sourceId === source &&
+      r => r.sourceId === 'ckjv' &&
         r.chapter === activeChapter.number &&
-        (source === 'jasher' ? true : r.bookId === (activeBook?.id as number | undefined))
+        r.bookId === (activeBook?.id as number | undefined)
     )
   })()
 
   const navigateNextChapter = useCallback(() => {
-    if (source === 'jasher' && jasher && activeChapter) {
-      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
-      if (idx < jasher.chapters.length - 1) selectJasherChapter(jasher.chapters[idx + 1])
-    } else if (source === 'ckjv' && ckjv && activeBook && activeChapter) {
+    if (ckjv && activeBook && activeChapter) {
       const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
       if (chIdx < activeBook.chapters.length - 1) {
         selectCkjvChapter(activeBook, activeBook.chapters[chIdx + 1])
@@ -438,50 +400,36 @@ function App() {
         }
       }
     }
-  }, [source, jasher, ckjv, activeBook, activeChapter, selectJasherChapter, selectCkjvChapter])
+  }, [ckjv, activeBook, activeChapter, selectCkjvChapter])
 
   const handleMarkComplete = useCallback(() => {
     if (activeChapter && !isCurrentCompleted) {
-      recordCompletion(source, activeChapter, activeBook)
+      recordCompletion(activeChapter, activeBook)
       setShowBanner(true)
     }
-  }, [source, activeChapter, activeBook, recordCompletion, isCurrentCompleted])
+  }, [activeChapter, activeBook, recordCompletion, isCurrentCompleted])
 
   const hasPrev = (() => {
-    if (!activeChapter) return false
-    if (source === 'jasher' && jasher) {
-      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
-      return idx > 0
-    }
-    if (source === 'ckjv' && ckjv && activeBook) {
-      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
-      if (chIdx > 0) return true
-      const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
-      return bIdx > 0
-    }
-    return false
+    if (!activeChapter || !ckjv || !activeBook) return false
+    const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+    if (chIdx > 0) return true
+    const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+    return bIdx > 0
   })()
 
   const hasNext = (() => {
-    if (!activeChapter) return false
-    if (source === 'jasher' && jasher) {
-      const idx = jasher.chapters.findIndex(c => c.number === activeChapter.number)
-      return idx < jasher.chapters.length - 1
-    }
-    if (source === 'ckjv' && ckjv && activeBook) {
-      const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
-      if (chIdx < activeBook.chapters.length - 1) return true
-      const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
-      return bIdx < ckjv.books.length - 1
-    }
-    return false
+    if (!activeChapter || !ckjv || !activeBook) return false
+    const chIdx = activeBook.chapters.findIndex(c => c.number === activeChapter.number)
+    if (chIdx < activeBook.chapters.length - 1) return true
+    const bIdx = ckjv.books.findIndex(b => b.id === activeBook.id)
+    return bIdx < ckjv.books.length - 1
   })()
 
   // Format a completion record for display
   const formatCompletion = (r: CompletionRecord) => {
     const d = new Date(r.completedAt)
     const dateStr = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-    const bookLabel = r.sourceId === 'jasher' ? '雅煞珥書' : (r.bookName ?? '未知')
+    const bookLabel = r.bookName ?? '未知'
     return { bookLabel, dateStr }
   }
 
@@ -508,16 +456,12 @@ function App() {
     bookmark = JSON.parse(localStorage.getItem(BOOKMARK_KEY) || 'null')
   } catch { /* ignore */ }
 
-  const resumeBookName =
-    bookmark?.sourceId === 'ckjv'
-      ? (ckjv?.books.find(b => b.id === bookmark!.bookId)?.name ?? '')
-      : '雅煞珥書'
+  const resumeBookName = ckjv?.books.find(b => b.id === bookmark?.bookId)?.name ?? ''
   const resumeChapter = bookmark?.chapter ?? 1
 
   // Hide resume CTA when already at bookmark position
   const isAtBookmark = bookmark
-    ? source === bookmark.sourceId && activeChapter?.number === bookmark.chapter &&
-      (bookmark.sourceId === 'jasher' || (activeBook?.id === bookmark.bookId))
+    ? activeChapter?.number === bookmark.chapter && activeBook?.id === bookmark.bookId
     : false
 
   if (loading) {
@@ -565,19 +509,16 @@ function App() {
       }`}>
       <Sidebar
         ckjv={ckjv}
-        jasher={jasher}
-        source={source}
         activeBook={activeBook}
         activeChapter={activeChapter}
         onSelectCkjvChapter={selectCkjvChapter}
-        onSelectJasherChapter={selectJasherChapter}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         completions={completions}
         currentChapterLabel={
-          source === 'ckjv' && activeBook && activeChapter
+          activeBook && activeChapter
             ? `${activeBook.name} · 第 ${activeChapter.number} 章`
-            : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
+            : ''
         }
         onSelectBookBackground={selectBookBackground}
       />
@@ -661,10 +602,8 @@ function App() {
 
             {mainView === 'scripture' && (
               <span className="hidden sm:inline text-sm font-medium text-stone-500 dark:text-[#E4DDD0] tracking-wide">
-                {source === 'ckjv' && activeBook
-                  ? `${activeBook.name} · ${activeChapter?.number ?? ''}`
-                  : source === 'jasher' && activeChapter
-                  ? `雅煞珥書 · ${activeChapter.number}`
+                {activeBook && activeChapter
+                  ? `${activeBook.name} · ${activeChapter.number}`
                   : ''}
               </span>
             )}
@@ -733,12 +672,12 @@ function App() {
         {mainView === 'scripture' && showBanner && activeChapter && (
           <CompletionBanner
             chapterLabel={
-              source === 'ckjv' && activeBook
+              activeBook
                 ? `${activeBook.name} · 第 ${activeChapter.number} 章`
-                : `雅煞珥書 · 第 ${activeChapter.number} 章`
+                : `第 ${activeChapter.number} 章`
             }
             bookName={
-              source === 'ckjv' && activeBook &&
+              activeBook &&
               activeBook.chapters[activeBook.chapters.length - 1].number === activeChapter.number
                 ? activeBook.name
                 : undefined
@@ -759,17 +698,11 @@ function App() {
               hasPrev={hasPrev}
               hasNext={hasNext}
               chapterTitle={
-                source === 'ckjv' && activeBook
-                  ? `${activeBook.name}·第${activeChapter?.number}章`
-                  : source === 'jasher' && activeChapter
-                  ? `雅煞珥·第${activeChapter.number}章`
+                activeBook && activeChapter
+                  ? `${activeBook.name}·第${activeChapter.number}章`
                   : ''
               }
-              bookName={
-                source === 'ckjv' && activeBook
-                  ? activeBook.name
-                  : '雅煞珥書'
-              }
+              bookName={activeBook?.name ?? ''}
               onMarkComplete={handleMarkComplete}
               isCompleted={isCurrentCompleted}
               showResumeCTA={showResumeCTA && !isAtBookmark}
@@ -781,13 +714,13 @@ function App() {
               onToggleImmersive={() => setIsImmersive(v => !v)}
               onOpenChapterGrid={() => setChapterGridOpen(true)}
               highlights={highlights.filter(h =>
-                h.sourceId === source &&
+                h.sourceId === 'ckjv' &&
                 h.bookId === (activeBook?.id as number | undefined) &&
                 h.chapter === (activeChapter?.number ?? -1)
               )}
               onHighlight={saveHighlight}
               onRemoveHighlight={removeHighlight}
-              currentSource={source}
+              currentSource='ckjv'
               currentBookId={activeBook?.id as number | undefined}
               verseNumStyle={verseNumStyle}
               lineSpacing={lineSpacing}
@@ -808,9 +741,9 @@ function App() {
                     onClick={() => setChapterGridOpen(true)}
                     className="flex-1 h-11 flex items-center justify-center text-sm text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
                   >
-                    {source === 'ckjv' && activeBook && activeChapter
+                    {activeBook && activeChapter
                       ? `${activeBook.name} · 第 ${activeChapter.number} 章`
-                      : activeChapter ? `雅煞珥 · 第 ${activeChapter.number} 章` : ''}
+                      : ''}
                   </button>
                   <button
                     onClick={handleNextChapter}
@@ -972,25 +905,16 @@ function App() {
         <ChapterGrid
         isOpen={chapterGridOpen}
         onClose={() => setChapterGridOpen(false)}
-        title={source === 'ckjv' && activeBook ? activeBook.name : '雅煞珥書'}
-        chapters={
-          source === 'ckjv' && activeBook
-            ? activeBook.chapters
-            : (jasher?.chapters ?? [])
-        }
+        title={activeBook?.name ?? ''}
+        chapters={activeBook?.chapters ?? []}
         activeChapterNum={activeChapter?.number ?? null}
         completedNums={new Set(
           completions
-            .filter(r =>
-              source === 'ckjv'
-                ? r.sourceId === 'ckjv' && r.bookId === (activeBook?.id as number | undefined)
-                : r.sourceId === 'jasher'
-            )
+            .filter(r => r.sourceId === 'ckjv' && r.bookId === (activeBook?.id as number | undefined))
             .map(r => r.chapter)
         )}
         onSelect={ch => {
-          if (source === 'ckjv' && activeBook) selectCkjvChapter(activeBook, ch)
-          else selectJasherChapter(ch)
+          if (activeBook) selectCkjvChapter(activeBook, ch)
         }}
         />
       )}

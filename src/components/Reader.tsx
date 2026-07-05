@@ -58,7 +58,7 @@ interface Props {
   highlights: Highlight[]
   onHighlight: (h: Highlight) => void
   onRemoveHighlight: (sourceId: string, bookId: number | undefined, chapter: number, verse: number) => void
-  currentSource: 'ckjv' | 'jasher'
+  currentSource: 'ckjv'
   currentBookId: number | undefined
   // Reading settings
   verseNumStyle: 'show' | 'fade' | 'hide'
@@ -72,7 +72,7 @@ interface PickerState {
 
 function ChapterEndReflection({ highlights, currentSource, currentBookId, currentChapter }: {
   highlights: Highlight[]
-  currentSource: 'ckjv' | 'jasher'
+  currentSource: 'ckjv'
   currentBookId: number | undefined
   currentChapter: number
 }) {
@@ -295,8 +295,7 @@ export default function Reader({
 
   const getVerseShareText = () => {
     if (!picker || !chapter) return { title: '', text: '' }
-    const label = currentSource === 'ckjv' ? '（CKJV）' : '（雅煞珥書）'
-    const text = `「${picker.verseText}」\n${bookName} 第 ${chapter.number}章第 ${picker.verse}節${label}`
+    const text = `「${picker.verseText}」\n${bookName} 第 ${chapter.number}章第 ${picker.verse}節（CKJV）`
     const title = `${bookName} ${chapter.number}:${picker.verse}`
     return { title, text }
   }
