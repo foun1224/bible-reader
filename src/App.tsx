@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar'
 import Reader from './components/Reader'
 import MainDevotional from './components/MainDevotional'
 import MainBookBackground from './components/MainBookBackground'
+import MainBookCourses from './components/MainBookCourses'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -105,11 +106,12 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
   const [bgBookName, setBgBookName] = useState<string | null>(null)
+  const [coursesBookName, setCoursesBookName] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -321,6 +323,11 @@ function App() {
   const selectBookBackground = useCallback((bookName: string) => {
     setBgBookName(bookName)
     setMainView('book-background')
+  }, [])
+
+  const selectBookCourses = useCallback((bookName: string) => {
+    setCoursesBookName(bookName)
+    setMainView('book-courses')
   }, [])
 
   const handleJumpTo = useCallback((
@@ -580,6 +587,7 @@ function App() {
             : activeChapter ? `雅煞珥書 · 第 ${activeChapter.number} 章` : ''
         }
         onSelectBookBackground={selectBookBackground}
+        onSelectBookCourses={selectBookCourses}
       />
       </div>
 
@@ -645,7 +653,7 @@ function App() {
           </div>
           <div className="flex items-center gap-3">
             {/* Hamburger — mobile only, scripture/book-background mode */}
-            {(mainView === 'scripture' || mainView === 'book-background') && (
+            {(mainView === 'scripture' || mainView === 'book-background' || mainView === 'book-courses') && (
               <button
                 onClick={() => setSidebarOpen(o => !o)}
                 className="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded text-stone-400 dark:text-[#A09890] hover:bg-stone-100 dark:hover:bg-[#22242C] transition-colors"
@@ -850,6 +858,13 @@ function App() {
             }}
           />
         )}
+
+        {mainView === 'book-courses' && coursesBookName && (
+          <MainBookCourses
+            bookName={coursesBookName}
+            onBack={() => setMainView('scripture')}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -1000,7 +1015,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={mainView === 'book-background' ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
