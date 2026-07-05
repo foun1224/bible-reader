@@ -6,6 +6,7 @@ import MainDevotional from './components/MainDevotional'
 import MainBookBackground from './components/MainBookBackground'
 import MainBookCourses from './components/MainBookCourses'
 import MainCurriculum from './components/MainCurriculum'
+import MainTimeline from './components/MainTimeline'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -107,7 +108,7 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
@@ -330,6 +331,15 @@ function App() {
     setCoursesBookName(bookName)
     setMainView('book-courses')
   }, [])
+
+  const selectBookFirstChapter = useCallback((bookName: string) => {
+    if (!ckjv) return
+    const book = ckjv.books.find((b: Book) => b.name === bookName)
+    if (book && book.chapters.length > 0) {
+      selectCkjvChapter(book, book.chapters[0])
+      setMainView('scripture')
+    }
+  }, [ckjv, selectCkjvChapter])
 
   const handleJumpTo = useCallback((
     sourceId: 'ckjv' | 'jasher',
@@ -870,6 +880,13 @@ function App() {
         {mainView === 'curriculum' && (
           <MainCurriculum onBack={() => setMainView('scripture')} />
         )}
+
+        {mainView === 'timeline' && (
+          <MainTimeline
+            onBack={() => setMainView('scripture')}
+            onSelectBook={selectBookFirstChapter}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -882,6 +899,7 @@ function App() {
         onSettings={() => setSettingsOpen(true)}
         onToggleImmersive={() => setIsImmersive(v => !v)}
         onCurriculum={() => { setMainView('curriculum'); setMoreOpen(false); setSidebarOpen(false) }}
+        onTimeline={() => { setMainView('timeline'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
@@ -1021,7 +1039,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
