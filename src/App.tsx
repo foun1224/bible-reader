@@ -529,7 +529,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden bg-stone-50 dark:bg-[#17191E]">
+    <div className="flex flex-col h-dvh overflow-hidden bg-stone-50 dark:bg-[#17191E]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Book complete toast */}
       {bookCompleteMessage && (
         <div className="fixed bottom-6 right-6 z-[70] px-5 py-3 rounded-xl bg-[#C17D3A] dark:bg-[#D4935C] text-white dark:text-[#17191E] text-sm font-semibold shadow-2xl animate-pop-in pointer-events-none">
