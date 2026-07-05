@@ -84,6 +84,7 @@ export default function MoreMenu({
       {isOpen && <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />}
       <div
         className={`fixed top-0 right-0 z-50 h-full flex flex-col w-56 bg-stone-50 dark:bg-[#22242C] border-l border-stone-200 dark:border-[#2E3240] shadow-xl transition-transform duration-250 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <nav className="flex-1 overflow-y-auto pt-6 pb-2">
           {showScriptureTools && scriptureTools.length > 0 && (
