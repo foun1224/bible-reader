@@ -5,6 +5,7 @@ import Reader from './components/Reader'
 import MainDevotional from './components/MainDevotional'
 import MainBookBackground from './components/MainBookBackground'
 import MainBookCourses from './components/MainBookCourses'
+import MainCurriculum from './components/MainCurriculum'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -106,7 +107,7 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
@@ -865,6 +866,10 @@ function App() {
             onBack={() => setMainView('scripture')}
           />
         )}
+
+        {mainView === 'curriculum' && (
+          <MainCurriculum onBack={() => setMainView('scripture')} />
+        )}
       </div>
 
       {/* More menu */}
@@ -876,6 +881,7 @@ function App() {
         onSearch={() => setSearchOpen(true)}
         onSettings={() => setSettingsOpen(true)}
         onToggleImmersive={() => setIsImmersive(v => !v)}
+        onCurriculum={() => { setMainView('curriculum'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
@@ -1015,7 +1021,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
