@@ -1,4 +1,4 @@
-type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list'
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library'
 
 function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
   const common = {
@@ -31,6 +31,12 @@ function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
       <path d="M6.5 2H17v16H6.5A2.5 2.5 0 0 1 4 15.5v-11A2.5 2.5 0 0 1 6.5 2z" />
     </svg>
   )
+  if (icon === 'library') return (
+    <svg {...common}>
+      <path d="M4 4.5h5.5v11H4zM10.5 4.5H16v11h-5.5z" />
+      <path d="M6 7h1.5M12.5 7H14M6 10h1.5M12.5 10H14" />
+    </svg>
+  )
   if (icon === 'history') return (
     <svg {...common}>
       <path d="M4 6.5A7 7 0 1 1 3.5 11" />
@@ -53,6 +59,7 @@ interface Props {
   onSearch?: () => void
   onSettings?: () => void
   onToggleImmersive?: () => void
+  onCurriculum?: () => void
   showScriptureTools?: boolean
   showReadingSettings?: boolean
 }
@@ -65,6 +72,7 @@ export default function MoreMenu({
   onSearch,
   onSettings,
   onToggleImmersive,
+  onCurriculum,
   showScriptureTools = false,
   showReadingSettings = false,
 }: Props) {
@@ -72,6 +80,10 @@ export default function MoreMenu({
     { label: '搜尋經文', icon: 'search' as MenuIcon, fn: onSearch },
     { label: '閱讀設定', icon: 'settings' as MenuIcon, fn: onSettings },
     { label: '沉浸閱讀', icon: 'book' as MenuIcon, fn: onToggleImmersive },
+  ].filter(item => Boolean(item.fn))
+
+  const learningTools = [
+    { label: '線上教材', icon: 'library' as MenuIcon, fn: onCurriculum },
   ].filter(item => Boolean(item.fn))
 
   const reviewTools = [
@@ -111,6 +123,22 @@ export default function MoreMenu({
                 <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon="settings" /></span>
                 <span>閱讀設定</span>
               </button>
+            </div>
+          )}
+
+          {learningTools.length > 0 && (
+            <div className="pb-2 mb-2 border-b border-stone-200 dark:border-[#2E3240]">
+              <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">學習</p>
+              {learningTools.map(({ label, icon, fn }) => (
+                <button
+                  key={label}
+                  onClick={() => { fn?.(); onClose() }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-stone-500 dark:text-[#E4DDD0] hover:bg-stone-100 dark:hover:bg-[#17191E] transition-colors text-left"
+                >
+                  <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon={icon} /></span>
+                  <span>{label}</span>
+                </button>
+              ))}
             </div>
           )}
 
