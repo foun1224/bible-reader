@@ -1,4 +1,4 @@
-type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library'
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline'
 
 function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
   const common = {
@@ -37,6 +37,15 @@ function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
       <path d="M6 7h1.5M12.5 7H14M6 10h1.5M12.5 10H14" />
     </svg>
   )
+  if (icon === 'timeline') return (
+    <svg {...common}>
+      <line x1="5" y1="3" x2="5" y2="17" strokeWidth="1.2" />
+      <circle cx="5" cy="5.5" r="1.8" fill="currentColor" stroke="none" />
+      <circle cx="5" cy="10" r="1.8" fill="currentColor" stroke="none" />
+      <circle cx="5" cy="14.5" r="1.8" fill="currentColor" stroke="none" />
+      <path d="M8 5.5h8M8 10h9M8 14.5h6" />
+    </svg>
+  )
   if (icon === 'history') return (
     <svg {...common}>
       <path d="M4 6.5A7 7 0 1 1 3.5 11" />
@@ -60,6 +69,7 @@ interface Props {
   onSettings?: () => void
   onToggleImmersive?: () => void
   onCurriculum?: () => void
+  onTimeline?: () => void
   showScriptureTools?: boolean
   showReadingSettings?: boolean
 }
@@ -73,6 +83,7 @@ export default function MoreMenu({
   onSettings,
   onToggleImmersive,
   onCurriculum,
+  onTimeline,
   showScriptureTools = false,
   showReadingSettings = false,
 }: Props) {
@@ -84,6 +95,7 @@ export default function MoreMenu({
 
   const learningTools = [
     { label: '線上教材', icon: 'library' as MenuIcon, fn: onCurriculum },
+    { label: '聖經時間軸', icon: 'timeline' as MenuIcon, fn: onTimeline },
   ].filter(item => Boolean(item.fn))
 
   const reviewTools = [

@@ -896,6 +896,7 @@ function App() {
         onSettings={() => setSettingsOpen(true)}
         onToggleImmersive={() => setIsImmersive(v => !v)}
         onCurriculum={() => { setMainView('curriculum'); setMoreOpen(false); setSidebarOpen(false) }}
+        onTimeline={() => { setMainView('timeline'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
