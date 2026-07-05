@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
+import { BOOK_COURSES } from '../lib/bookCourses'
 import type {
   BibleData, JasherData, Book, Chapter, CompletionRecord,
 } from '../types'
@@ -18,6 +19,7 @@ interface Props {
   completions: CompletionRecord[]
   currentChapterLabel: string
   onSelectBookBackground: (bookName: string) => void
+  onSelectBookCourses: (bookName: string) => void
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -27,6 +29,7 @@ export default function Sidebar({
   isOpen, onClose, completions,
   currentChapterLabel,
   onSelectBookBackground,
+  onSelectBookCourses,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
@@ -71,6 +74,7 @@ export default function Sidebar({
         onClose={onClose}
         currentChapterLabel={currentChapterLabel}
         onSelectBookBackground={onSelectBookBackground}
+        onSelectBookCourses={onSelectBookCourses}
       />
     </div>
   )
@@ -144,6 +148,7 @@ interface ScriptureProps {
   onClose: () => void
   currentChapterLabel: string
   onSelectBookBackground: (bookName: string) => void
+  onSelectBookCourses: (bookName: string) => void
 }
 
 function ScriptureContent({
@@ -158,6 +163,7 @@ function ScriptureContent({
   onClose,
   currentChapterLabel,
   onSelectBookBackground,
+  onSelectBookCourses,
 }: ScriptureProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -254,13 +260,22 @@ function ScriptureContent({
           </button>
           {isExpanded && (
             <div className="flex flex-wrap gap-1 pl-6 pr-3 py-1 pb-2">
-              {/* 書卷背景 tile — same style as chapter tiles */}
+              {/* 書卷背景 tile */}
               <button
                 onClick={() => onSelectBookBackground(book.name)}
                 className="flex items-center justify-center w-9 h-9 rounded-md text-[10px] font-medium transition-colors bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] text-[#4F7358] dark:text-[#7AAF87]"
               >
                 簡介
               </button>
+              {/* 教材 tile — 僅在有對應課程的書卷顯示 */}
+              {BOOK_COURSES[book.name] && (
+                <button
+                  onClick={() => onSelectBookCourses(book.name)}
+                  className="flex items-center justify-center w-9 h-9 rounded-md text-[10px] font-medium transition-colors bg-stone-100 dark:bg-[#22242C] hover:bg-stone-200 dark:hover:bg-[#2E3240] text-stone-400 dark:text-[#6B6460]"
+                >
+                  教材
+                </button>
+              )}
               {book.chapters.map(ch => {
                 const completed = isCkjvCompleted(book, ch.number)
                 const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
