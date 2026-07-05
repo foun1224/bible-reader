@@ -1,3 +1,15 @@
+export interface WorldEvent {
+  date: string
+  title: string
+  note: string
+}
+
+export interface WorldContext {
+  regions: string[]
+  summary: string
+  events: WorldEvent[]
+}
+
 export interface TimelinePeriod {
   id: string
   name: string
@@ -11,6 +23,8 @@ export interface TimelinePeriod {
   /** Bible book names (must match app's Chinese book names) */
   books: string[]
   testament: 'old' | 'new' | 'intertestamental'
+  /** Parallel world history context for this period */
+  worldContext?: WorldContext
 }
 
 export const TIMELINE_PERIODS: TimelinePeriod[] = [
@@ -29,6 +43,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['創世記', '約伯記'],
     testament: 'old',
+    worldContext: {
+      regions: ['埃及', '美索不達米亞'],
+      summary: '先祖時期與埃及中王國、古巴比倫帝國同時代，是古近東文明蓬勃發展的時期。',
+      events: [
+        {
+          date: '約 2055–1650 BC',
+          title: '埃及中王國',
+          note: '法老統治上下埃及，建設神廟、發展文學，是以色列人進入埃及之前近東最強盛的政體。',
+        },
+        {
+          date: '約 1754 BC',
+          title: '漢摩拉比法典',
+          note: '古巴比倫王漢摩拉比頒布人類最早的成文法典之一，刻在玄武岩石柱上，以「以牙還牙」原則規範社會秩序。',
+        },
+        {
+          date: '約 1650 BC',
+          title: '希克索人入侵埃及',
+          note: '游牧民族希克索人佔領埃及北部，建立第二中間期，可能正是以色列人在埃及受苦的歷史背景。',
+        },
+      ],
+    },
   },
   {
     id: 'exodus',
@@ -46,6 +81,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['出埃及記', '利未記', '民數記', '申命記'],
     testament: 'old',
+    worldContext: {
+      regions: ['埃及', '西臺'],
+      summary: '以色列出埃及時，埃及新王國正值全盛，西臺帝國在北方與埃及角力爭霸近東。',
+      events: [
+        {
+          date: '約 1479 BC',
+          title: '圖特摩斯三世北征',
+          note: '埃及法老圖特摩斯三世在米吉多擊敗迦南諸王，帝國版圖擴展至敘利亞，是以色列在埃及受苦年代的強權背景。',
+        },
+        {
+          date: '約 1350 BC',
+          title: '阿肯那頓的宗教改革',
+          note: '法老阿肯那頓強制崇拜太陽神阿頓，廢除傳統多神信仰，改革最終失敗，卻留下人類最早的準一神思想記錄。',
+        },
+        {
+          date: '約 1274 BC',
+          title: '卡迭石戰役',
+          note: '拉美西斯二世與西臺王交戰，最終簽署人類已知最早的書面和平條約，奠定近東秩序。',
+        },
+      ],
+    },
   },
   {
     id: 'conquest',
@@ -63,6 +119,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['約書亞記', '士師記', '路得記'],
     testament: 'old',
+    worldContext: {
+      regions: ['地中海地區', '腓尼基'],
+      summary: '以色列定居迦南的同時，地中海世界正經歷「青銅時代大崩潰」，眾多強大文明在短期內瓦解，腓尼基城邦趁機崛起。',
+      events: [
+        {
+          date: '約 1200 BC',
+          title: '青銅時代大崩潰',
+          note: '邁錫尼、西臺、烏加里特等文明在幾十年內相繼瓦解，原因至今仍有爭議（氣候、「海上民族」入侵、地震），是當時全球性的動盪。',
+        },
+        {
+          date: '約 1100–800 BC',
+          title: '希臘黑暗時代',
+          note: '邁錫尼文明崩潰後，希臘進入文字消失、城邦衰退的「黑暗時代」，直到約 800 BC 才在腓尼基字母的幫助下重新復甦。',
+        },
+        {
+          date: '約 1050 BC',
+          title: '腓尼基字母成熟',
+          note: '腓尼基人（今黎巴嫩沿海）發展出成熟的字母系統，後傳入希臘，成為整個西方字母體系的源頭。',
+        },
+      ],
+    },
   },
   {
     id: 'united-kingdom',
@@ -79,6 +156,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['撒母耳記上', '撒母耳記下', '詩篇', '箴言', '傳道書', '雅歌'],
     testament: 'old',
+    worldContext: {
+      regions: ['希臘', '腓尼基', '亞述'],
+      summary: '大衛與所羅門的黃金時代與鐵器時代的全面擴張同步，希臘城邦萌芽，腓尼基擴張海上商路，亞述在東方逐漸壯大。',
+      events: [
+        {
+          date: '約 1000 BC',
+          title: '鐵器技術廣泛擴散',
+          note: '鐵器從近東傳遍地中海，改變農業與軍事格局；非利士人掌握鐵器優勢，是大衛時代爭霸的技術背景（撒上 13:19）。',
+        },
+        {
+          date: '約 950 BC',
+          title: '腓尼基殖民地擴張',
+          note: '推羅、西頓等城邦在地中海廣建殖民地，與所羅門王保持密切貿易往來——希蘭王提供黎巴嫩香柏木，用於建造聖殿（王上 5:1）。',
+        },
+        {
+          date: '776 BC',
+          title: '第一屆奧林匹克運動會',
+          note: '希臘各城邦在奧林匹亞舉行競技，成為泛希臘認同的象徵，希臘城邦秩序由此確立。時間大約在所羅門後期至王國分裂初期。',
+        },
+      ],
+    },
   },
   {
     id: 'divided-kingdom',
@@ -101,6 +199,32 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
       '彌迦書', '那鴻書', '哈巴谷書', '西番雅書',
     ],
     testament: 'old',
+    worldContext: {
+      regions: ['亞述', '巴比倫', '希臘', '中國'],
+      summary: '這是人類歷史上的「軸心時代」——哲學、宗教與道德思想在希臘、印度、中國、以色列幾乎同時爆發，先知書正是這一覺醒的核心。',
+      events: [
+        {
+          date: '722 BC',
+          title: '亞述滅北國以色列',
+          note: '亞述王撒珥根二世攻陷撒瑪利亞，北國十支派被迫遷散各地，成為歷史上著名的「失落的十支派」，先知預警應驗。',
+        },
+        {
+          date: '612 BC',
+          title: '尼尼微陷落',
+          note: '巴比倫與米底聯軍攻陷亞述帝國首都尼尼微，那鴻書的預言成真，近東霸主易位，巴比倫時代來臨。',
+        },
+        {
+          date: '551 BC',
+          title: '孔子誕生（中國）',
+          note: '儒家創始人孔子在春秋時代誕生，開創仁義思想，與以賽亞書完成的年代相近，反映「軸心時代」全球思想的同步覺醒。',
+        },
+        {
+          date: '776–500 BC',
+          title: '希臘城邦黃金時期',
+          note: '斯巴達、雅典等城邦各自發展政治制度，哲學、文學、藝術蓬勃興起，為西方文明奠定思想基礎。',
+        },
+      ],
+    },
   },
   {
     id: 'exile',
@@ -117,6 +241,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['耶利米哀歌', '以西結書', '但以理書'],
     testament: 'old',
+    worldContext: {
+      regions: ['巴比倫', '波斯', '印度'],
+      summary: '以色列人流亡巴比倫時，東方世界同步出現了幾位影響人類文明至深的思想家——佛陀、孔子，以及將改變一切格局的居魯士大帝。',
+      events: [
+        {
+          date: '605–562 BC',
+          title: '尼布甲尼撒二世統治巴比倫',
+          note: '重建巴比倫城（含傳說中的「空中花園」），建立近東最強大的帝國，以色列人在其統治下度過被擄歲月（但以理書 1:1）。',
+        },
+        {
+          date: '563 BC',
+          title: '釋迦牟尼誕生（印度）',
+          note: '佛教創始人悉達多·喬答摩在尼泊爾藍毘尼誕生，與但以理事奉巴比倫宮廷同期，印度次大陸的精神覺醒由此展開。',
+        },
+        {
+          date: '559 BC',
+          title: '居魯士大帝崛起（波斯）',
+          note: '居魯士建立阿契美尼德波斯帝國，以寬容的宗教政策著稱，最終於 539 BC 兵不血刃滅巴比倫，允許被擄民族歸回故土。',
+        },
+      ],
+    },
   },
   {
     id: 'return',
@@ -134,6 +279,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['以斯拉記', '尼希米記', '以斯帖記', '哈該書', '撒迦利亞書', '瑪拉基書'],
     testament: 'old',
+    worldContext: {
+      regions: ['波斯', '希臘'],
+      summary: '波斯帝國的寬容治理使猶太人得以歸回，而西方的希臘正進入最輝煌的古典時代，蘇格拉底在問問題，雅典在建神廟。',
+      events: [
+        {
+          date: '490, 480 BC',
+          title: '波希戰爭',
+          note: '希臘城邦在馬拉松與薩拉米斯擊退波斯大軍，雅典由此成為西方文明中心。波斯王薛西斯（亞哈隨魯）正是以斯帖記中的主角（斯 1:1）。',
+        },
+        {
+          date: '461–429 BC',
+          title: '伯里克利的雅典黃金時代',
+          note: '雅典建造帕德嫩神廟，蘇格拉底、希羅多德、修昔底德活躍其中，奠定西方民主與史學傳統，與尼希米重建城牆同期。',
+        },
+        {
+          date: '479 BC',
+          title: '孔子逝世（中國）',
+          note: '孔子思想開始廣泛傳播，中國進入諸子百家時期；孔子同世代的以色列正從流亡中重建律法秩序。',
+        },
+      ],
+    },
   },
   {
     id: 'intertestamental',
@@ -151,6 +317,32 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: [],
     testament: 'intertestamental',
+    worldContext: {
+      regions: ['馬其頓', '羅馬', '中國'],
+      summary: '先知沉寂的四百年間，世界格局翻天覆地：亞歷山大的征服使 Koine 希臘語成為地中海通用語，直接為新約聖經的寫作預備了土壤。',
+      events: [
+        {
+          date: '336–323 BC',
+          title: '亞歷山大大帝東征',
+          note: '馬其頓王亞歷山大征服波斯、埃及、巴比倫，直達印度河，希臘化文化席捲近東，Koine 希臘語成為新約聖經的語言。',
+        },
+        {
+          date: '285–247 BC',
+          title: '七十士譯本（亞歷山大港）',
+          note: '猶太學者在埃及亞歷山大港將希伯來聖經譯為希臘文，使散居外邦的猶太人與後來的外邦信徒都能讀到舊約。',
+        },
+        {
+          date: '221 BC',
+          title: '秦始皇統一中國',
+          note: '秦王嬴政結束戰國紛爭，建立第一個中央集權帝國，與馬加比起義（165 BC）幾乎同期，東西方同步進入帝國時代。',
+        },
+        {
+          date: '63 BC',
+          title: '羅馬龐培佔領耶路撒冷',
+          note: '羅馬將軍龐培結束哈斯摩尼王朝，猶地亞成為羅馬保護國，為耶穌時代的政治背景奠定基礎。',
+        },
+      ],
+    },
   },
   {
     id: 'jesus',
@@ -168,6 +360,27 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
     ],
     books: ['馬太福音', '馬可福音', '路加福音', '約翰福音'],
     testament: 'new',
+    worldContext: {
+      regions: ['羅馬帝國'],
+      summary: '耶穌的降生、事奉與復活發生在羅馬帝國治下，帝國的道路網絡、通用語言與相對和平，日後成為福音廣傳不可或缺的基礎建設。',
+      events: [
+        {
+          date: '27 BC–AD 14',
+          title: '奧古斯都統治羅馬',
+          note: '羅馬第一任皇帝，「羅馬和平」（Pax Romana）開始。路加福音 2:1 記載耶穌正是在奧古斯都的人口普查令下降生伯利恆。',
+        },
+        {
+          date: '約 37 BC–AD 4',
+          title: '大希律王統治猶地亞',
+          note: '羅馬任命的猶太王大希律重建耶路撒冷聖殿（希律聖殿），同時也下令在伯利恆屠殺嬰兒（太 2:16）。',
+        },
+        {
+          date: 'AD 14–37',
+          title: '提比略皇帝',
+          note: '耶穌所有公開事奉、受死與復活均在提比略治下發生。路加福音 3:1 明確記載「提庇留凱撒在位第十五年」為施洗約翰開始事奉的時間點。',
+        },
+      ],
+    },
   },
   {
     id: 'early-church',
@@ -194,6 +407,32 @@ export const TIMELINE_PERIODS: TimelinePeriod[] = [
       '啟示錄',
     ],
     testament: 'new',
+    worldContext: {
+      regions: ['羅馬帝國', '地中海地區'],
+      summary: '福音藉著羅馬的道路網絡與 Koine 希臘文快速擴散；帝國的迫害反而加速了教會的離散與廣傳，應驗了使徒行傳 1:8 的藍圖。',
+      events: [
+        {
+          date: 'AD 64',
+          title: '尼祿迫害基督徒',
+          note: '羅馬大火後，皇帝尼祿將責任歸咎於基督徒，展開大規模迫害，保羅與彼得據傳在此時期殉道於羅馬。',
+        },
+        {
+          date: 'AD 70',
+          title: '提多滅耶路撒冷',
+          note: '羅馬將軍提多率軍攻陷耶路撒冷，摧毀希律聖殿，猶太大流散開始，應驗耶穌在馬太福音 24 章的預言。',
+        },
+        {
+          date: 'AD 79',
+          title: '維蘇威火山爆發',
+          note: '義大利南部維蘇威火山爆發，龐貝古城被掩埋，留下完整的羅馬帝國生活遺址，是初期教會所在世界的真實切片。',
+        },
+        {
+          date: 'AD 81–96',
+          title: '多米田皇帝迫害',
+          note: '皇帝要求臣民以「主與神」稱呼他，拒絕的基督徒遭受迫害，約翰被流放拔摩島，啟示錄可能即寫於此背景（啟 1:9）。',
+        },
+      ],
+    },
   },
 ]
 
