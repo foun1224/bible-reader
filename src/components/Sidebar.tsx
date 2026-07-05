@@ -94,6 +94,7 @@ export default function Sidebar({
           border-r border-stone-200 dark:border-[#2E3240] bg-stone-100 dark:bg-[#22242C]
           transition-transform duration-200 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="flex items-center justify-between px-3 py-3 border-b border-stone-200 dark:border-[#2E3240] shrink-0">
           <div>
