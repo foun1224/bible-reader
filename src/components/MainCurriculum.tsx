@@ -1,6 +1,6 @@
 import { CURRICULUM_CATEGORIES } from '../lib/bookCourses'
 
-export default function MainCurriculum({ onBack }: { onBack: () => void }) {
+export default function MainCurriculum({ onBack, onTimeline }: { onBack: () => void; onTimeline: () => void }) {
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
       <div className="mx-auto w-full max-w-3xl">
@@ -21,6 +21,24 @@ export default function MainCurriculum({ onBack }: { onBack: () => void }) {
         <p className="mb-8 text-sm leading-8 text-stone-500 dark:text-[#A09890]">
           這裡收錄不限定單一書卷的課程：讀經方法、聖經導讀、神學主題與信仰生活。單卷教材仍放在各書卷展開後的「教材」入口。
         </p>
+
+        <section className="mb-8 border-t border-stone-200/70 pt-5 dark:border-[#2E3240]">
+          <div className="mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">Visual Guide</p>
+            <h2 className="mt-1 text-base font-semibold text-stone-700 dark:text-[#E4DDD0]">聖經視覺導覽</h2>
+            <p className="mt-1 text-sm leading-7 text-stone-400 dark:text-[#A09890]">用時間軸先看見聖經歷史大脈絡，再回到書卷閱讀。</p>
+          </div>
+          <button
+            onClick={onTimeline}
+            className="group flex w-full items-center justify-between rounded-xl border border-stone-200 px-5 py-4 text-left transition-colors hover:border-[#4F7358]/50 hover:bg-[#4F7358]/5 dark:border-[#2E3240] dark:hover:border-[#7AAF87]/40 dark:hover:bg-[#7AAF87]/5"
+          >
+            <div>
+              <p className="text-sm font-medium text-stone-600 transition-colors group-hover:text-[#4F7358] dark:text-[#D4CEC4] dark:group-hover:text-[#7AAF87]">聖經時間軸</p>
+              <p className="mt-0.5 text-[11px] text-stone-300 dark:text-[#6B6460]">十個歷史時期，串起創世、王國、被擄、耶穌與初期教會</p>
+            </div>
+            <span className="ml-3 shrink-0 text-sm text-stone-300 transition-colors group-hover:text-[#4F7358] dark:text-[#6B6460] dark:group-hover:text-[#7AAF87]">→</span>
+          </button>
+        </section>
 
         <div className="space-y-8">
           {CURRICULUM_CATEGORIES.map(category => (
