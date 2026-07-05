@@ -22,21 +22,15 @@ export interface BibleData {
   books: Book[]
 }
 
-export interface JasherData {
-  name: string
-  nameEn: string
-  chapters: Chapter[]
-}
-
 export interface BookMark {
-  sourceId: 'ckjv' | 'jasher'
+  sourceId: 'ckjv'
   bookId?: number
   chapter: number
   verse: number
 }
 
 export interface CompletionRecord {
-  sourceId: 'ckjv' | 'jasher'
+  sourceId: 'ckjv'
   bookId?: number
   bookName?: string
   chapter: number
@@ -68,8 +62,8 @@ export type HighlightColor = 'important' | 'comfort' | 'question' | 'prayer'
 export type LegacyHighlightColor = 'yellow' | 'red' | 'green' | 'blue'
 
 export interface Highlight {
-  id: string                     // UUID-like: `${sourceId}-${bookId ?? 'j'}-${chapter}-${verse}-${Date.now()}`
-  sourceId: 'ckjv' | 'jasher'
+  id: string                     // UUID-like: `${sourceId}-${bookId}-${chapter}-${verse}-${Date.now()}`
+  sourceId: 'ckjv'
   bookId?: number
   chapter: number
   verse: number
@@ -80,7 +74,7 @@ export interface Highlight {
 }
 
 export interface ReflectionNote {
-  sourceId: 'ckjv' | 'jasher'
+  sourceId: 'ckjv'
   bookId?: number
   chapter: number
   content: string

@@ -5,7 +5,7 @@ interface Props {
   onClose: () => void
   highlights: Highlight[]
   ckjv: BibleData | null
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  onJumpTo: (sourceId: 'ckjv', bookId: number | undefined, chapter: number) => void
 }
 
 const COLOR_DOT: Record<HighlightColor, string> = {
@@ -54,10 +54,7 @@ export default function NotesPanel({ isOpen, onClose, highlights, ckjv, onJumpTo
           <p className="text-center text-sm text-stone-300 dark:text-[#6B6460] py-12">尚無劃線記錄</p>
         ) : (
           sorted.map(h => {
-            const bookName =
-              h.sourceId === 'jasher'
-                ? '雅煞珥書'
-                : ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
+            const bookName = ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
             const preview = h.highlightText.slice(0, 50) + (h.highlightText.length > 50 ? '…' : '')
 
             return (

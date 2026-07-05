@@ -13,7 +13,7 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   ckjv: BibleData | null
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  onJumpTo: (sourceId: 'ckjv', bookId: number | undefined, chapter: number) => void
 }
 
 function highlight(text: string, query: string): React.ReactNode {

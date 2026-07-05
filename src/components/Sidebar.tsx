@@ -1,18 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import type {
-  BibleData, JasherData, Book, Chapter, CompletionRecord,
+  BibleData, Book, Chapter, CompletionRecord,
 } from '../types'
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
   ckjv: BibleData | null
-  jasher: JasherData | null
-  source: 'ckjv' | 'jasher'
   activeBook: Book | null
   activeChapter: Chapter | null
   onSelectCkjvChapter: (book: Book, chapter: Chapter) => void
-  onSelectJasherChapter: (chapter: Chapter) => void
   isOpen: boolean
   onClose: () => void
   completions: CompletionRecord[]
@@ -22,15 +19,14 @@ interface Props {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function Sidebar({
-  ckjv, jasher, source, activeBook, activeChapter,
-  onSelectCkjvChapter, onSelectJasherChapter,
+  ckjv, activeBook, activeChapter,
+  onSelectCkjvChapter,
   isOpen, onClose, completions,
   currentChapterLabel,
   onSelectBookBackground,
 }: Props) {
 
   const [expandedBook, setExpandedBook] = useState<number | string | null>(activeBook?.id ?? null)
-  const [showJasher, setShowJasher] = useState(source === 'jasher')
   const [oldExpanded, setOldExpanded] = useState(true)
   const [newExpanded, setNewExpanded] = useState(true)
 
@@ -43,8 +39,6 @@ export default function Sidebar({
 
   const isCkjvCompleted = (book: Book, chNum: number) =>
     completions.some(r => r.sourceId === 'ckjv' && r.bookId === (book.id as number) && r.chapter === chNum)
-  const isJasherCompleted = (chNum: number) =>
-    completions.some(r => r.sourceId === 'jasher' && r.chapter === chNum)
 
   const sidebarContent = (
     <div className="flex-1 min-h-0 overflow-hidden">
@@ -56,18 +50,12 @@ export default function Sidebar({
         setOldExpanded={setOldExpanded}
         newExpanded={newExpanded}
         setNewExpanded={setNewExpanded}
-        jasher={jasher}
-        source={source}
         activeBook={activeBook}
         activeChapter={activeChapter}
-        showJasher={showJasher}
-        setShowJasher={setShowJasher}
         expandedBook={expandedBook}
         setExpandedBook={setExpandedBook}
         isCkjvCompleted={isCkjvCompleted}
-        isJasherCompleted={isJasherCompleted}
         onSelectCkjvChapter={onSelectCkjvChapter}
-        onSelectJasherChapter={onSelectJasherChapter}
         onClose={onClose}
         currentChapterLabel={currentChapterLabel}
         onSelectBookBackground={onSelectBookBackground}
@@ -129,18 +117,12 @@ interface ScriptureProps {
   setOldExpanded: (v: boolean) => void
   newExpanded: boolean
   setNewExpanded: (v: boolean) => void
-  jasher: JasherData | null
-  source: 'ckjv' | 'jasher'
   activeBook: Book | null
   activeChapter: Chapter | null
-  showJasher: boolean
-  setShowJasher: (v: boolean) => void
   expandedBook: number | string | null
   setExpandedBook: (v: number | string | null) => void
   isCkjvCompleted: (book: Book, chNum: number) => boolean
-  isJasherCompleted: (chNum: number) => boolean
   onSelectCkjvChapter: (book: Book, chapter: Chapter) => void
-  onSelectJasherChapter: (chapter: Chapter) => void
   onClose: () => void
   currentChapterLabel: string
   onSelectBookBackground: (bookName: string) => void
@@ -151,10 +133,10 @@ function ScriptureContent({
   oldTestament, newTestament,
   oldExpanded, setOldExpanded,
   newExpanded, setNewExpanded,
-  jasher, source, activeBook, activeChapter,
-  showJasher, setShowJasher, expandedBook, setExpandedBook,
-  isCkjvCompleted, isJasherCompleted,
-  onSelectCkjvChapter, onSelectJasherChapter,
+  activeBook, activeChapter,
+  expandedBook, setExpandedBook,
+  isCkjvCompleted,
+  onSelectCkjvChapter,
   onClose,
   currentChapterLabel,
   onSelectBookBackground,
@@ -232,13 +214,12 @@ function ScriptureContent({
         )
       }
       const isExpanded = expandedBook === book.id
-      const isActive = source === 'ckjv' && activeBook?.id === book.id
+      const isActive = activeBook?.id === book.id
       items.push(
         <div key={book.id} data-book-id={book.id}>
           <button
             onClick={() => {
               setExpandedBook(isExpanded ? null : book.id)
-              setShowJasher(false)
             }}
             title={book.name}
             className={`w-full text-left pl-6 pr-3 py-2.5 text-sm rounded-md transition-colors
@@ -263,7 +244,7 @@ function ScriptureContent({
               </button>
               {book.chapters.map(ch => {
                 const completed = isCkjvCompleted(book, ch.number)
-                const active = source === 'ckjv' && activeBook?.id === book.id && activeChapter?.number === ch.number
+                const active = activeBook?.id === book.id && activeChapter?.number === ch.number
                 return (
                   <button
                     key={ch.number}
@@ -334,45 +315,8 @@ function ScriptureContent({
               {newExpanded && <div className="pb-1">{renderBookList(filteredNew)}</div>}
             </>
           )}
-          {jasher && (
-            <div className="mt-1">
-              <button
-                onClick={() => setShowJasher(!showJasher)}
-                className={`w-full flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold uppercase tracking-widest transition-colors
-                  ${source === 'jasher'
-                    ? 'text-[#4F7358] dark:text-[#7AAF87]'
-                    : 'text-stone-300 dark:text-[#6B6460] hover:text-stone-400 dark:hover:text-[#A09890]'
-                  }`}
-              >
-                <span>{showJasher ? '▾' : '▸'}</span>次經 · 雅煞珥書
-              </button>
-              {showJasher && (
-                <div className="flex flex-wrap gap-1 pl-6 pr-3 pb-2 pt-1">
-                  {jasher.chapters.map(ch => {
-                    const completed = isJasherCompleted(ch.number)
-                    const active = source === 'jasher' && activeChapter?.number === ch.number
-                    return (
-                      <button
-                        key={ch.number}
-                        onClick={() => onSelectJasherChapter(ch)}
-                        className={`flex items-center justify-center w-9 h-9 rounded-md text-xs transition-colors
-                          ${active
-                            ? 'bg-sage text-white dark:bg-sage-dark dark:text-[#17191E]'
-                            : 'bg-stone-200 dark:bg-[#2E3240] hover:bg-stone-300 dark:hover:bg-[#3A3C42] ' +
-                              (completed ? 'text-stone-300 dark:text-[#4A4840]' : 'text-stone-500 dark:text-[#A09890]')
-                          }`}
-                      >
-                        {ch.number}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
   )
 }
-

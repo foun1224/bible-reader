@@ -104,13 +104,13 @@ interface Props {
   ckjv: BibleData | null
   onNavigate: (book: Book, chapter: Chapter) => void
   // For 默想 tab
-  currentSource: 'ckjv' | 'jasher'
+  currentSource: 'ckjv'
   currentBookId: number | undefined
   currentChapter: number
   currentChapterLabel: string
   // For 筆記 tab
   highlights: Highlight[]
-  onJumpTo: (sourceId: 'ckjv' | 'jasher', bookId: number | undefined, chapter: number) => void
+  onJumpTo: (sourceId: 'ckjv', bookId: number | undefined, chapter: number) => void
   // Reading settings (controlled from parent, toggled in panel)
   verseNumStyle: 'show' | 'fade' | 'hide'
   onVerseNumStyle: (v: 'show' | 'fade' | 'hide') => void
@@ -434,10 +434,7 @@ export default function ReflectionPanel({
                 <p className="text-center text-sm text-stone-300 dark:text-[#6B6460] py-12">尚無劃線記錄</p>
               ) : (
                 sortedHighlights.map(h => {
-                  const bookName =
-                    h.sourceId === 'jasher'
-                      ? '雅煞珥書'
-                      : ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
+                  const bookName = ckjv?.books.find(b => b.id === h.bookId)?.name ?? '未知'
                   const preview = h.highlightText.slice(0, 60) + (h.highlightText.length > 60 ? '…' : '')
 
                   return (
