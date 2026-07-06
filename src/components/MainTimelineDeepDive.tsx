@@ -3,17 +3,62 @@ import { findTimelineDeepDive } from '../lib/timelineDeepDives'
 import { TIMELINE_PERIODS } from '../lib/timelinePeriods'
 import type { BibleData, Book } from '../types'
 
-function Section({ eyebrow, title, children }: {
+function Section({ id, eyebrow, title, children }: {
+  id?: string
   eyebrow: string
   title: string
   children: ReactNode
 }) {
   return (
-    <section className="border-t border-stone-200/70 pt-6 dark:border-[#2E3240]">
+    <section id={id} className="scroll-mt-6 border-t border-stone-200/70 pt-6 dark:border-[#2E3240]">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">{eyebrow}</p>
       <h2 className="mt-1 text-base font-semibold text-stone-700 dark:text-[#E4DDD0]">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
+  )
+}
+
+function CollapsibleSection({ id, eyebrow, title, children, defaultOpen = false }: {
+  id: string
+  eyebrow: string
+  title: string
+  children: ReactNode
+  defaultOpen?: boolean
+}) {
+  return (
+    <details
+      id={id}
+      open={defaultOpen}
+      className="group scroll-mt-6 rounded-lg border border-stone-200 bg-stone-50/55 dark:border-[#2E3240] dark:bg-[#22242C]/35"
+    >
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden">
+        <span>
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">{eyebrow}</span>
+          <span className="mt-0.5 block text-base font-semibold text-stone-700 dark:text-[#E4DDD0]">{title}</span>
+        </span>
+        <span className="text-sm text-stone-300 transition-transform duration-150 group-open:rotate-180 dark:text-[#6B6460]" aria-hidden="true">⌄</span>
+      </summary>
+      <div className="border-t border-stone-200/70 px-4 pb-4 pt-4 dark:border-[#2E3240]">{children}</div>
+    </details>
+  )
+}
+
+function ReadingMap({ items }: { items: Array<{ id: string; label: string }> }) {
+  return (
+    <nav className="rounded-lg border border-stone-200 bg-stone-50/70 p-3 dark:border-[#2E3240] dark:bg-[#22242C]/45" aria-label="本頁學習路線">
+      <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">Learning route</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {items.map((item, index) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className="inline-flex min-h-8 items-center rounded-full border border-stone-200 bg-stone-50 px-3 text-xs font-medium text-stone-500 transition-colors hover:border-[#4F7358]/25 hover:text-[#4F7358] dark:border-[#2E3240] dark:bg-[#17191E] dark:text-[#A09890] dark:hover:border-[#7AAF87]/25 dark:hover:text-[#7AAF87]"
+          >
+            {index + 1}. {item.label}
+          </a>
+        ))}
+      </div>
+    </nav>
   )
 }
 
@@ -88,8 +133,20 @@ export default function MainTimelineDeepDive({
           <p className="mt-5 text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.thesis}</p>
         </header>
 
+        <ReadingMap
+          items={[
+            { id: 'learning', label: '學習導引' },
+            ...(deepDive.sourceReading ? [{ id: 'source-reading', label: '史料細讀' }] : []),
+            { id: 'world-context', label: '世界背景' },
+            { id: 'scripture-books', label: '書卷導讀' },
+            ...(deepDive.scriptureDeepRead ? [{ id: 'deep-read', label: '經文慢讀' }] : []),
+            { id: 'reflection', label: '信仰反思' },
+            ...(deepDive.todayReflection ? [{ id: 'today-reflection', label: '今日連結' }] : []),
+            { id: 'sources', label: '資料來源' },
+          ]}
+        />
 
-        <Section eyebrow="Learning Guide" title="進入這個時代前，先抓住三個重點">
+        <Section id="learning" eyebrow="Learning Guide" title="進入這個時代前，先抓住三個重點">
           <div className="grid gap-3">
             <InsightCard
               label="Why it matters"
@@ -110,7 +167,7 @@ export default function MainTimelineDeepDive({
         </Section>
 
         {deepDive.sourceReading && (
-          <Section eyebrow="Primary Source" title={`代表史料細讀：${deepDive.sourceReading.artifactName}`}>
+          <CollapsibleSection id="source-reading" eyebrow="Primary Source" title={`代表史料細讀：${deepDive.sourceReading.artifactName}`}>
             <div className="rounded-lg border border-stone-200 bg-stone-50/70 dark:border-[#2E3240] dark:bg-[#22242C]/45 divide-y divide-stone-200/70 dark:divide-[#2E3240]">
               <div className="p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">這份史料是什麼</p>
@@ -129,10 +186,10 @@ export default function MainTimelineDeepDive({
                 <p className="text-sm leading-7 text-stone-600 dark:text-[#D4CEC4]">{deepDive.sourceReading.connectionToScripture}</p>
               </div>
             </div>
-          </Section>
+          </CollapsibleSection>
         )}
 
-        <Section eyebrow="World Context" title="世界背景：文化、人文與自然環境">
+        <CollapsibleSection id="world-context" eyebrow="World Context" title="世界背景：文化、人文與自然環境">
           <div className="grid gap-3">
             <TextBlock title={deepDive.world.culture.title} body={deepDive.world.culture.body} />
             <TextBlock title={deepDive.world.humanity.title} body={deepDive.world.humanity.body} />
@@ -166,9 +223,9 @@ export default function MainTimelineDeepDive({
               </figure>
             ))}
           </div>
-        </Section>
+        </CollapsibleSection>
 
-        <Section eyebrow="Scripture" title="聖經相關書卷">
+        <CollapsibleSection id="scripture-books" eyebrow="Scripture" title="聖經相關書卷">
           <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.scripture.overview}</p>
           <div className="mt-4 space-y-3">
             {deepDive.scripture.bookGuides.map(guide => {
@@ -218,10 +275,10 @@ export default function MainTimelineDeepDive({
               })}
             </div>
           </div>
-        </Section>
+        </CollapsibleSection>
 
         {deepDive.scriptureDeepRead && (
-          <Section eyebrow="Deep Read" title={`關鍵經文慢讀：${deepDive.scriptureDeepRead.reference}`}>
+          <CollapsibleSection id="deep-read" eyebrow="Deep Read" title={`關鍵經文慢讀：${deepDive.scriptureDeepRead.reference}`}>
             <div className="rounded-lg border border-stone-200 bg-stone-50/70 dark:border-[#2E3240] dark:bg-[#22242C]/45 divide-y divide-stone-200/70 dark:divide-[#2E3240]">
               <div className="p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">背景脈絡</p>
@@ -243,10 +300,10 @@ export default function MainTimelineDeepDive({
                 <p className="text-sm leading-7 text-stone-700 dark:text-[#E4DDD0]">{deepDive.scriptureDeepRead.faithQuestion}</p>
               </div>
             </div>
-          </Section>
+          </CollapsibleSection>
         )}
 
-        <Section eyebrow="Reflection" title="信仰反思">
+        <CollapsibleSection id="reflection" eyebrow="Reflection" title="信仰反思" defaultOpen>
           <div className="rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 p-4 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5">
             <h3 className="text-sm font-semibold text-[#4F7358] dark:text-[#7AAF87]">{deepDive.reflection.theme}</h3>
             <div className="mt-4 space-y-4">
@@ -259,18 +316,18 @@ export default function MainTimelineDeepDive({
             </div>
             <p className="mt-5 border-t border-[#4F7358]/15 pt-4 text-sm leading-8 text-stone-600 dark:border-[#7AAF87]/15 dark:text-[#D4CEC4]">{deepDive.reflection.prayer}</p>
           </div>
-        </Section>
+        </CollapsibleSection>
 
         {deepDive.todayReflection && (
-          <Section eyebrow="Today" title="今日連結：從那個時代到你的生活">
+          <CollapsibleSection id="today-reflection" eyebrow="Today" title="今日連結：從那個時代到你的生活" defaultOpen>
             <div className="rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 p-5 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 space-y-4">
               <p className="text-sm leading-8 text-stone-600 dark:text-[#D4CEC4]">{deepDive.todayReflection.bridge}</p>
               <p className="border-t border-[#4F7358]/15 pt-4 dark:border-[#7AAF87]/15 text-sm leading-7 text-stone-700 dark:text-[#E4DDD0] font-medium">{deepDive.todayReflection.question}</p>
             </div>
-          </Section>
+          </CollapsibleSection>
         )}
 
-        <Section eyebrow="Sources" title="資料來源">
+        <CollapsibleSection id="sources" eyebrow="Sources" title="資料來源">
           <ul className="space-y-2">
             {deepDive.sources.map(source => (
               <li key={source.url} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
@@ -282,7 +339,7 @@ export default function MainTimelineDeepDive({
               </li>
             ))}
           </ul>
-        </Section>
+        </CollapsibleSection>
       </article>
     </main>
   )
