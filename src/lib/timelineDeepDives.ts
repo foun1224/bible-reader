@@ -774,6 +774,307 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
     ],
   },
 
+  {
+    periodId: 'conquest',
+    title: '征服與士師：進入應許地，也進入信仰循環',
+    thesis:
+      '約書亞帶領以色列進入迦南，但土地並沒有自動使人忠心。征服與士師時期讓讀者看見：神的應許真實臨到，人的心卻仍可能在安定之後轉向偶像。這是一段關於得地、妥協、呼求與拯救的循環故事。',
+    world: {
+      culture: {
+        title: '迦南是城邦與地方神明交織的世界',
+        body:
+          '晚期青銅時代的迦南不是統一國家，而是許多城邦、山地村落與地方勢力交錯的地區。城市有自己的王、城牆、神廟與外交依附關係，常在埃及、赫人與其他近東勢力的夾縫中求生。約書亞記中的耶利哥、艾城、夏瑣等地，不只是軍事目標，也代表以色列進入一個已經被宗教、政治與農耕節奏深深塑造的世界。',
+      },
+      humanity: {
+        title: '定居後的最大危險不是戰爭，而是同化',
+        body:
+          '在曠野中，以色列人缺乏食物與水；進入迦南後，他們面對的是另一種試探：有土地、有農作、有地方神明、有婚姻聯盟，也有「看起來比較實際」的生存方式。士師記反覆出現的循環——犯罪、受壓、呼求、拯救、再犯罪——不是簡單的道德失敗，而是群體在安定與壓力中不斷被周圍文化吸收的過程。',
+      },
+      environment: {
+        title: '山地、谷地與城門塑造敘事張力',
+        body:
+          '迦南地形複雜：沿海平原、中央山地、約旦河谷與耶斯列平原彼此不同。以色列初期多在山地定居，面對低地戰車與城邦軍事優勢時常處於弱勢。士師故事中的戰場、泉源、禾場、城門與山地都不只是背景，而是說明神常在軍事弱勢與地理限制中拯救百姓。',
+      },
+      artifacts: [
+        {
+          title: 'Tell es-Sultan（古耶利哥遺址）',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Tell_es-sultan.jpg/1280px-Tell_es-sultan.jpg',
+          sourceName: 'Wikimedia Commons',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Tell_es-sultan.jpg',
+          license: 'CC BY-SA 3.0',
+          caption: 'Tell es-Sultan 是古耶利哥遺址所在的土丘，幫助讀者把約書亞記中的城牆敘事放回古代城邦地景中。',
+          educationalUse: '用來建立「城邦、城牆、山地定居」的空間感，不把考古爭議簡化成單一證明，而是幫助讀者理解征服敘事的地理與城市背景。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '約書亞記、士師記、路得記形成一組強烈對照：約書亞記宣告神信實成就應許；士師記揭露人進入土地後仍反覆失敗；路得記則在黑暗時代中放入一個小而忠誠的故事，預備大衛家的線索。讀這三卷書，要同時看見宏大得地與日常忠心。',
+      bookGuides: [
+        {
+          bookName: '約書亞記',
+          role: '記錄以色列進入應許地、分地與更新盟約，核心是神信實守約。',
+          readingQuestion: '約書亞記一方面強調勇敢爭戰，一方面強調不可離開律法。這如何修正你對「成功」的定義？',
+        },
+        {
+          bookName: '士師記',
+          role: '記錄以色列沒有王時反覆偏離神、受壓迫、蒙拯救的循環。',
+          readingQuestion: '士師記的循環中，哪一步最像你自己的屬靈模式：妥協、受壓、呼求、短暫恢復，還是再次忘記？',
+        },
+        {
+          bookName: '路得記',
+          role: '在士師時代的混亂中，呈現信實、憐憫與救贖親屬如何保存盼望。',
+          readingQuestion: '路得記裡最改變歷史的，不是戰爭，而是日常忠誠。這如何改變你對「神使用我」的想像？',
+        },
+      ],
+      readingPath: [
+        { label: '進入應許地', bookName: '約書亞記', chapter: 1, purpose: '看神如何把勇敢與遵行律法綁在一起。' },
+        { label: '更新盟約', bookName: '約書亞記', chapter: 24, purpose: '看「至於我和我家，我們必定事奉耶和華」如何成為進地後的選擇。' },
+        { label: '士師循環', bookName: '士師記', chapter: 2, purpose: '看下一代如何不認識神，也看整卷士師記的神學框架。' },
+        { label: '黑暗中的忠誠', bookName: '路得記', chapter: 2, purpose: '看路得與波阿斯如何在小事上活出信實。' },
+      ],
+    },
+    reflection: {
+      theme: '進入應許不等於自動忠心；安定也可能成為新的試探。',
+      prompts: [
+        {
+          question: '我是否曾在「神帶我進入某個祝福」之後，反而慢慢忘記神？',
+          hint: '士師記提醒我們，困難會使人呼求神，安定也可能使人失去警醒。',
+        },
+        {
+          question: '我生命中有哪些「迦南文化」看似實際、合理，卻正在慢慢塑造我的敬拜？',
+          hint: '不要只想到明顯偶像，也可以想到效率、安全感、成功、關係或身份。',
+        },
+        {
+          question: '路得記中的忠誠很平凡，卻進入大衛與彌賽亞家譜。我的日常忠心可能正在預備什麼我看不見的事？',
+          hint: '神常把救贖歷史藏在不被注意的田間、家庭與承諾裡。',
+        },
+      ],
+      prayer:
+        '主啊，求你讓我在祝福中不忘記你，在安定中仍保持敬畏。當我反覆落入自己的循環時，求你使我真實回轉，也讓我在平凡日常中活出路得那樣的忠誠。',
+    },
+    sources: [
+      {
+        title: 'Tell es-Sultan',
+        sourceName: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/wiki/File:Tell_es-sultan.jpg',
+        note: '古耶利哥遺址照片，用於建立迦南城邦與城牆背景。',
+      },
+      {
+        title: 'Ancient Jericho / Tell es-Sultan',
+        sourceName: 'UNESCO World Heritage Centre',
+        url: 'https://whc.unesco.org/en/list/1687/',
+        note: '古耶利哥 / Tell es-Sultan 的世界遺產資料，可補充遺址與考古背景。',
+      },
+    ],
+  },
+
+  {
+    periodId: 'united-kingdom',
+    title: '統一王國：敬拜、權力與智慧的高峰',
+    thesis:
+      '掃羅、大衛與所羅門的時代，是以色列從鬆散支派走向王國的關鍵轉折。這段歷史有聖殿、詩篇、智慧與國家榮耀，也有權力誘惑、家庭破裂與敬拜混雜；它讓讀者看見，神的應許會經過君王制度，卻不被君王制度取代。',
+    world: {
+      culture: {
+        title: '王權帶來秩序，也帶來集中化的危險',
+        body:
+          '統一王國使以色列有固定首都、行政制度、軍隊與聖殿中心。大衛攻取耶路撒冷，使它成為政治與敬拜的交會點；所羅門建殿與擴大國際貿易，使以色列短暫進入古近東的繁榮網絡。但撒母耳記早已警告：王會徵兵、徵稅、取得田地與人力。王權能保護群體，也能把群體重新帶回另一種奴役。',
+      },
+      humanity: {
+        title: '大衛家的榮耀與傷口同時展開',
+        body:
+          '大衛既是合神心意的人，也是犯下姦淫、謀殺並使家庭長期破裂的人。所羅門既有智慧，也因政治婚姻與外邦神明使心偏離。統一王國的敘事拒絕把領袖浪漫化：聖經讓讀者看見恩膏、才幹、詩歌與智慧都不能取代悔改與敬畏。',
+      },
+      environment: {
+        title: '耶路撒冷成為信仰地圖的中心',
+        body:
+          '耶路撒冷位於山地，不像埃及或巴比倫那樣依靠大河平原。它的政治力量起初並不顯眼，但因大衛遷都、約櫃進城、所羅門建殿，成為以色列記憶中的屬靈中心。詩篇中「上行之詩」與錫安神學，都把地理上的上行變成信仰上的朝向神。',
+      },
+      artifacts: [
+        {
+          title: 'City of David, Jerusalem',
+          imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/City_of_David,_Jerusalem.jpg',
+          sourceName: 'Wikimedia Commons',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:City_of_David,_Jerusalem.jpg',
+          license: 'CC BY-SA 3.0',
+          caption: '耶路撒冷城南側的大衛城區域，幫助讀者理解大衛遷都與錫安傳統的地理背景。',
+          educationalUse: '用來建立耶路撒冷如何從政治據點成為敬拜中心的空間感，並連結撒母耳記、列王紀與詩篇。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '撒母耳記上下講述王權如何被建立，也揭露王權如何傷害人；詩篇把王國時代的祈禱、哀歌、讚美與悔改保存下來；箴言、傳道書與雅歌則呈現智慧傳統的多面向：生活秩序、人生虛空與愛的渴望。這個時期的書卷讓讀者看見，信仰不只關於戰爭與聖殿，也關於情感、倫理、智慧與領袖的內心。',
+      bookGuides: [
+        {
+          bookName: '撒母耳記上',
+          role: '描述撒母耳、掃羅與大衛興起，呈現王權的渴望與危險。',
+          readingQuestion: '以色列要求立王，是出於對神治理的不信任，還是對秩序的真實需要？這兩者如何同時存在？',
+        },
+        {
+          bookName: '撒母耳記下',
+          role: '記錄大衛王國的高峰、犯罪、悔改與家庭後果。',
+          readingQuestion: '大衛是真實敬拜者，也是破碎罪人。這如何幫助你看待屬靈領袖與自己的矛盾？',
+        },
+        {
+          bookName: '詩篇',
+          role: '保存以色列的禱告語言，涵蓋讚美、哀歌、悔改、君王與錫安盼望。',
+          readingQuestion: '詩篇允許人把憤怒、恐懼、罪疚與盼望都帶到神面前。你最不習慣向神表達哪一類情緒？',
+        },
+        {
+          bookName: '箴言',
+          role: '把敬畏神落實到日常生活、言語、金錢、工作、人際與判斷。',
+          readingQuestion: '如果智慧的起點是敬畏耶和華，那我的判斷方式和世界的成功邏輯有何不同？',
+        },
+      ],
+      readingPath: [
+        { label: '王權的警告', bookName: '撒母耳記上', chapter: 8, purpose: '看以色列要求立王時，神如何揭露王權的代價。' },
+        { label: '大衛之約', bookName: '撒母耳記下', chapter: 7, purpose: '看神如何把大衛家與彌賽亞盼望連在一起。' },
+        { label: '破碎中的悔改', bookName: '詩篇', chapter: 51, purpose: '看大衛犯罪後如何在神面前承認真相。' },
+        { label: '智慧的起點', bookName: '箴言', chapter: 1, purpose: '看智慧文學如何把信仰帶入日常選擇。' },
+      ],
+    },
+    reflection: {
+      theme: '神可以使用權力，但權力永遠不能取代神。',
+      prompts: [
+        {
+          question: '我是否期待某個領袖、制度或成功狀態，替我帶來只有神能給的安全感？',
+          hint: '以色列想要王，部分原因是想像「像列國一樣」就會安全。',
+        },
+        {
+          question: '大衛的故事如何幫助我同時看見恩典與責任？我是否常只強調其中一邊？',
+          hint: '神赦免大衛，但後果並沒有被取消；恩典不等於輕看傷害。',
+        },
+        {
+          question: '詩篇中的哪一種禱告語言，是我現在最需要重新學習的：讚美、哀哭、悔改、等候，還是信靠？',
+          hint: '詩篇不是只教人說漂亮話，而是教人把真實生命帶到神面前。',
+        },
+      ],
+      prayer:
+        '主啊，求你讓我在渴望秩序與成功時，不把任何人或制度當作偶像。教我像大衛一樣悔改，像詩篇一樣誠實禱告，像箴言一樣在日常中敬畏你。',
+    },
+    sources: [
+      {
+        title: 'City of David, Jerusalem',
+        sourceName: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/wiki/File:City_of_David,_Jerusalem.jpg',
+        note: '耶路撒冷大衛城區域照片，用於統一王國與錫安傳統背景。',
+      },
+      {
+        title: 'City of David',
+        sourceName: 'Bible Odyssey / SBL',
+        url: 'https://www.bibleodyssey.org/places/main-articles/city-of-david',
+        note: '大衛城與耶路撒冷歷史背景的學術導讀。',
+      },
+    ],
+  },
+
+  {
+    periodId: 'divided-kingdom',
+    title: '分裂王國與先知：在帝國陰影下聽見神的聲音',
+    thesis:
+      '王國分裂後，以色列與猶大在偶像、權力、外交與社會不義中逐漸走向審判。先知不是預測未來的神祕人物，而是在帝國威脅與宗教虛假中，替神指出真相、呼喚悔改，也保存彌賽亞盼望的人。',
+    world: {
+      culture: {
+        title: '亞述與巴比倫把小國推進生存危機',
+        body:
+          '北國以色列與南國猶大夾在亞述、埃及、巴比倫等強權之間，外交選邊常與敬拜選擇交織。君王一方面尋求軍事聯盟，一方面在國內推行或容忍偶像崇拜；先知則不斷指出，真正的危機不是軍事弱小，而是失去對神的信靠。以賽亞面對亞述威脅，耶利米面對巴比倫興起，兩者都把國際政治重新放在神主權之下閱讀。',
+      },
+      humanity: {
+        title: '敬拜腐敗必然流向社會不義',
+        body:
+          '阿摩司、彌迦、以賽亞等先知一再把偶像崇拜與欺壓窮人連在一起。人若在聖殿獻祭，卻在市場剝削貧弱，在法庭顛倒公義，在家庭與土地上欺壓無助者，這樣的敬拜就是神厭惡的。分裂王國時期讓讀者看見，信仰敗壞不是只發生在宗教儀式裡，也會具體表現在經濟、司法、性倫理與權力運作上。',
+      },
+      environment: {
+        title: '撒瑪利亞、耶路撒冷與拉吉成為審判地圖',
+        body:
+          '北國首都撒瑪利亞在公元前 722 年被亞述攻陷；南國的拉吉在西拿基立入侵時被圍攻，成為亞述宮殿浮雕中炫耀勝利的場景；耶路撒冷則在希西家時短暫得救，最終仍在巴比倫手中陷落。這些地名不是背景裝飾，而是先知信息具體落地的地方：神的話語進入城門、市場、宮廷與戰場。',
+      },
+      artifacts: [
+        {
+          title: 'Lachish relief inscription',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Lachish_inscription.jpeg/1280px-Lachish_inscription.jpeg',
+          sourceName: 'Wikimedia Commons / British Museum',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Lachish_inscription.jpeg',
+          license: 'Public Domain',
+          caption: '拉吉浮雕銘文出自亞述王西拿基立的尼尼微宮殿，描繪亞述攻取猶大城拉吉的勝利宣傳。',
+          educationalUse: '幫助讀者把列王紀、以賽亞書中的亞述威脅放入帝國宣傳與軍事壓力中理解，也看見小國猶大面對強權時的脆弱。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '列王紀與歷代志從不同角度回顧王國興衰；先知書則把這段歷史變成神學診斷。以賽亞、耶利米、何西阿、阿摩司、彌迦、那鴻、哈巴谷等先知，不只是說未來，也揭露現在：虛假敬拜、社會不義、政治倚靠與忘記盟約。這個時期的閱讀重點，是學習讓神的話語解讀歷史，而不是讓恐懼解讀歷史。',
+      bookGuides: [
+        {
+          bookName: '列王紀上',
+          role: '從所羅門晚年、王國分裂到眾王興衰，呈現敬拜選擇如何決定國家方向。',
+          readingQuestion: '列王紀評價君王時，不先問他多成功，而問他是否行耶和華眼中看為正的事。這如何挑戰你的評價標準？',
+        },
+        {
+          bookName: '列王紀下',
+          role: '記錄北國滅亡、南國改革與耶路撒冷最終陷落。',
+          readingQuestion: '為什麼希西家、約西亞的改革如此重要，卻仍無法完全阻止審判？改革與悔改有何差別？',
+        },
+        {
+          bookName: '以賽亞書',
+          role: '在亞述威脅下宣告聖潔的神、受苦僕人與將來的安慰。',
+          readingQuestion: '以賽亞同時講審判與盼望。你是否容易只接受其中一面？',
+        },
+        {
+          bookName: '阿摩司書',
+          role: '從社會公義角度揭露宗教虛偽，宣告神不接受與不義共存的敬拜。',
+          readingQuestion: '我是否可能一面維持宗教生活，一面在金錢、工作或關係中忽略公義？',
+        },
+        {
+          bookName: '耶利米書',
+          role: '在巴比倫陰影下呼籲猶大面對真相，並預告新約。',
+          readingQuestion: '耶利米常被拒絕，因他說的不是人想聽的。你如何分辨安慰與逃避真相？',
+        },
+      ],
+      readingPath: [
+        { label: '王國分裂', bookName: '列王紀上', chapter: 12, purpose: '看驕傲、重擔與政治計算如何撕裂群體。' },
+        { label: '亞述威脅', bookName: '以賽亞書', chapter: 36, purpose: '看拉伯沙基如何用恐嚇語言攻擊信心。' },
+        { label: '神厭惡虛假敬拜', bookName: '阿摩司書', chapter: 5, purpose: '看公義如何成為敬拜不可分割的一部分。' },
+        { label: '新約的應許', bookName: '耶利米書', chapter: 31, purpose: '看審判之後，神如何應許把律法寫在心上。' },
+      ],
+    },
+    reflection: {
+      theme: '先知不是讓人知道更多未來，而是讓人誠實面對現在。',
+      prompts: [
+        {
+          question: '如果先知今天進入我的生活，他最可能指出哪一個我不想面對的真相？',
+          hint: '先知常常先處理敬拜、金錢、公義、權力與安全感，而不是滿足人的好奇心。',
+        },
+        {
+          question: '我是否曾用宗教行為遮蓋生活中的不義？',
+          hint: '阿摩司書提醒我們，敬拜若不流向公義，就會變成自我安慰。',
+        },
+        {
+          question: '當我面對大環境壓力時，我最容易倚靠什麼「埃及」或「亞述」？',
+          hint: '先知不是反對策略，而是反對把策略變成取代神的救主。',
+        },
+      ],
+      prayer:
+        '主啊，求你給我能聽見先知聲音的耳朵。當你的話語指出我不想面對的地方，求你不要任憑我用宗教語言逃避真相。讓我的敬拜與公義相連，讓我的安全感重新回到你裡面。',
+    },
+    sources: [
+      {
+        title: 'Lachish reliefs',
+        sourceName: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/wiki/File:Lachish_inscription.jpeg',
+        note: 'Public Domain，亞述拉吉浮雕銘文，用於亞述威脅與猶大歷史背景。',
+      },
+      {
+        title: 'The Lachish reliefs',
+        sourceName: 'British Museum',
+        url: 'https://www.britishmuseum.org/collection/term/BIOG59031',
+        note: 'British Museum 對拉吉浮雕與西拿基立王宮背景的收藏資料。',
+      },
+    ],
+  },
+
+
 ]
 
 export function findTimelineDeepDive(periodId: string) {
