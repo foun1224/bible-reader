@@ -265,7 +265,7 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       artifacts: [
         {
           title: '居魯士圓柱',
-          imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cyrus_Cylinder.jpg',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Cyrus_Cylinder.jpg',
           sourceName: 'Wikimedia Commons / British Museum',
           sourceUrl: 'https://commons.wikimedia.org/wiki/File:Cyrus_Cylinder.jpg',
           license: 'CC BY-SA 4.0',
@@ -573,11 +573,11 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       artifacts: [
         {
           title: '加利利湖（太巴列湖）全景',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Sea_of_galilee_tiberias.jpg/1280px-Sea_of_galilee_tiberias.jpg',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Lake_Tiberias_%28Sea_of_Galilee%29%2C_Northern_Israel.jpg',
           sourceName: 'Wikimedia Commons',
-          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sea_of_galilee_tiberias.jpg',
-          license: 'CC BY-SA 3.0',
-          caption: '加利利湖（太巴列湖），耶穌在這裡呼召彼得、安德烈、雅各與約翰，也在湖面上行走。這片湖是福音書事工的核心地理場景。',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Lake_Tiberias_(Sea_of_Galilee),_Northern_Israel.jpg',
+          license: 'Public Domain (NASA)',
+          caption: '加利利湖（太巴列湖）空照，耶穌在這裡呼召彼得、安德烈、雅各與約翰，也在湖面上行走。這片湖是福音書事工的核心地理場景。',
           educationalUse: '幫助讀者建立福音書事工的地理感，理解耶穌在加利利鄉間起點的文化意義——而不是從耶路撒冷宗教中心開始。',
         },
       ],
