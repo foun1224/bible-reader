@@ -26,6 +26,17 @@ function TextBlock({ title, body }: { title: string; body: string }) {
   )
 }
 
+
+function InsightCard({ label, title, body }: { label: string; title: string; body: string }) {
+  return (
+    <div className="rounded-lg border border-stone-200 bg-stone-50/70 p-4 dark:border-[#2E3240] dark:bg-[#22242C]/45">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-300 dark:text-[#6B6460]">{label}</p>
+      <h3 className="mt-1 text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{title}</h3>
+      <p className="mt-2 text-sm leading-8 text-stone-500 dark:text-[#A09890]">{body}</p>
+    </div>
+  )
+}
+
 export default function MainTimelineDeepDive({
   periodId,
   ckjv,
@@ -76,6 +87,27 @@ export default function MainTimelineDeepDive({
           </div>
           <p className="mt-5 text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.thesis}</p>
         </header>
+
+
+        <Section eyebrow="Learning Guide" title="進入這個時代前，先抓住三個重點">
+          <div className="grid gap-3">
+            <InsightCard
+              label="Why it matters"
+              title="為什麼這個時期重要"
+              body={deepDive.insights.whyItMatters}
+            />
+            <InsightCard
+              label="Common misconception"
+              title="常見誤解"
+              body={deepDive.insights.commonMisconception}
+            />
+            <InsightCard
+              label="World history parallel"
+              title="世界史對照"
+              body={deepDive.insights.worldHistoryParallel}
+            />
+          </div>
+        </Section>
 
         <Section eyebrow="World Context" title="世界背景：文化、人文與自然環境">
           <div className="grid gap-3">
