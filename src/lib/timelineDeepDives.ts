@@ -336,6 +336,219 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
     ],
   },
 
+  {
+    periodId: 'return',
+    title: '歸回與重建：回到土地，卻需要重建心靈',
+    thesis:
+      '歸回應許地不等於回到過去。廢墟的耶路撒冷告訴以色列人：地理的歸回只是起點，真正的重建是信仰群體與屬神身份的重塑——這比城牆更難建造。',
+    world: {
+      culture: {
+        title: '波斯帝國推行宗教包容作為治理策略',
+        body:
+          '居魯士大帝的政策允許被遷移民族返回故鄉、恢復神廟祭拜，這在古代是非常獨特的帝國策略。他的這個決定被刻在居魯士圓柱上，記錄他讓各民族帶著神像歸回故地。以斯拉記開頭引用居魯士詔書，聖經作者把它理解為神動用外邦君王來成就應許。整個波斯治下的近東，宗教與民族身份在帝國架構中相對獲得喘息空間。',
+      },
+      humanity: {
+        title: '歸回者、留守者與外族之間的身份衝突',
+        body:
+          '歸回的猶大人面對的不是空地，而是已在這片土地生活了幾十年的混居群體。誰是「真正的以色列人」？誰有資格重建聖殿？以斯拉-尼希米記錄的通婚問題、安息日爭議、祭司名冊，都反映一場關於邊界與身份的深層討論。這種「歸回者的眼光」也造成了社群的張力，既排外又脆弱。',
+      },
+      environment: {
+        title: '從河流平原到山城廢墟',
+        body:
+          '巴比倫坐落在幼發拉底河流域的肥沃平原，城市基礎設施完整；而歸回者面對的耶路撒冷，是山地廢墟、城牆頹敗、聖殿燒毀的景象。尼希米記對城牆的詳細記錄顯示，重建是一件具體、艱辛、在周圍敵人嘲弄下進行的工程。土地的實際狀況，讓應許地的榮耀與現實的落差更加刺骨。',
+      },
+      artifacts: [
+        {
+          title: '以拉凡那波斯文書（Elephantine Papyri，局部複製）',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Elephantine_papyrus_in_the_Brooklyn_Museum.jpg/480px-Elephantine_papyrus_in_the_Brooklyn_Museum.jpg',
+          sourceName: 'Wikimedia Commons / Brooklyn Museum',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Elephantine_papyrus_in_the_Brooklyn_Museum.jpg',
+          license: 'CC BY 3.0',
+          caption: '以拉凡那莎草文書（約公元前 5 世紀），記錄波斯時代留在埃及的猶太人社群的生活與書信，是同期猶太離散群體的真實文獻。',
+          educationalUse: '幫助讀者理解歸回期間「留下的猶太人」如何在波斯帝國各地持續建立信仰社群，補充聖經以外的同期歷史視角。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '這個時期的書卷共同回答一個問題：歸回之後，神的百姓如何在廢墟與衝突中重建屬神的群體？以斯拉-尼希米從律法與城牆兩個方向重建；哈該-撒迦利亞-瑪拉基從先知角度鼓勵並挑戰仍在妥協的百姓；以斯帖則從留在帝國的人的角度，提醒神在看不見之處仍護守祂的子民。',
+      bookGuides: [
+        {
+          bookName: '以斯拉記',
+          role: '記錄第一批歸回、聖殿重建與律法更新，焦點在身份的宗教核心。',
+          readingQuestion: '以斯拉與利未人宣讀律法時，百姓一面哭泣一面重新明白神的話（尼 8）。是什麼讓人聽見神的話語時落淚？',
+        },
+        {
+          bookName: '尼希米記',
+          role: '記錄城牆重建、社群改革與敵人的阻撓，是信心與行動的具體敘事。',
+          readingQuestion: '尼希米在外部嘲弄和內部妥協的壓力下繼續工作。你在哪些地方需要同樣的堅持？',
+        },
+        {
+          bookName: '以斯帖記',
+          role: '呈現留在波斯的猶太人如何在危機中，神隱藏地介入並保全祂的子民。',
+          readingQuestion: '以斯帖記全書未提到神的名字，你如何在這故事中看見神的臨在？',
+        },
+        {
+          bookName: '瑪拉基書',
+          role: '舊約最後一卷先知書，指出歸回後的百姓仍在獻祭、婚姻與十分之一上漫不經心。',
+          readingQuestion: '為什麼外在的歸回（回到土地、恢復祭祀）不等於心靈的歸回？',
+        },
+      ],
+      readingPath: [
+        { label: '歸回的命令', bookName: '以斯拉記', chapter: 1, purpose: '看居魯士詔書如何成為神應許的實現。' },
+        { label: '城牆的危機', bookName: '尼希米記', chapter: 4, purpose: '看外部嘲弄如何成為信心與禱告的動力。' },
+        { label: '律法的重新中心化', bookName: '尼希米記', chapter: 8, purpose: '看聽神的話語如何重建群體身份。' },
+        { label: '帝國中的護守', bookName: '以斯帖記', chapter: 4, purpose: '看「此時此刻你來到王后的位分，豈不是為現今的機會嗎」。' },
+        { label: '舊約的告別', bookName: '瑪拉基書', chapter: 4, purpose: '看最後一位先知如何預告以利亞與太陽升起的彌賽亞。' },
+      ],
+    },
+    reflection: {
+      theme: '歸回是起點，不是終點——神要建造的比城牆更深。',
+      prompts: [
+        {
+          question: '我生命中是否有某個「歸回」之後，卻發現廢墟比想像中更多的時刻？那段重建的過程告訴你什麼？',
+          hint: '可以想想恢復一段關係、重啟一個習慣、回歸一個群體，發現現實與期待落差的經驗。',
+        },
+        {
+          question: '尼希米同時禱告又行動（尼 4:9「我們向神禱告，又因他們的緣故派人看守」）。你如何平衡信靠神與承擔責任？',
+          hint: '注意尼希米不是「禱告之後等神工作」，而是「禱告之後繼續做工」。',
+        },
+        {
+          question: '以斯帖記的神在幕後工作，沒有明顯神蹟。你如何在「看不見神的手」的時候仍然信任祂的主權？',
+          hint: '留意以斯帖記的結構：每一個「巧合」如何連成一條看見神護守的線。',
+        },
+      ],
+      prayer:
+        '主啊，我感謝你連在廢墟中仍然帶領歸回。求你教我分辨什麼是外在的整齊，什麼是你真正要在我心裡重建的。讓我的歸回不只是回到熟悉的位置，而是真正回到你。',
+    },
+    sources: [
+      {
+        title: 'Elephantine Papyrus (Brooklyn Museum)',
+        sourceName: 'Wikimedia Commons / Brooklyn Museum',
+        url: 'https://commons.wikimedia.org/wiki/File:Elephantine_papyrus_in_the_Brooklyn_Museum.jpg',
+        note: 'CC BY 3.0，波斯時代猶太離散群體的文獻，補充歸回期的多元猶太社群背景。',
+      },
+      {
+        title: 'Cyrus Cylinder',
+        sourceName: 'British Museum',
+        url: 'https://www.britishmuseum.org/collection/object/W_1880-0617-1941',
+        note: '居魯士圓柱——歸回詔書的歷史背景文物，與 exile 時期共享此來源。',
+      },
+      {
+        title: 'Elephantine Papyri (Jewish community in Egypt)',
+        sourceName: 'JSTOR / Jewish Encyclopedia',
+        url: 'https://www.jewishencyclopedia.com/articles/5617-elephantine-papyri',
+        note: '以拉凡那文書學術背景介紹，說明波斯時代猶太社群的行政、宗教與書信往來。',
+      },
+    ],
+  },
+
+  {
+    periodId: 'intertestamental',
+    title: '兩約之間：沉默中的預備',
+    thesis:
+      '從瑪拉基到馬太，四百年沒有新的先知聲音——但歷史沒有停止。希臘化、馬加比革命、羅馬征服、七十士譯本、會堂制度與法利賽傳統，共同預備了新約時代的語言、問題與期待。這四百年的沉默是神話語預備的時間，不是神缺席的時間。',
+    world: {
+      culture: {
+        title: '希臘化：一種語言與思想的全球化',
+        body:
+          '亞歷山大大帝在公元前 333 年征服波斯，並將希臘文化向東推進到印度邊境。他死後帝國分裂，但希臘語（Koine Greek）成為地中海世界的通用語。猶太人面對希臘哲學、運動競技、文學與城市生活的全面滲透。安提阿古四世（約公元前 167 年）強制猶太人希臘化——禁止安息日、割禮，在聖殿設偶像——引發馬加比起義，獨立節光明節（Hanukkah）從此而來。七十士譯本（LXX）則是這場文化碰撞最有建設性的產物：希伯來聖經被譯成希臘語，使分散在帝國各地的猶太人與外邦人都能讀到神的話語。',
+      },
+      humanity: {
+        title: '猶太社群的四種回應方式',
+        body:
+          '面對希臘化與羅馬統治，猶太人形成了幾個重要派系，這些派系後來直接出現在福音書的衝突場景中：法利賽人護衛律法、發展口傳傳統（後來成為猶太法典 Talmud 的基礎），強調每個人在會堂中都能親近律法；撒都該人是聖殿貴族與祭司精英，只接受成文摩西五經，並與羅馬維持合作關係；愛色尼人隱居曠野（死海古卷的可能群體），等待末世審判；奮銳黨人主張武裝抵抗羅馬。這四種路線，代表了在強權下信仰群體如何保持身份的四種方式。',
+      },
+      environment: {
+        title: '從波斯到希臘到羅馬：帝國的三次更替',
+        body:
+          '這四百年巴勒斯坦先後在波斯（539–333 BC）、馬其頓/塞琉古（333–142 BC）、哈斯摩尼（142–63 BC）與羅馬（63 BC 起）的統治下。龐培在公元前 63 年進入聖殿（但未搶奪器物）標誌著羅馬時代的開始。耶路撒冷在這段時間成為一個被反覆征服、重建、世俗化又護衛的城市。到新約時代，巴勒斯坦是羅馬帝國的一個省，猶太人既享有一定的宗教自主，也承受重稅與占領的恥辱。',
+      },
+      artifacts: [
+        {
+          title: '亞歷山大大帝馬賽克（龐貝古城，伊蘇斯戰役）',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Battle_of_Issus_333_BC-Poseidon_mosaic.jpg/640px-Battle_of_Issus_333_BC-Poseidon_mosaic.jpg',
+          sourceName: 'Wikimedia Commons',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Battle_of_Issus_333_BC-Poseidon_mosaic.jpg',
+          license: 'Public Domain',
+          caption: '伊蘇斯戰役馬賽克（約公元前 100 年，龐貝出土），描繪亞歷山大大帝對抗波斯王大流士三世，現藏那不勒斯國家考古博物館。此戰役是希臘化時代開端的歷史地標。',
+          educationalUse: '幫助讀者視覺化亞歷山大時代的帝國擴張，理解希臘化如何在政治與文化上改變了兩約之間的猶太世界。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '兩約之間沒有新的正典書卷，但這個時期的發展直接影響了新約的理解框架。以下的「承接閱讀」不是要補充新書卷，而是幫助讀者看見：舊約的結局如何留下問題，兩約之間的歷史如何放大這些問題，以及為什麼新約的開頭「終於來了」。',
+      bookGuides: [
+        {
+          bookName: '但以理書',
+          role: '但以理書的帝國異象（第 2、7 章）預描了金銀銅鐵土的帝國更迭，至今被解讀為波斯→希臘→羅馬的序列，為兩約之間的人提供了一個理解歷史的神學框架。',
+          readingQuestion: '如果你活在一個接連被帝國統治的時代，但以理的異象對你的盼望有什麼作用？',
+        },
+        {
+          bookName: '瑪拉基書',
+          role: '瑪拉基是舊約最後一位先知，他預告以利亞再來（瑪 4:5）——新約將這個應許連結到施洗約翰。讀這個結尾，有助於感受四百年「等待以利亞」的張力。',
+          readingQuestion: '四百年沒有先知聲音的以色列人在等什麼？等待如何塑造一個群體的盼望？',
+        },
+        {
+          bookName: '以斯拉記',
+          role: '以斯拉記與尼希米記留下第二聖殿群體的起點：聖殿重建、律法宣讀、群體邊界與盼望尚未完全實現的張力。',
+          readingQuestion: '當百姓已經回到土地，卻仍然沒有大衛王朝與完全自由，他們如何在未完成的恢復中繼續等待？',
+        },
+      ],
+      readingPath: [
+        { label: '帝國更迭的異象', bookName: '但以理書', chapter: 7, purpose: '看四獸異象如何成為流亡群體理解歷史的神學語言。' },
+        { label: '舊約的問號', bookName: '瑪拉基書', chapter: 4, purpose: '看最後一位先知如何留下一個懸念：以利亞回來了嗎？' },
+        { label: '未完成的歸回', bookName: '以斯拉記', chapter: 6, purpose: '看第二聖殿完成時的喜樂，如何仍帶著等待更大恢復的張力。' },
+      ],
+    },
+    reflection: {
+      theme: '沉默不是缺席——神在歷史的安靜中仍在預備。',
+      prompts: [
+        {
+          question: '你是否有過神「沉默」的時期——沒有明顯的方向、感動或答案？那段時間，你如何維持信仰？',
+          hint: '兩約之間的猶太人沒有先知，卻有會堂、律法、詩篇，還有彼此。沉默中的群體是什麼讓他們撐過去的？',
+        },
+        {
+          question: '法利賽人、撒都該人、愛色尼人、奮銳黨人——四種面對強權的信仰方式。你最靠近哪一種？哪一種讓你不舒服？',
+          hint: '不要急著評判哪一種對。先問：在壓力下，我傾向保持什麼、放棄什麼？',
+        },
+        {
+          question: '希臘化帶來了更好的語言與基礎設施，卻也帶來文化的同化壓力。在你所在的文化中，哪些是可以學習的，哪些是需要保持界線的？',
+          hint: '但以理在宮廷裡學習巴比倫語言，卻在飲食與敬拜上設定界線。這個取捨原則適用於今天嗎？',
+        },
+      ],
+      prayer:
+        '主啊，感謝你在沉默中仍然預備。當我看不見你的手、聽不見你的聲音時，求你讓我記得：你的時間不是我的時間，你的沉默不是你的缺席。讓我在等待中仍然忠心，在歷史的混亂中仍然看見你的主權。',
+    },
+    sources: [
+      {
+        title: 'Battle of Issus mosaic (Alexander)',
+        sourceName: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/wiki/File:Battle_of_Issus_333_BC-Poseidon_mosaic.jpg',
+        note: 'Public Domain 馬賽克，用於視覺化希臘化時代的帝國更迭背景。',
+      },
+      {
+        title: 'Maccabees and Hanukkah (World History Encyclopedia)',
+        sourceName: 'World History Encyclopedia',
+        url: 'https://www.worldhistory.org/Maccabees/',
+        note: '馬加比起義的學術介紹，說明光明節起源、安提阿古四世的壓迫與哈斯摩尼獨立。',
+      },
+      {
+        title: 'Dead Sea Scrolls (Leon Levy Dead Sea Scrolls Digital Library)',
+        sourceName: 'Israel Antiquities Authority',
+        url: 'https://www.deadseascrolls.org.il/',
+        note: '死海古卷數位圖書館，提供愛色尼群體手稿的公開學術資源。',
+      },
+      {
+        title: 'The Septuagint',
+        sourceName: 'Encyclopaedia Britannica',
+        url: 'https://www.britannica.com/topic/Septuagint',
+        note: '七十士譯本背景資料，說明希伯來聖經被譯成希臘語後如何影響猶太離散社群與早期基督教引用。',
+      },
+    ],
+  },
+
 ]
 
 export function findTimelineDeepDive(periodId: string) {
