@@ -1,5 +1,65 @@
+import { useState } from 'react'
 import { TIMELINE_PERIODS } from '../lib/timelinePeriods'
+import type { WorldContext } from '../lib/timelinePeriods'
 import type { BibleData, Book } from '../types'
+
+function WorldContextSection({ ctx }: { ctx: WorldContext }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="mt-4 border-t border-stone-100 pt-4 dark:border-[#2E3240]">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="group flex items-center gap-1.5 text-left"
+        aria-expanded={open}
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 transition-colors group-hover:text-stone-400 dark:text-[#6B6460] dark:group-hover:text-[#A09890]">
+          世界背景
+        </span>
+        <span
+          className={`text-[10px] text-stone-300 transition-transform duration-150 group-hover:text-stone-400 dark:text-[#6B6460] dark:group-hover:text-[#A09890] ${open ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        >
+          ▾
+        </span>
+      </button>
+
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {ctx.regions.map(r => (
+          <span
+            key={r}
+            className="rounded-full bg-stone-100 px-2.5 py-1 text-[10px] font-medium text-stone-400 dark:bg-[#17191E] dark:text-[#6B6460]"
+          >
+            {r}
+          </span>
+        ))}
+      </div>
+
+      {open && (
+        <div className="mt-3 space-y-1">
+          <p className="mb-3 text-[12px] leading-6 text-stone-400 dark:text-[#6B6460]">
+            {ctx.summary}
+          </p>
+          {ctx.events.map(ev => (
+            <div key={ev.title} className="border-l-2 border-stone-200 pl-3 dark:border-[#2E3240]">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className="shrink-0 text-[10px] font-medium text-stone-300 dark:text-[#6B6460]">
+                  {ev.date}
+                </span>
+                <span className="text-[12px] font-semibold text-stone-500 dark:text-[#A09890]">
+                  {ev.title}
+                </span>
+              </div>
+              <p className="mt-0.5 text-[12px] leading-5 text-stone-400 dark:text-[#6B6460]">
+                {ev.note}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
   ckjv: BibleData | null
@@ -79,6 +139,10 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
                       })}
                     </div>
                   </div>
+                )}
+
+                {period.worldContext && (
+                  <WorldContextSection ctx={period.worldContext} />
                 )}
               </div>
             </section>
