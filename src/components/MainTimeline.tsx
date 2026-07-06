@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { TIMELINE_PERIODS } from '../lib/timelinePeriods'
 import type { BibleData, Book } from '../types'
 
@@ -6,7 +7,12 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
   onBack: () => void
   onOpenBook: (book: Book) => void
 }) {
+  const [openWorld, setOpenWorld] = useState<Record<string, boolean>>({})
   const findBook = (name: string) => ckjv?.books.find(b => b.name === name)
+
+  const toggleWorld = (id: string) => {
+    setOpenWorld(prev => ({ ...prev, [id]: !prev[id] }))
+  }
 
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
@@ -78,6 +84,43 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
                         )
                       })}
                     </div>
+                  </div>
+                )}
+
+                {period.worldContext && (
+                  <div className="mt-5 border-t border-stone-200/70 pt-4 dark:border-[#2E3240]">
+                    <button
+                      onClick={() => toggleWorld(period.id)}
+                      className="flex w-full items-center justify-between gap-3 text-left transition-colors hover:text-stone-500 dark:hover:text-[#A09890]"
+                      aria-expanded={Boolean(openWorld[period.id])}
+                    >
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">世界背景</p>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {period.worldContext.regions.map(region => (
+                            <span key={region} className="rounded-full border border-stone-200 bg-stone-100/70 px-2.5 py-1 text-[11px] text-stone-400 dark:border-[#2E3240] dark:bg-[#17191E] dark:text-[#6B6460]">
+                              {region}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <span className="shrink-0 text-sm text-stone-300 dark:text-[#6B6460]">{openWorld[period.id] ? '收合' : '展開'}</span>
+                    </button>
+
+                    {openWorld[period.id] && (
+                      <div className="mt-4 rounded-lg border border-stone-200/70 bg-stone-100/50 p-4 dark:border-[#2E3240] dark:bg-[#17191E]/60">
+                        <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.worldContext.summary}</p>
+                        <div className="mt-4 space-y-3">
+                          {period.worldContext.events.map(event => (
+                            <div key={`${event.date}-${event.title}`} className="border-l border-stone-300/70 pl-3 dark:border-[#4A4840]">
+                              <p className="text-[11px] font-medium text-stone-300 dark:text-[#6B6460]">{event.date}</p>
+                              <p className="mt-0.5 text-sm font-medium text-stone-600 dark:text-[#D4CEC4]">{event.title}</p>
+                              <p className="mt-1 text-sm leading-7 text-stone-500 dark:text-[#A09890]">{event.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
