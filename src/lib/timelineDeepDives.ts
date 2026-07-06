@@ -241,6 +241,101 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       },
     ],
   },
+  {
+    periodId: 'exile',
+    title: '被擄巴比倫：失去聖殿後仍學習忠心',
+    thesis:
+      '被擄不是聖經故事的中斷，而是信仰被迫離開熟悉形式後的深層考驗。當土地、王權與聖殿都失去，神的百姓必須重新學習：神的同在不被地理限制，信仰也不只存在於順境。',
+    world: {
+      culture: {
+        title: '巴比倫用帝國文化重塑被征服者',
+        body:
+          '尼布甲尼撒時代的巴比倫是高度組織化的帝國中心，城牆、神廟、行政系統與宮廷教育共同塑造權力秩序。被擄者被帶入這套文化中，不只是被迫遷移，也被迫面對語言、名字、飲食、官僚體制與偶像崇拜的同化壓力。',
+      },
+      humanity: {
+        title: '流亡使人失去外在身份，也暴露內在信仰',
+        body:
+          '對猶大人而言，耶路撒冷、聖殿、王室與土地都是身份核心。被擄讓這些外在標記同時崩塌，也逼問一個更深的問題：如果我不能再靠地方、制度與傳統證明自己屬於神，我還能如何忠心？但以理、以西結與哀歌都在回答這個問題。',
+      },
+      environment: {
+        title: '從山城耶路撒冷到河網平原巴比倫',
+        body:
+          '耶路撒冷位於山地，防衛與敬拜都圍繞聖殿山；巴比倫則坐落在幼發拉底河流域，以灌溉、運河與城市工程支撐帝國生活。空間的改變也改變了信仰經驗：詩篇說「在巴比倫河邊」，流亡者在陌生河岸記念錫安，學習在異地向神呼求。',
+      },
+      artifacts: [
+        {
+          title: '居魯士圓柱',
+          imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cyrus_Cylinder.jpg',
+          sourceName: 'Wikimedia Commons / British Museum',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Cyrus_Cylinder.jpg',
+          license: 'CC BY-SA 4.0',
+          caption: '居魯士圓柱記錄波斯王居魯士征服巴比倫後的王權宣告與宗教恢復政策。',
+          educationalUse: '用來說明被擄末期的帝國更替，以及以斯拉記中「歸回」政策的古近東背景。它不是直接提到猶大人的證據，卻能幫助讀者理解波斯對被遷徙群體與神廟的治理方式。',
+        },
+      ],
+    },
+    scripture: {
+      overview:
+        '耶利米哀歌、以西結書與但以理書從不同角度描述被擄信仰：哀歌允許人在廢墟中哀哭；以西結宣告神的榮耀仍臨到流亡之地；但以理示範在帝國中心仍不被帝國吞沒。',
+      bookGuides: [
+        {
+          bookName: '耶利米哀歌',
+          role: '以詩歌形式面對耶路撒冷被毀後的痛苦、羞辱與盼望。',
+          readingQuestion: '真正的信心是否允許人誠實哀哭，而不是急著把痛苦包裝成答案？',
+        },
+        {
+          bookName: '以西結書',
+          role: '在被擄群體中宣告審判、神的榮耀離開與重新恢復的異象。',
+          readingQuestion: '當熟悉的敬拜中心崩塌，神如何讓人重新認識祂的同在？',
+        },
+        {
+          bookName: '但以理書',
+          role: '呈現信徒在外邦宮廷中如何保持智慧、忠心與盼望。',
+          readingQuestion: '在強勢文化中，哪些地方需要適應，哪些地方不能妥協？',
+        },
+      ],
+      readingPath: [
+        { label: '廢墟中的哀哭', bookName: '耶利米哀歌', chapter: 3, purpose: '看哀傷如何與「你的誠實極其廣大」並存。' },
+        { label: '異鄉中的呼召', bookName: '以西結書', chapter: 1, purpose: '看神的榮耀如何在巴比倫河邊臨到先知。' },
+        { label: '不被同化的開始', bookName: '但以理書', chapter: 1, purpose: '看但以理如何在宮廷教育中設定忠心的界線。' },
+        { label: '帝國與敬拜的衝突', bookName: '但以理書', chapter: 3, purpose: '看敬拜如何成為面對權力時最深的抵抗。' },
+      ],
+    },
+    reflection: {
+      theme: '當熟悉的支撐被拿走，信仰才顯出真正的根。',
+      prompts: [
+        {
+          question: '如果我失去某個讓我覺得「神與我同在」的外在記號，我還能怎樣認出神的同在？',
+          hint: '可以想想教會、服事角色、人際肯定、穩定生活或某段屬靈經驗。',
+        },
+        {
+          question: '我現在身處的文化，在哪些地方正在改變我的名字、慾望與忠誠？',
+          hint: '但以理不是拒絕所有學習，而是在最核心的敬拜與身份上不妥協。',
+        },
+        {
+          question: '我是否允許自己在神面前哀哭？還是我只允許自己講「正確答案」？',
+          hint: '哀歌提醒我們，成熟信仰不是沒有眼淚，而是把眼淚帶到神面前。',
+        },
+      ],
+      prayer:
+        '主啊，當我失去熟悉的依靠時，求你教我在異地仍認出你的同在。使我有誠實哀哭的勇氣，也有在帝國中不妥協的忠心。',
+    },
+    sources: [
+      {
+        title: 'The Cyrus Cylinder',
+        sourceName: 'British Museum',
+        url: 'https://www.britishmuseum.org/collection/object/W_1880-0617-1941',
+        note: '物件頁說明居魯士圓柱的日期、內容、出土地與詮釋限制。',
+      },
+      {
+        title: 'File:Cyrus Cylinder.jpg',
+        sourceName: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/wiki/File:Cyrus_Cylinder.jpg',
+        note: 'CC BY-SA 4.0 圖片，用於被擄巴比倫與波斯歸回背景。',
+      },
+    ],
+  },
+
 ]
 
 export function findTimelineDeepDive(periodId: string) {
