@@ -7,6 +7,7 @@ import MainBookBackground from './components/MainBookBackground'
 import MainBookCourses from './components/MainBookCourses'
 import MainCurriculum from './components/MainCurriculum'
 import MainTimeline from './components/MainTimeline'
+import MainTimelineDeepDive from './components/MainTimelineDeepDive'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -108,12 +109,13 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
   const [bgBookName, setBgBookName] = useState<string | null>(null)
   const [coursesBookName, setCoursesBookName] = useState<string | null>(null)
+  const [timelinePeriodId, setTimelinePeriodId] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -882,6 +884,22 @@ function App() {
             onOpenBook={(book) => {
               if (book.chapters[0]) selectCkjvChapter(book, book.chapters[0])
             }}
+            onOpenPeriod={(periodId) => {
+              setTimelinePeriodId(periodId)
+              setMainView('timeline-detail')
+            }}
+          />
+        )}
+
+        {mainView === 'timeline-detail' && timelinePeriodId && (
+          <MainTimelineDeepDive
+            periodId={timelinePeriodId}
+            ckjv={ckjv}
+            onBack={() => setMainView('timeline')}
+            onOpenBook={(book, chapterNumber = 1) => {
+              const chapter = book.chapters.find(ch => ch.number === chapterNumber) ?? book.chapters[0]
+              if (chapter) selectCkjvChapter(book, chapter)
+            }}
           />
         )}
       </div>
@@ -1036,7 +1054,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)

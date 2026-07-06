@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { TIMELINE_PERIODS } from '../lib/timelinePeriods'
 import type { BibleData, Book } from '../types'
 
-export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
+export default function MainTimeline({ ckjv, onBack, onOpenBook, onOpenPeriod }: {
   ckjv: BibleData | null
   onBack: () => void
   onOpenBook: (book: Book) => void
+  onOpenPeriod: (periodId: string) => void
 }) {
   const [openWorld, setOpenWorld] = useState<Record<string, boolean>>({})
   const findBook = (name: string) => ckjv?.books.find(b => b.name === name)
@@ -86,6 +87,15 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-5">
+                  <button
+                    onClick={() => onOpenPeriod(period.id)}
+                    className="w-full rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 px-4 py-3 text-left text-sm font-medium text-[#4F7358] transition-colors hover:border-[#4F7358]/35 hover:bg-[#4F7358]/10 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 dark:text-[#7AAF87] dark:hover:border-[#7AAF87]/35 dark:hover:bg-[#7AAF87]/10"
+                  >
+                    深入理解這個時代 →
+                  </button>
+                </div>
 
                 {period.worldContext && (
                   <div className="mt-5 border-t border-stone-200/70 pt-4 dark:border-[#2E3240]">
