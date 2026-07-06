@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { TIMELINE_PERIODS } from '../lib/timelinePeriods'
+import { getDeepDive } from '../lib/timelineDeepDives'
+import MainTimelineDeepDive from './MainTimelineDeepDive'
 import type { BibleData, Book } from '../types'
 
 export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
@@ -8,7 +10,17 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
   onOpenBook: (book: Book) => void
 }) {
   const [openWorld, setOpenWorld] = useState<Record<string, boolean>>({})
+  const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null)
   const findBook = (name: string) => ckjv?.books.find(b => b.name === name)
+
+  if (selectedPeriodId) {
+    return (
+      <MainTimelineDeepDive
+        periodId={selectedPeriodId}
+        onBack={() => setSelectedPeriodId(null)}
+      />
+    )
+  }
 
   const toggleWorld = (id: string) => {
     setOpenWorld(prev => ({ ...prev, [id]: !prev[id] }))
@@ -86,6 +98,20 @@ export default function MainTimeline({ ckjv, onBack, onOpenBook }: {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-5 border-t border-stone-200/70 pt-4 dark:border-[#2E3240]">
+                  <button
+                    onClick={() => setSelectedPeriodId(period.id)}
+                    className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                      getDeepDive(period.id)
+                        ? 'bg-stone-100 text-stone-600 hover:bg-stone-200 dark:bg-[#17191E] dark:text-[#D4CEC4] dark:hover:bg-[#22242C]'
+                        : 'cursor-default text-stone-300 dark:text-[#4A4840]'
+                    }`}
+                    disabled={!getDeepDive(period.id)}
+                  >
+                    {getDeepDive(period.id) ? '深入理解這個時代 →' : '深入內容整備中'}
+                  </button>
+                </div>
 
                 {period.worldContext && (
                   <div className="mt-5 border-t border-stone-200/70 pt-4 dark:border-[#2E3240]">
