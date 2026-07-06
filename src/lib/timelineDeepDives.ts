@@ -265,7 +265,7 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       artifacts: [
         {
           title: '居魯士圓柱',
-          imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cyrus_Cylinder.jpg',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Cyrus_Cylinder.jpg',
           sourceName: 'Wikimedia Commons / British Museum',
           sourceUrl: 'https://commons.wikimedia.org/wiki/File:Cyrus_Cylinder.jpg',
           license: 'CC BY-SA 4.0',
@@ -359,13 +359,13 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       },
       artifacts: [
         {
-          title: '以拉凡那波斯文書（Elephantine Papyri，局部複製）',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Elephantine_papyrus_in_the_Brooklyn_Museum.jpg/480px-Elephantine_papyrus_in_the_Brooklyn_Museum.jpg',
-          sourceName: 'Wikimedia Commons / Brooklyn Museum',
-          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Elephantine_papyrus_in_the_Brooklyn_Museum.jpg',
-          license: 'CC BY 3.0',
-          caption: '以拉凡那莎草文書（約公元前 5 世紀），記錄波斯時代留在埃及的猶太人社群的生活與書信，是同期猶太離散群體的真實文獻。',
-          educationalUse: '幫助讀者理解歸回期間「留下的猶太人」如何在波斯帝國各地持續建立信仰社群，補充聖經以外的同期歷史視角。',
+          title: '阿契美尼德波斯帝國版圖（公元前 500 年）',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Map_of_the_Achaemenid_Empire.jpg/1280px-Map_of_the_Achaemenid_Empire.jpg',
+          sourceName: 'Wikimedia Commons',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Map_of_the_Achaemenid_Empire.jpg',
+          license: 'CC BY-SA 3.0',
+          caption: '波斯阿契美尼德帝國版圖橫跨從埃及到印度，居魯士大帝的宗教包容政策允許猶太人歸回故地，是以斯拉記歸回敘事的地緣政治背景。',
+          educationalUse: '幫助讀者理解歸回時期的地緣政治背景，看見以色列從巴比倫到耶路撒冷的路程置放在更大帝國版圖中的比例與意義。',
         },
       ],
     },
@@ -466,12 +466,12 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       },
       artifacts: [
         {
-          title: '亞歷山大大帝馬賽克（龐貝古城，伊蘇斯戰役）',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Battle_of_Issus_333_BC-Poseidon_mosaic.jpg/640px-Battle_of_Issus_333_BC-Poseidon_mosaic.jpg',
+          title: '亞歷山大大帝馬賽克（龐貝出土，那不勒斯國立考古博物館）',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Alexander_the_Great_mosaic.jpg',
           sourceName: 'Wikimedia Commons',
-          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Battle_of_Issus_333_BC-Poseidon_mosaic.jpg',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Alexander_the_Great_mosaic.jpg',
           license: 'Public Domain',
-          caption: '伊蘇斯戰役馬賽克（約公元前 100 年，龐貝出土），描繪亞歷山大大帝對抗波斯王大流士三世，現藏那不勒斯國家考古博物館。此戰役是希臘化時代開端的歷史地標。',
+          caption: '亞歷山大大帝馬賽克，出土於龐貝古城，現藏那不勒斯國立考古博物館。約公元前 1 世紀複製自更早的希臘原作，描繪亞歷山大大帝在戰場上的形象——希臘化時代的視覺象徵。',
           educationalUse: '幫助讀者視覺化亞歷山大時代的帝國擴張，理解希臘化如何在政治與文化上改變了兩約之間的猶太世界。',
         },
       ],
@@ -573,11 +573,11 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       artifacts: [
         {
           title: '加利利湖（太巴列湖）全景',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Sea_of_galilee_tiberias.jpg/640px-Sea_of_galilee_tiberias.jpg',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Lake_Tiberias_%28Sea_of_Galilee%29%2C_Northern_Israel.jpg',
           sourceName: 'Wikimedia Commons',
-          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sea_of_galilee_tiberias.jpg',
-          license: 'CC BY-SA 3.0',
-          caption: '加利利湖（太巴列湖），耶穌在這裡呼召彼得、安德烈、雅各與約翰，也在湖面上行走。這片湖是福音書事工的核心地理場景。',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Lake_Tiberias_(Sea_of_Galilee),_Northern_Israel.jpg',
+          license: 'Public Domain (NASA)',
+          caption: '加利利湖（太巴列湖）空照，耶穌在這裡呼召彼得、安德烈、雅各與約翰，也在湖面上行走。這片湖是福音書事工的核心地理場景。',
           educationalUse: '幫助讀者建立福音書事工的地理感，理解耶穌在加利利鄉間起點的文化意義——而不是從耶路撒冷宗教中心開始。',
         },
       ],
@@ -680,7 +680,7 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
       artifacts: [
         {
           title: '亞壁古道（Via Appia），羅馬帝國主要幹道',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Appia_antica.jpg/640px-Appia_antica.jpg',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Appia_antica.jpg/1280px-Appia_antica.jpg',
           sourceName: 'Wikimedia Commons',
           sourceUrl: 'https://commons.wikimedia.org/wiki/File:Appia_antica.jpg',
           license: 'CC BY-SA 2.5',
