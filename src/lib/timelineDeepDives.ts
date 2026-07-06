@@ -612,7 +612,7 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
         { label: '拿撒勒會堂的宣言', bookName: '路加福音', chapter: 4, purpose: '看耶穌如何引用以賽亞書宣告自己的使命：傳福音給貧窮人。' },
         { label: '登山寶訓', bookName: '馬太福音', chapter: 5, purpose: '看天國倫理如何翻轉所有的人際等級與道德算計。' },
         { label: '拉撒路的復活', bookName: '約翰福音', chapter: 11, purpose: '看「復活與生命」的宣告被具體展示，也看耶穌在悲傷前哭泣。' },
-        { label: '受難週與復活', bookName: '馬可福音', chapter: 15, purpose: '看「被放棄的神子」如何成為救贖的中心，以及空墓如何成為一切的轉折。' },
+        { label: '十字架上的王', bookName: '馬可福音', chapter: 15, purpose: '看「被放棄的神子」如何成為救贖的中心，並預備讀者進入第 16 章的空墓見證。' },
       ],
     },
     reflection: {
