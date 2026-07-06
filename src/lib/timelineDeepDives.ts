@@ -376,7 +376,7 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
         {
           bookName: '以斯拉記',
           role: '記錄第一批歸回、聖殿重建與律法更新，焦點在身份的宗教核心。',
-          readingQuestion: '以斯拉讀律法讓百姓哭泣（尼 8:9）。是什麼讓人聽見神的話語時落淚？',
+          readingQuestion: '以斯拉與利未人宣讀律法時，百姓一面哭泣一面重新明白神的話（尼 8）。是什麼讓人聽見神的話語時落淚？',
         },
         {
           bookName: '尼希米記',
@@ -491,15 +491,15 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
           readingQuestion: '四百年沒有先知聲音的以色列人在等什麼？等待如何塑造一個群體的盼望？',
         },
         {
-          bookName: '詩篇',
-          role: '兩約之間的猶太會堂以詩篇為核心的敬拜文本。即使沒有聖殿，人們在家庭與會堂中仍唱詩篇——這是離散信仰最重要的維繫。',
-          readingQuestion: '詩篇如何讓一個失去聖殿的群體繼續敬拜？敬拜的本質在這段時期如何被重新理解？',
+          bookName: '以斯拉記',
+          role: '以斯拉記與尼希米記留下第二聖殿群體的起點：聖殿重建、律法宣讀、群體邊界與盼望尚未完全實現的張力。',
+          readingQuestion: '當百姓已經回到土地，卻仍然沒有大衛王朝與完全自由，他們如何在未完成的恢復中繼續等待？',
         },
       ],
       readingPath: [
         { label: '帝國更迭的異象', bookName: '但以理書', chapter: 7, purpose: '看四獸異象如何成為流亡群體理解歷史的神學語言。' },
         { label: '舊約的問號', bookName: '瑪拉基書', chapter: 4, purpose: '看最後一位先知如何留下一個懸念：以利亞回來了嗎？' },
-        { label: '等待中的讚美', bookName: '詩篇', chapter: 22, purpose: '看「我的神，我的神，你為何離棄我」如何成為兩約之間哀哭與盼望並存的表達。' },
+        { label: '未完成的歸回', bookName: '以斯拉記', chapter: 6, purpose: '看第二聖殿完成時的喜樂，如何仍帶著等待更大恢復的張力。' },
       ],
     },
     reflection: {
@@ -541,10 +541,10 @@ export const TIMELINE_DEEP_DIVES: TimelineDeepDive[] = [
         note: '死海古卷數位圖書館，提供愛色尼群體手稿的公開學術資源。',
       },
       {
-        title: 'The Septuagint (LXX) – Early Jewish Writings',
-        sourceName: 'Early Jewish Writings',
-        url: 'https://www.earlyjewishwritings.com/lxx.html',
-        note: '七十士譯本的歷史背景與學術資源，說明希臘語聖經如何鋪路新約引用。',
+        title: 'The Septuagint',
+        sourceName: 'Encyclopaedia Britannica',
+        url: 'https://www.britannica.com/topic/Septuagint',
+        note: '七十士譯本背景資料，說明希伯來聖經被譯成希臘語後如何影響猶太離散社群與早期基督教引用。',
       },
     ],
   },
