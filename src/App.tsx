@@ -14,6 +14,7 @@ import SearchModal from './components/SearchModal'
 import MoreMenu from './components/MoreMenu'
 import ChapterGrid from './components/ChapterGrid'
 import BottomNav from './components/BottomNav'
+import FeatureGuide from './components/FeatureGuide'
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'] as const
 const BOOKMARK_KEY = 'bible-reader-bookmark'
@@ -23,6 +24,7 @@ const PLAN_KEY = 'bible-reader-plan'
 const ACHIEVEMENTS_KEY = 'bible-reader-achievements'
 const HIGHLIGHTS_KEY = 'bible-reader-highlights'
 const DEFAULT_VIEW_KEY = 'bible-reader-default-view'
+const FEATURE_GUIDE_KEY = 'bible-reader-feature-guide-seen'
 
 function loadCompletions(): CompletionRecord[] {
   try {
@@ -175,6 +177,17 @@ function App() {
 
   // More menu (Layer 2 features)
   const [moreOpen, setMoreOpen] = useState(false)
+
+  // First-run feature guide; can be reopened from MoreMenu.
+  const [featureGuideOpen, setFeatureGuideOpen] = useState(() => {
+    try { return localStorage.getItem(FEATURE_GUIDE_KEY) !== 'true' }
+    catch { return true }
+  })
+
+  const closeFeatureGuide = useCallback(() => {
+    try { localStorage.setItem(FEATURE_GUIDE_KEY, 'true') } catch {}
+    setFeatureGuideOpen(false)
+  }, [])
 
   // Chapter grid (mobile bottom nav tap)
   const [chapterGridOpen, setChapterGridOpen] = useState(false)
@@ -567,6 +580,12 @@ function App() {
         onJumpTo={handleJumpTo}
       />
 
+      {/* Feature Guide */}
+      <FeatureGuide
+        isOpen={featureGuideOpen}
+        onClose={closeFeatureGuide}
+      />
+
       {/* Inner layout row */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
 
@@ -915,6 +934,7 @@ function App() {
         onToggleImmersive={() => setIsImmersive(v => !v)}
         onCurriculum={() => { setMainView('curriculum'); setMoreOpen(false); setSidebarOpen(false) }}
         onTimeline={() => { setMainView('timeline'); setMoreOpen(false); setSidebarOpen(false) }}
+        onFeatureGuide={() => setFeatureGuideOpen(true)}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />

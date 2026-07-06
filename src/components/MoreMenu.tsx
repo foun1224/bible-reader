@@ -1,4 +1,4 @@
-type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline'
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline' | 'help'
 
 function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
   const common = {
@@ -53,6 +53,13 @@ function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
       <path d="M10 6v4l2.5 1.5" />
     </svg>
   )
+  if (icon === 'help') return (
+    <svg {...common}>
+      <circle cx="10" cy="10" r="7" />
+      <path d="M8.2 7.8A2 2 0 0 1 12 8.9c0 1.4-1.8 1.7-1.8 3" />
+      <path d="M10.2 15h.01" />
+    </svg>
+  )
   return (
     <svg {...common}>
       <path d="M5 6h10M5 10h10M5 14h10" />
@@ -70,6 +77,7 @@ interface Props {
   onToggleImmersive?: () => void
   onCurriculum?: () => void
   onTimeline?: () => void
+  onFeatureGuide?: () => void
   showScriptureTools?: boolean
   showReadingSettings?: boolean
 }
@@ -84,6 +92,7 @@ export default function MoreMenu({
   onToggleImmersive,
   onCurriculum,
   onTimeline,
+  onFeatureGuide,
   showScriptureTools = false,
   showReadingSettings = false,
 }: Props) {
@@ -96,6 +105,10 @@ export default function MoreMenu({
   const learningTools = [
     { label: '線上教材', icon: 'library' as MenuIcon, fn: onCurriculum },
     { label: '聖經時間軸', icon: 'timeline' as MenuIcon, fn: onTimeline },
+  ].filter(item => Boolean(item.fn))
+
+  const guideTools = [
+    { label: '功能說明', icon: 'help' as MenuIcon, fn: onFeatureGuide },
   ].filter(item => Boolean(item.fn))
 
   const reviewTools = [
@@ -142,6 +155,22 @@ export default function MoreMenu({
             <div className="pb-2 mb-2 border-b border-stone-200 dark:border-[#2E3240]">
               <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">學習</p>
               {learningTools.map(({ label, icon, fn }) => (
+                <button
+                  key={label}
+                  onClick={() => { fn?.(); onClose() }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-stone-500 dark:text-[#E4DDD0] hover:bg-stone-100 dark:hover:bg-[#17191E] transition-colors text-left"
+                >
+                  <span className="w-5 shrink-0 text-stone-300 dark:text-[#6B6460]"><MenuIconGlyph icon={icon} /></span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {guideTools.length > 0 && (
+            <div className="pb-2 mb-2 border-b border-stone-200 dark:border-[#2E3240]">
+              <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">說明</p>
+              {guideTools.map(({ label, icon, fn }) => (
                 <button
                   key={label}
                   onClick={() => { fn?.(); onClose() }}
