@@ -109,6 +109,29 @@ export default function MainTimelineDeepDive({
           </div>
         </Section>
 
+        {deepDive.sourceReading && (
+          <Section eyebrow="Primary Source" title={`代表史料細讀：${deepDive.sourceReading.artifactName}`}>
+            <div className="rounded-lg border border-stone-200 bg-stone-50/70 dark:border-[#2E3240] dark:bg-[#22242C]/45 divide-y divide-stone-200/70 dark:divide-[#2E3240]">
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">這份史料是什麼</p>
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.sourceReading.whatItIs}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">如何閱讀這份史料</p>
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.sourceReading.howToRead}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">它告訴我們什麼</p>
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.sourceReading.whatItTells}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87] mb-1">連結到聖經</p>
+                <p className="text-sm leading-7 text-stone-600 dark:text-[#D4CEC4]">{deepDive.sourceReading.connectionToScripture}</p>
+              </div>
+            </div>
+          </Section>
+        )}
+
         <Section eyebrow="World Context" title="世界背景：文化、人文與自然環境">
           <div className="grid gap-3">
             <TextBlock title={deepDive.world.culture.title} body={deepDive.world.culture.body} />
@@ -197,6 +220,32 @@ export default function MainTimelineDeepDive({
           </div>
         </Section>
 
+        {deepDive.scriptureDeepRead && (
+          <Section eyebrow="Deep Read" title={`關鍵經文慢讀：${deepDive.scriptureDeepRead.reference}`}>
+            <div className="rounded-lg border border-stone-200 bg-stone-50/70 dark:border-[#2E3240] dark:bg-[#22242C]/45 divide-y divide-stone-200/70 dark:divide-[#2E3240]">
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">背景脈絡</p>
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{deepDive.scriptureDeepRead.context}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-2">慢讀時要注意</p>
+                <div className="space-y-3">
+                  {deepDive.scriptureDeepRead.keyObservations.map((obs, i) => (
+                    <div key={i} className="flex gap-3">
+                      <span className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F7358]/50 dark:bg-[#7AAF87]/50" />
+                      <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{obs}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87] mb-1">信仰問題</p>
+                <p className="text-sm leading-7 text-stone-700 dark:text-[#E4DDD0]">{deepDive.scriptureDeepRead.faithQuestion}</p>
+              </div>
+            </div>
+          </Section>
+        )}
+
         <Section eyebrow="Reflection" title="信仰反思">
           <div className="rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 p-4 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5">
             <h3 className="text-sm font-semibold text-[#4F7358] dark:text-[#7AAF87]">{deepDive.reflection.theme}</h3>
@@ -211,6 +260,15 @@ export default function MainTimelineDeepDive({
             <p className="mt-5 border-t border-[#4F7358]/15 pt-4 text-sm leading-8 text-stone-600 dark:border-[#7AAF87]/15 dark:text-[#D4CEC4]">{deepDive.reflection.prayer}</p>
           </div>
         </Section>
+
+        {deepDive.todayReflection && (
+          <Section eyebrow="Today" title="今日連結：從那個時代到你的生活">
+            <div className="rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 p-5 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 space-y-4">
+              <p className="text-sm leading-8 text-stone-600 dark:text-[#D4CEC4]">{deepDive.todayReflection.bridge}</p>
+              <p className="border-t border-[#4F7358]/15 pt-4 dark:border-[#7AAF87]/15 text-sm leading-7 text-stone-700 dark:text-[#E4DDD0] font-medium">{deepDive.todayReflection.question}</p>
+            </div>
+          </Section>
+        )}
 
         <Section eyebrow="Sources" title="資料來源">
           <ul className="space-y-2">
