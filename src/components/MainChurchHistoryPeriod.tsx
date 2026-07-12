@@ -45,6 +45,48 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
 
         <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{period.thesis}</p>
 
+        {/* Geographic Context */}
+        {period.geographicContext && (
+          <section className="mt-6">
+            <figure className="overflow-hidden rounded-xl border border-stone-200 dark:border-[#2E3240]">
+              <img
+                src={period.geographicContext.imageUrl}
+                alt={period.geographicContext.imageCaption}
+                className="aspect-[16/9] w-full object-cover"
+                loading="lazy"
+              />
+              <figcaption className="p-4 space-y-2">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">地理與背景</p>
+                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.geographicContext.description}</p>
+                <p className="text-[11px] text-stone-300 dark:text-[#6B6460] italic">{period.geographicContext.imageCaption}</p>
+              </figcaption>
+            </figure>
+          </section>
+        )}
+
+        {/* Martyr Story */}
+        {period.martyrStory && (
+          <section className="mt-6 rounded-xl border border-red-900/20 bg-red-950/5 dark:border-red-900/30 dark:bg-red-950/10 overflow-hidden">
+            <div className="px-5 pt-5 pb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-red-700/60 dark:text-red-400/50 mb-1">殉道見證</p>
+              <p className="text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.martyrStory.person}</p>
+              <p className="text-[11px] text-stone-400 dark:text-[#6B6460] mt-0.5">{period.martyrStory.year}</p>
+            </div>
+            <div className="px-5 pb-4 pt-3">
+              <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{period.martyrStory.story}</p>
+            </div>
+            {period.martyrStory.quote && period.martyrStory.quote !== '（殉道記錄中無留存語句）' && period.martyrStory.quote !== '（無留存語句——他的見證在他的平靜中）' && (
+              <div className="mx-5 mb-4 border-l-2 border-red-700/30 pl-4">
+                <p className="text-sm italic leading-7 text-stone-400 dark:text-[#A09890]">「{period.martyrStory.quote}」</p>
+              </div>
+            )}
+            <div className="border-t border-red-900/10 dark:border-red-900/20 mx-0 px-5 py-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-red-700/50 dark:text-red-400/40 mb-1">為什麼這個故事值得記住</p>
+              <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.martyrStory.significance}</p>
+            </div>
+          </section>
+        )}
+
         {/* Theological Question Chain */}
         <Section eyebrow="思想演進" title="這個時代的核心神學問題">
           {parentPeriod && (
