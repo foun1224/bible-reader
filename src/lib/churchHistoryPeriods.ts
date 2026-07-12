@@ -11,6 +11,20 @@ export interface ChurchSourceReading {
   type: 'creed' | 'letter' | 'council' | 'treatise' | 'rule' | 'confession'
 }
 
+export interface GeographicContext {
+  description: string
+  imageUrl: string
+  imageCaption: string
+}
+
+export interface MartyrStory {
+  person: string
+  year: string
+  story: string
+  quote?: string
+  significance: string
+}
+
 export interface ChurchHistoryPeriod {
   periodId: string
   title: string
@@ -32,6 +46,8 @@ export interface ChurchHistoryPeriod {
     question: string
     prompt: string
   }[]
+  geographicContext?: GeographicContext
+  martyrStory?: MartyrStory
 }
 
 export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
@@ -90,6 +106,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '使徒教父時代的信仰傳遞是「人傳人」的——坡旅甲親眼見過使徒約翰。你的信仰是從誰那裡接來的？那個人對你的信仰有什麼影響？你又把信仰傳遞給了誰？',
       },
     ],
+    geographicContext: {
+      description: '早期教會沿著羅馬帝國道路網絡擴散——從耶路撒冷出發，安提阿是外邦宣教基地，以弗所是亞西亞中心，羅馬是殉道的最終舞台。這些城市靠書信和行腳傳道者彼此連繫。坡旅甲的士每拿（今伊茲密爾）距使徒約翰晚年所在的以弗所不過六十公里，是一條真實走過的信仰傳承之路。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Via_Appia_02.jpg',
+      imageCaption: '羅馬阿庇亞大道（Via Appia）——使徒與傳道者踏過的帝國幹道',
+    },
+    martyrStory: {
+      person: '坡旅甲（Polycarp of Smyrna）',
+      year: '約公元 155 年，士每拿（今土耳其）',
+      story: '使徒約翰親眼見過的門徒，活到八十六歲，在競技場前被命令詛咒基督以換取生命。他平靜回答：「我服事祂八十六年，祂從未虧待我，我怎能褻瀆拯救我的王？」火點燃後，目擊者記載火焰像帆一樣在他周圍鼓起，飄出的不是燒焦氣味，而是麵包出爐的香氣。最後刑官派人用匕首刺死他。《坡旅甲殉道記》是現存最早的殉道者傳記。',
+      quote: '我服事祂八十六年，祂從未虧待我。我怎能褻瀆拯救我的王？',
+      significance: '他是從使徒時代到後使徒時代的活橋梁。他的死，不是意外，而是選擇。他向下一個世代示範：信仰在最後的考驗中是什麼樣子。',
+    },
   },
   {
     periodId: 'apologists-heresy',
@@ -147,6 +175,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '護教士時代的神學深化，不是在書房裡的學術探索，而是在被攻擊、被質疑、被逼迫中發生的。你的信仰裡，有沒有哪個部分是因為被人質疑或挑戰，你才真正想清楚的？那個過程對你的信仰有什麼影響？',
       },
     ],
+    geographicContext: {
+      description: '護教士時代的神學戰場在地中海的知識重鎮展開：亞歷山大（諾斯底主義溫床）、迦太基（北非最繁華羅馬城市，特土良的家鄉）、里昂（177 年血腥屠殺發生地）、羅馬（賈斯丁開學校、辯論、殉道的舞台）。這些城市的信徒，在逼迫中同時用劍與筆回應那個時代的問題。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Carthage_amphitheatre.jpg',
+      imageCaption: '北非迦太基（今突尼西亞）的羅馬競技場遺址——柏珮彼雅殉道的城市',
+    },
+    martyrStory: {
+      person: '柏珮彼雅與斐利西大（Perpetua & Felicitas）',
+      year: '公元 203 年，迦太基（今突尼西亞）',
+      story: '柏珮彼雅是出身貴族的年輕母親，斐利西大是她的女奴、入獄時懷孕八個月。柏珮彼雅在獄中寫下日記——現存最早的女性親筆基督教文獻。她父親哭著求她否認信仰。她拿起水罐問他：「你能叫這個罐子換個名字嗎？」「不能。」「同樣，我也不能稱自己不是基督徒。」斐利西大在行刑前幾天在獄中生產，哭喊著。獄卒嘲笑：「你現在這樣哭，等一下進競技場怎麼辦？」她說：「現在是我在受苦；那時，會有另一位在我裡面受苦。」她們在競技場中先被公牛頂傷，最後被劍刺死。柏珮彼雅年約二十二歲。',
+      quote: '你能叫這個罐子換個名字嗎？同樣，我也不能稱自己不是基督徒。',
+      significance: '她的日記是歷史上最早由女性親筆記錄的基督教文獻，讓後人得以直接聽見一個站在死亡邊緣的年輕母親的聲音，而不只是關於她的敘述。',
+    },
   },
   {
     periodId: 'councils-creeds',
@@ -203,6 +243,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '尼西亞爭論的核心是一個希臘字的差異：homoousios（同質）vs homoiousios（相似）——只差一個字母 i，卻代表基督是完全的神，或只是「很像神」。在你的信仰群體中，有沒有一個神學表述是你覺得「精確說清楚」很重要的？是什麼讓那個精確性在你的信仰上有重量？',
       },
     ],
+    geographicContext: {
+      description: '大公會議時代發生在帝國東部的神學城市：尼西亞（今土耳其伊茲尼克）、君士坦丁堡、亞歷山大、安提阿、迦克墩。這些城市既是羅馬帝國的政治重鎮，也是希臘文化的知識中心。神學辯論在皇帝的宮廷建築群中進行，皇帝的政治意志與主教們的神學立場彼此拉扯，重塑了整個信仰的語言。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hagia_Sophia_Mars_2013.jpg',
+      imageCaption: '今伊斯坦堡的聖索非亞大教堂——建於大公會議時代，承載東方教會的信仰與神學語言',
+    },
+    martyrStory: {
+      person: '普里西連（Priscillian of Ávila）',
+      year: '公元 385 年，特里爾（今德國）',
+      story: '西班牙主教普里西連因傳授嚴格禁慾神學被控異端，385 年在特里爾被羅馬帝國當局斬首——他是教會史上第一位被「基督教政府」以異端罪處死的人。這不是羅馬皇帝迫害基督徒，而是基督徒政府殺死另一個基督徒。就連嚴厲的正統神學家米蘭的安博（Ambrose）和都爾的馬丁（Martin of Tours）都抗議說，這樣的處死是不義的。這件事留給教會一個至今未解的問題：當教會掌握了政治權力，它如何對待不同意見者？',
+      quote: '（殉道記錄中無留存語句）',
+      significance: '他的死是一個警示：信仰得來不易，但當信仰獲得世俗權力之後，它也可能成為壓迫的工具。這個張力從 385 年延伸到中世紀宗教裁判所，再到今天。',
+    },
   },
   {
     periodId: 'monasticism',
@@ -260,6 +312,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '沙漠教父問的問題，在今天仍然有效：在一個沒有迫害、宗教自由、信仰舒適的環境中，是什麼讓你的信仰保持真實而非形式？你目前的「靈性紀律」是什麼——不是出於外在要求，而是你自己選擇的委身方式？',
       },
     ],
+    geographicContext: {
+      description: '修道主義從炎熱的埃及沙漠（尼特利亞、斯刻忒斯曠野）蔓延到寒冷的愛爾蘭海岸，這本身就是神學聲明：神可以在任何極端環境中被尋見。安東尼在東部曠野獨居的故事傳遍帝國，引發了史上第一次宗教「移民潮」——人們逃離城市財富，跑向沙漠尋找神。波尼法修（Boniface）後來將修道精神帶入日耳曼，開闢了歐洲中世紀宣教的新頁。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Monastery_of_Saint_Anthony,_Egypt.jpg',
+      imageCaption: '埃及聖安東尼修道院——世界現存最古老的修道院，坐落在西奈半島的沙漠岩壁之下',
+    },
+    martyrStory: {
+      person: '波尼法修（Boniface of Fulda）',
+      year: '公元 754 年，弗里西亞（今荷蘭）',
+      story: '英格蘭修士波尼法修被稱為「日耳曼人的使徒」，深入今德國和荷蘭地區傳揚福音三十年，建立教會、創辦修道院。754 年 6 月 5 日清晨，他在荷蘭弗里西亞等待一群新信徒受洗，武裝異教徒突然包圍了他的營地。隨行的信徒拿起武器，波尼法修阻止他們：「停下！聖經說不要以惡報惡，這一天是我長久期盼的日子。」他拿起一本福音書護住頭部。攻擊者的劍砍穿了書本，刺進他的頭顱。他與五十三名同伴一起死去。他的墓地富爾達至今是德國最重要的朝聖地之一。',
+      quote: '停下！聖經說不要以惡報惡，這一天是我長久期盼的日子。',
+      significance: '他的死說明修道主義從來不是逃避世界——它的最高表達是走入最危險的地方，以自己的身體為信仰作見證。',
+    },
   },
   {
     periodId: 'medieval-church',
@@ -317,6 +381,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '阿奎那相信理性與信仰最終指向同一個神。有人認為信仰超越理性（「這是信心的跳躍」），有人認為信仰建立在理性之上。你自己站在哪裡？在你的信仰歷程中，理性曾經支持過你的信仰，還是威脅過它？兩者都有嗎？',
       },
     ],
+    geographicContext: {
+      description: '中世紀教會的地理版圖是一幅朝聖、十字軍與哥德式大教堂交織的地圖：羅馬（教宗廷）、坎特伯里（英格蘭聖地）、巴黎（第一所大學）、康斯坦茨（決定胡斯命運的大公會議所在地）。胡斯 1415 年被燒死的廣場，今天仍在康斯坦茨，那裡豎立著一塊紀念碑，上面刻著：「真理終將勝利。」',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Constance_Konzilgeba%C3%A4ude.jpg',
+      imageCaption: '德國康斯坦茨的公會議廳（1414–1418 年）——揚·胡斯在此被定罪，後在城外廣場被燒死',
+    },
+    martyrStory: {
+      person: '揚·胡斯（Jan Hus）',
+      year: '1415 年 7 月 6 日，康斯坦茨（今德國）',
+      story: '波西米亞神學家胡斯比路德早一百年呼籲教會改革，批評贖罪券和教宗腐敗。康斯坦茨大公會議以人身安全的承諾邀請他前來辯護——然後逮捕了他，以異端罪定罪。1415 年 7 月 6 日，他被帶到城外廣場綁上木柱。他拒絕了最後一次棄教的機會，大聲禱告。火點燃後，目擊者記載他在煙霧中唱起讚美詩，直到窒息而死。臨終前他說過一句話廣被流傳：「你們今天燒死的是一隻鵝（Hus 在捷克語是鵝），但一百年後，將有一隻天鵝出現，你們既燒不死也煮不熟他。」恰好一百年後，路德的宗教改革爆發。',
+      quote: '你們今天燒死的是一隻鵝，但一百年後，將有一隻天鵝出現，你們既燒不死也煮不熟他。',
+      significance: '他的死提前點燃了宗教改革的導火線——波西米亞爆發了「胡斯戰爭」，震動整個歐洲。他的故事提醒我們：改革者往往先以殉道者的身份死去，才以真理的名義活下去。',
+    },
   },
   {
     periodId: 'reformation',
@@ -374,6 +450,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '宗教改革說聖經是最高權威——但誰來詮釋聖經？路德說每個信徒自己可以讀聖經，結果是幾百個宗派。在你的教會傳統中，聖經、傳統、理性、個人經歷，各自有多少份量？你認為這個平衡對嗎？',
       },
     ],
+    geographicContext: {
+      description: '宗教改革的地圖是一張被印刷機打破邊界的地圖：威登堡（路德張貼論綱）、蘇黎世（茲文利）、日內瓦（加爾文）、倫敦與牛津（英格蘭改革）。廷代爾在安特衛普（今比利時）流亡翻譯聖經，在那裡被逮捕。宗教改革也是一場印刷革命——路德的《九十五條論綱》兩週內傳遍德國，兩個月內傳遍整個歐洲。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Schlosskirche_Wittenberg2.jpg',
+      imageCaption: '德國威登堡宮廷教堂（Schlosskirche）——路德據傳在此門上張貼《九十五條論綱》',
+    },
+    martyrStory: {
+      person: '威廉·廷代爾（William Tyndale）',
+      year: '1536 年 10 月，維爾福德（今比利時）',
+      story: '廷代爾花十二年逃避英國當局追殺，在歐洲各地流亡，把聖經翻譯成英文——為此他學習了八種語言。1535 年，他在安特衛普被一個偽裝成朋友的特工出賣，遭到逮捕。1536 年 10 月，他先被勒死，屍體在火上燒化。行刑前他大聲禱告：「主啊，求你開英格蘭王的眼睛！」諷刺的是：兩年後，亨利八世下令將廷代爾翻譯的聖經放進全英格蘭每一間教堂。他用生命換來的聖經，成了整個國家的聖經。他翻譯的許多詞句，至今仍在英文聖經中：「讓你的光照耀人前」、「吃、喝、快樂吧」——他的話語還活著。',
+      quote: '主啊，求你開英格蘭王的眼睛！',
+      significance: '他的故事揭示了一個悖論：那些掌權者認為燒死一個人就能壓制真理，結果那個人死後，他的話語反而進入了每一個人的手中。',
+    },
   },
   {
     periodId: 'revivals-missions',
@@ -431,6 +519,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '戴德生說「有一千萬人每天在死去」——這個數字讓他放棄了舒適的生活。在你的生命中，你是否有過一個「讓你覺得必須做點什麼」的神學認知？那個認知帶來了什麼行動，或者它只停留在知識層面？兩者之間的差距，是什麼造成的？',
       },
     ],
+    geographicContext: {
+      description: '奮興運動與現代宣教時代的地圖，是一張從歐美向全球放射的線條：威廉·克里從英格蘭到印度（塞蘭坡），戴德生從上海深入中國內地，利文斯頓在非洲行走二萬九千英里。1900 年義和團運動期間，中國各地宣教站成為殺戮現場——山西省太原一場屠殺奪走了四十七條人命。信仰的擴張，從來不是在安全的地方發生的。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hudson_Taylor_(1832%E2%80%931905).jpg',
+      imageCaption: '戴德生（James Hudson Taylor，1832–1905）——中國內地會創始人，穿著中國服飾的宣教先驅',
+    },
+    martyrStory: {
+      person: '吉姆·艾略特與四位同伴（Jim Elliot and companions）',
+      year: '1956 年 1 月 8 日，厄瓜多亞馬遜叢林',
+      story: '1956 年 1 月 8 日，五位美國宣教士——吉姆·艾略特、納特·聖特、羅傑·尤德林、艾德·麥卡里、皮特·弗萊明——在厄瓜多亞馬遜的庫拉雷河邊被瓦奧拉尼人（奧卡人）以長矛刺死。他們身上帶著槍，但選擇不射擊，因為他們說：「我們已準備好見主，但他們還沒有。」吉姆在殉道幾年前的日記中寫道：「獻上留不住的，換取不能失去的，這人不是傻瓜。」他的妻子伊莉莎白後來帶著年幼的女兒回到同一個部落居住，最終那個殺夫的族群整體信主了，其中包括當年親手刺死他們的人。',
+      quote: '獻上留不住的，換取不能失去的，這人不是傻瓜。',
+      significance: '他們的死不是終點，而是轉捩點。殺人者成了信徒，這個結局讓世人看見：基督信仰的邏輯與世界的邏輯根本不同——死亡不是失敗的證明，而可以是愛的最極致表達。',
+    },
   },
   {
     periodId: 'global-christianity',
@@ -488,6 +588,18 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
           '你所在的教會是哪個傳統的後代（長老宗、浸信宗、五旬節、天主教…）？那個傳統的歷史遺產（包括優點和陰暗面），對你今天的信仰有什麼影響？你是否曾經好奇「另一個傳統的基督徒」如何讀同一本聖經、用不同的方式禮拜、但信奉同一位神？',
       },
     ],
+    geographicContext: {
+      description: '二十世紀的教會地圖是一幅同時有爆炸性增長和系統性迫害並存的地圖。納粹德國（潘霍華）、中國文化大革命（王志明與無數無名信徒）、北韓、蘇丹、中東——這些是迫害的地方。同時，非洲、亞洲、拉丁美洲是教會快速增長的地方。台灣、韓國也從「宣教接受者」轉型為「宣教發送者」。今天的全球基督教，從來不只是歐美的事。',
+      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Bundesarchiv_Bild_183-R0211-316,_Dietrich_Bonhoeffer.jpg',
+      imageCaption: '潘霍華（Dietrich Bonhoeffer，1906–1945）——德國牧師，納粹抵抗者，1945 年 4 月被處決，距德國投降僅三週',
+    },
+    martyrStory: {
+      person: '王志明（Wang Zhiming）',
+      year: '1973 年 12 月 29 日，昆明，中國',
+      story: '雲南苗族牧師王志明，在文化大革命期間被以「宗教罪行」逮捕。1973 年 12 月 29 日，他被帶到昆明的公開批鬥廣場，面對一萬多名觀眾公開槍決。目擊者說，人群中有數千名信徒悄悄流淚，而王志明走向刑場時臉上帶著平靜。他的名字和雕像於 1998 年被放進西敏寺大教堂西牆的「二十世紀殉道者」龕中，與潘霍華、馬丁·路德·金恩、奧斯卡·羅梅羅等人並列。他代表的，是文革中數十萬個沒有名字被記下的中國信徒——他們同樣真實，同樣付出了生命。',
+      quote: '（無留存語句——他的見證在他的平靜中）',
+      significance: '他的故事讓我們看見：二十世紀的殉道不是發生在遙遠的古代，而是在我們父祖輩的時代，在離台灣不遠的地方。今天我們能自由讀聖經、自由聚會，是因為有人為此付出了代價。',
+    },
   },
 ]
 
