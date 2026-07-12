@@ -8,6 +8,8 @@ import MainBookCourses from './components/MainBookCourses'
 import MainCurriculum from './components/MainCurriculum'
 import MainTimeline from './components/MainTimeline'
 import MainTimelineDeepDive from './components/MainTimelineDeepDive'
+import MainChurchHistory from './components/MainChurchHistory'
+import MainChurchHistoryPeriod from './components/MainChurchHistoryPeriod'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -111,13 +113,14 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail' | 'church-history' | 'church-history-detail'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
   const [bgBookName, setBgBookName] = useState<string | null>(null)
   const [coursesBookName, setCoursesBookName] = useState<string | null>(null)
   const [timelinePeriodId, setTimelinePeriodId] = useState<string | null>(null)
+  const [churchHistoryPeriodId, setChurchHistoryPeriodId] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -921,6 +924,23 @@ function App() {
             }}
           />
         )}
+
+        {mainView === 'church-history' && (
+          <MainChurchHistory
+            onBack={() => setMainView('scripture')}
+            onOpenPeriod={(periodId) => {
+              setChurchHistoryPeriodId(periodId)
+              setMainView('church-history-detail')
+            }}
+          />
+        )}
+
+        {mainView === 'church-history-detail' && churchHistoryPeriodId && (
+          <MainChurchHistoryPeriod
+            periodId={churchHistoryPeriodId}
+            onBack={() => setMainView('church-history')}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -935,6 +955,7 @@ function App() {
         onCurriculum={() => { setMainView('curriculum'); setMoreOpen(false); setSidebarOpen(false) }}
         onTimeline={() => { setMainView('timeline'); setMoreOpen(false); setSidebarOpen(false) }}
         onFeatureGuide={() => setFeatureGuideOpen(true)}
+        onChurchHistory={() => { setMainView('church-history'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
@@ -1074,7 +1095,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail' || mainView === 'church-history' || mainView === 'church-history-detail') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
