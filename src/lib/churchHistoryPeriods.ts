@@ -598,8 +598,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '二十世紀的教會地圖是一幅同時有爆炸性增長和系統性迫害並存的地圖。納粹德國（潘霍華）、中國文化大革命（王志明與無數無名信徒）、北韓、蘇丹、中東——這些是迫害的地方。同時，非洲、亞洲、拉丁美洲是教會快速增長的地方。台灣、韓國也從「宣教接受者」轉型為「宣教發送者」。今天的全球基督教，從來不只是歐美的事。',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Bundesarchiv_Bild_146-1987-074-16%2C_Dietrich_Bonhoeffer.jpg',
-      imageCaption: '潘霍華（Dietrich Bonhoeffer，1906–1945）——德國牧師，納粹抵抗者，1945 年 4 月被處決，距德國投降僅三週',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/London_UK_Sculptures-at-Westminster-Abbey-Westgate-Bonhoeffer-01.jpg',
+      imageCaption: '西敏寺西門「二十世紀殉道者」雕像群（1998 年揭幕）——王志明與潘霍華、馬丁·路德·金恩等人的雕像並列於同一面牆',
     },
     martyrStory: {
       person: '王志明（Wang Zhiming）',
