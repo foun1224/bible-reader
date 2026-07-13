@@ -149,8 +149,8 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87]">帶來的建設</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.contribution}</p>
             </div>
-            <div className="rounded-lg border border-rose-900/15 bg-rose-950/[0.03] p-4 dark:border-rose-800/20 dark:bg-rose-950/[0.08]">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-700/70 dark:text-rose-400/60">付出的代價</p>
+            <div className="rounded-lg border border-amber-900/15 bg-amber-950/[0.03] p-4 dark:border-amber-800/20 dark:bg-amber-950/[0.08]">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-800/70 dark:text-amber-400/55">付出的代價</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.shadow}</p>
             </div>
           </div>
