@@ -139,6 +139,27 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
           </div>
         </Section>
 
+        {/* Balanced Assessment */}
+        <Section eyebrow="歷史辨識" title="成果、陰影與今日功課">
+          <p className="mb-4 text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+            同一個時代往往同時孕育信仰成果與制度傷害。理解兩面，才能避免把歷史讀成英雄榜或黑歷史清單。
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 p-4 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4F7358] dark:text-[#7AAF87]">帶來的建設</p>
+              <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.contribution}</p>
+            </div>
+            <div className="rounded-lg border border-rose-900/15 bg-rose-950/[0.03] p-4 dark:border-rose-800/20 dark:bg-rose-950/[0.08]">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-700/70 dark:text-rose-400/60">付出的代價</p>
+              <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.shadow}</p>
+            </div>
+          </div>
+          <div className="mt-3 rounded-lg border border-stone-200 bg-stone-50/70 p-4 dark:border-[#2E3240] dark:bg-[#22242C]/45">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">留給今天的辨識問題</p>
+            <p className="text-sm font-medium leading-7 text-stone-600 dark:text-[#D4CEC4]">{period.eraAssessment.discernment}</p>
+          </div>
+        </Section>
+
         {/* Key Figures */}
         {period.keyFigures.length > 0 && (
           <Section eyebrow="人物" title="這個時代的關鍵人物">
