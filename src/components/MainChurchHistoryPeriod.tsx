@@ -55,11 +55,11 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
               ['#discern', '歷史辨識'],
               ['#sources', '人物史料'],
               ['#reflection', '今日反思'],
-            ].map(([href, label]) => (
+            ].map(([href, label], index) => (
               <a
                 key={href}
                 href={href}
-                className="flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:text-[#B8B0A6] dark:hover:bg-[#2A2D36]"
+                className={`flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-center text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:text-[#B8B0A6] dark:hover:bg-[#2A2D36] ${index === 4 ? 'col-span-2 sm:col-span-1' : ''}`}
               >
                 {label}
               </a>
@@ -89,7 +89,7 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
 
         {/* Martyr Story */}
         {period.martyrStory && (
-          <section className="mt-6 rounded-xl border border-red-900/20 bg-red-950/5 dark:border-red-900/30 dark:bg-red-950/10 overflow-hidden">
+          <section className="mt-6 rounded-xl border border-red-900/15 bg-red-950/[0.025] dark:border-red-900/20 dark:bg-red-950/5 overflow-hidden">
             <div className="px-5 pt-5 pb-1">
               <p className="mb-1 text-xs font-semibold text-red-700/80 dark:text-red-300/80">殉道見證</p>
               <p className="text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.martyrStory.person}</p>
