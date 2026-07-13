@@ -1,8 +1,10 @@
 import { CHURCH_HISTORY_PERIODS } from '../lib/churchHistoryPeriods'
 
 const ERA_ACCENTS = [
-  '#7A6B8A', '#5E7A8A', '#6B8A6B', '#8A7A5E',
-  '#8A5E5E', '#5E6B8A', '#7A8A5E', '#5E8A7A',
+  '#56705E', '#56705E', // 信仰奠基
+  '#587184', '#587184', // 制度成形
+  '#8A7048', '#8A7048', // 改革與重整
+  '#52766F', '#52766F', // 跨文化與全球化
 ]
 
 export default function MainChurchHistory({ onBack, onOpenPeriod }: {
@@ -15,18 +17,18 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
         <div className="mb-7 flex items-center gap-3">
           <button
             onClick={onBack}
-            className="h-9 w-9 rounded-full border border-stone-200 text-stone-400 transition-colors hover:bg-stone-100 dark:border-[#2E3240] dark:text-[#A09890] dark:hover:bg-[#22242C]"
+            className="h-11 w-11 shrink-0 rounded-full border border-stone-300 text-stone-500 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:text-[#B8B0A6] dark:hover:bg-[#22242C] dark:active:bg-[#2A2D36]"
             aria-label="返回"
           >
             ←
           </button>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460]">歷史與神學</p>
+            <p className="text-xs font-semibold tracking-[0.08em] text-stone-500 dark:text-[#9B938B]">歷史與神學</p>
             <h1 className="text-lg font-semibold text-stone-700 dark:text-[#E4DDD0]">教會歷史</h1>
           </div>
         </div>
 
-        <p className="mb-8 text-sm leading-8 text-stone-500 dark:text-[#A09890]">
+        <p className="mb-8 text-base leading-8 text-stone-600 dark:text-[#B8B0A6]">
           從使徒時代到今日，每個世紀的教會都在回應上一個時代留下的問題，也為下一個世代留下新的張力。跟著問題鏈，看見神學思想如何演進。
         </p>
 
@@ -43,13 +45,13 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
                 <div className="rounded-xl border border-stone-200 bg-stone-50/60 p-5 dark:border-[#2E3240] dark:bg-[#22242C]/40">
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
                     <h2 className="text-base font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.title}</h2>
-                    <span className="text-[11px] font-medium text-stone-300 dark:text-[#6B6460]">{period.dateRange}</span>
+                    <span className="text-xs font-medium text-stone-500 dark:text-[#9B938B]">{period.dateRange}</span>
                   </div>
 
-                  <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.thesis}</p>
+                  <p className="text-sm leading-7 text-stone-600 dark:text-[#B8B0A6]">{period.thesis}</p>
 
                   <div className="mt-4 rounded-lg border border-stone-200/70 bg-stone-100/50 p-3 dark:border-[#2E3240] dark:bg-[#17191E]/60">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-300 dark:text-[#6B6460] mb-1">這個時代要回答的問題</p>
+                    <p className="mb-1 text-xs font-semibold text-stone-500 dark:text-[#9B938B]">這個時代要回答的問題</p>
                     <p className="text-sm leading-7 text-stone-600 dark:text-[#D4CEC4]">{period.theologicalQuestion}</p>
                   </div>
 
@@ -58,7 +60,7 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
                       {period.keyFigures.map(fig => (
                         <span
                           key={fig.name}
-                          className="rounded-full border border-stone-200 bg-stone-100/70 px-2.5 py-1 text-[11px] text-stone-400 dark:border-[#2E3240] dark:bg-[#17191E] dark:text-[#6B6460]"
+                          className="rounded-full border border-stone-300 bg-stone-100/70 px-2.5 py-1 text-xs text-stone-500 dark:border-[#3A3E4A] dark:bg-[#17191E] dark:text-[#9B938B]"
                         >
                           {fig.name.split('（')[0]}
                         </span>
@@ -69,7 +71,7 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
                   <div className="mt-4">
                     <button
                       onClick={() => onOpenPeriod(period.periodId)}
-                      className="w-full rounded-lg border border-[#4F7358]/20 bg-[#4F7358]/5 px-4 py-3 text-left text-sm font-medium text-[#4F7358] transition-colors hover:border-[#4F7358]/35 hover:bg-[#4F7358]/10 dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/5 dark:text-[#7AAF87] dark:hover:border-[#7AAF87]/35 dark:hover:bg-[#7AAF87]/10"
+                      className="min-h-11 w-full rounded-lg border border-[#4F7358]/25 bg-[#4F7358]/5 px-4 py-3 text-left text-sm font-semibold text-[#4F7358] transition-colors hover:border-[#4F7358]/40 hover:bg-[#4F7358]/10 active:bg-[#4F7358]/15 dark:border-[#7AAF87]/25 dark:bg-[#7AAF87]/5 dark:text-[#8FC79D] dark:hover:border-[#7AAF87]/40 dark:hover:bg-[#7AAF87]/10 dark:active:bg-[#7AAF87]/15"
                     >
                       深入這個時代 →
                     </button>
