@@ -4,7 +4,7 @@ import { CHURCH_HISTORY_PERIODS } from '../lib/churchHistoryPeriods'
 const STAGES = [
   { name: '信仰奠基', color: '#56705E' },
   { name: '制度成形', color: '#587184' },
-  { name: '改革與重整', color: '#8A7048' },
+  { name: '改革與重整', color: '#756981' },
   { name: '跨文化與全球化', color: '#52766F' },
 ]
 
