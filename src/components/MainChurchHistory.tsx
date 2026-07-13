@@ -1,10 +1,11 @@
+import { Fragment } from 'react'
 import { CHURCH_HISTORY_PERIODS } from '../lib/churchHistoryPeriods'
 
-const ERA_ACCENTS = [
-  '#56705E', '#56705E', // 信仰奠基
-  '#587184', '#587184', // 制度成形
-  '#8A7048', '#8A7048', // 改革與重整
-  '#52766F', '#52766F', // 跨文化與全球化
+const STAGES = [
+  { name: '信仰奠基', color: '#56705E' },
+  { name: '制度成形', color: '#587184' },
+  { name: '改革與重整', color: '#8A7048' },
+  { name: '跨文化與全球化', color: '#52766F' },
 ]
 
 export default function MainChurchHistory({ onBack, onOpenPeriod }: {
@@ -34,12 +35,23 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
 
         <div className="relative space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-stone-200 dark:before:bg-[#2E3240]">
           {CHURCH_HISTORY_PERIODS.map((period, i) => {
-            const accent = ERA_ACCENTS[i % ERA_ACCENTS.length]
+            const stage = STAGES[Math.min(Math.floor(i / 2), STAGES.length - 1)]
             return (
-              <section key={period.periodId} className="relative pl-8">
+              <Fragment key={period.periodId}>
+                {i % 2 === 0 && (
+                  <div className="relative pl-8">
+                    <span
+                      className="absolute left-[7px] top-1 h-2 w-2 rounded-full"
+                      style={{ backgroundColor: stage.color }}
+                      aria-hidden="true"
+                    />
+                    <p className="text-xs font-semibold tracking-[0.08em] text-stone-500 dark:text-[#9B938B]">{stage.name}</p>
+                  </div>
+                )}
+              <section className="relative pl-8">
                 <span
                   className="absolute left-0 top-3 h-6 w-6 rounded-full border-4 border-stone-50 dark:border-[#17191E]"
-                  style={{ backgroundColor: accent }}
+                  style={{ backgroundColor: stage.color }}
                   aria-hidden="true"
                 />
                 <div className="rounded-xl border border-stone-200 bg-stone-50/60 p-5 dark:border-[#2E3240] dark:bg-[#22242C]/40">
@@ -78,6 +90,7 @@ export default function MainChurchHistory({ onBack, onOpenPeriod }: {
                   </div>
                 </div>
               </section>
+              </Fragment>
             )
           })}
         </div>

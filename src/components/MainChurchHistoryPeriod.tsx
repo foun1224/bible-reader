@@ -170,11 +170,11 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-[#4F7358]/25 bg-[#4F7358]/5 p-4 dark:border-[#7AAF87]/25 dark:bg-[#7AAF87]/5">
-              <p className="mb-1 text-xs font-semibold text-[#4F7358] dark:text-[#8FC79D]">帶來的建設</p>
+              <p className="mb-1 text-xs font-semibold text-[#4F7358] dark:text-[#8FC79D]">留下的資產</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.contribution}</p>
             </div>
             <div className="rounded-lg border border-[#C17D3A]/30 bg-[#C17D3A]/5 p-4 dark:border-[#D4935C]/25 dark:bg-[#D4935C]/[0.06]">
-              <p className="mb-1 text-xs font-semibold text-[#8A5A24] dark:text-[#D9A876]">付出的代價</p>
+              <p className="mb-1 text-xs font-semibold text-[#8A5A24] dark:text-[#D9A876]">需要面對的陰影</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.shadow}</p>
             </div>
           </div>
