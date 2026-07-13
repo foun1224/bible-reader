@@ -48,11 +48,12 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
 
         <nav aria-label="本頁閱讀路徑" className="mt-6">
           <p className="mb-2 text-xs font-semibold text-stone-500 dark:text-[#9B938B]">閱讀路徑</p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {[
               ['#context', '時代背景'],
-              ['#ideas', '思想與辨識'],
-              ['#sources', '人物與史料'],
+              ['#ideas', '思想演進'],
+              ['#discern', '歷史辨識'],
+              ['#sources', '人物史料'],
               ['#reflection', '今日反思'],
             ].map(([href, label]) => (
               <a
@@ -66,9 +67,10 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
           </div>
         </nav>
 
+        <div id="context" className="scroll-mt-6">
         {/* Geographic Context */}
         {period.geographicContext && (
-          <section id="context" className="scroll-mt-6 mt-6">
+          <section className="mt-6">
             <figure className="overflow-hidden rounded-xl border border-stone-200 dark:border-[#2E3240]">
               <img
                 src={period.geographicContext.imageUrl}
@@ -117,6 +119,7 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
             </div>
           </section>
         )}
+        </div>
 
         {/* Theological Question Chain */}
         <Section id="ideas" eyebrow="思想演進" title="這個時代的核心神學問題">
@@ -161,7 +164,7 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
         </Section>
 
         {/* Balanced Assessment */}
-        <Section eyebrow="歷史辨識" title="成果、陰影與今日功課">
+        <Section id="discern" eyebrow="歷史辨識" title="成果、陰影與今日功課">
           <p className="mb-4 text-sm leading-7 text-stone-500 dark:text-[#A09890]">
             同一個時代往往同時孕育信仰成果與制度傷害。理解兩面，才能避免把歷史讀成英雄榜或黑歷史清單。
           </p>
@@ -170,8 +173,8 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
               <p className="mb-1 text-xs font-semibold text-[#4F7358] dark:text-[#8FC79D]">帶來的建設</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.contribution}</p>
             </div>
-            <div className="rounded-lg border border-[#8A7048]/25 bg-[#8A7048]/5 p-4 dark:border-[#C29B62]/25 dark:bg-[#C29B62]/5">
-              <p className="mb-1 text-xs font-semibold text-[#7A603D] dark:text-[#D0AA70]">付出的代價</p>
+            <div className="rounded-lg border border-[#C17D3A]/30 bg-[#C17D3A]/5 p-4 dark:border-[#D4935C]/25 dark:bg-[#D4935C]/[0.06]">
+              <p className="mb-1 text-xs font-semibold text-[#8A5A24] dark:text-[#D9A876]">付出的代價</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.shadow}</p>
             </div>
           </div>
