@@ -52,14 +52,14 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
             {[
               ['#context', '時代背景'],
               ['#ideas', '思想演進'],
-              ['#discern', '歷史辨識'],
+              ['#assessment', '歷史辨識'],
               ['#sources', '人物史料'],
               ['#reflection', '今日反思'],
-            ].map(([href, label]) => (
+            ].map(([href, label], index) => (
               <a
                 key={href}
                 href={href}
-                className="flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:text-[#B8B0A6] dark:hover:bg-[#2A2D36]"
+                className={`flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-center text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:text-[#B8B0A6] dark:hover:bg-[#2A2D36] ${index === 4 ? 'col-span-2 sm:col-span-1' : ''}`}
               >
                 {label}
               </a>
@@ -68,57 +68,57 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
         </nav>
 
         <div id="context" className="scroll-mt-6">
-        {/* Geographic Context */}
-        {period.geographicContext && (
-          <section className="mt-6">
-            <figure className="overflow-hidden rounded-xl border border-stone-200 dark:border-[#2E3240]">
-              <img
-                src={period.geographicContext.imageUrl}
-                alt={period.geographicContext.imageCaption}
-                className="aspect-[16/9] w-full object-cover"
-                loading="lazy"
-              />
-              <figcaption className="p-4 space-y-2">
-                <p className="text-xs font-semibold text-stone-500 dark:text-[#9B938B]">地理與背景</p>
-                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.geographicContext.description}</p>
-                <p className="text-xs text-stone-500 dark:text-[#9B938B]">{period.geographicContext.imageCaption}</p>
-              </figcaption>
-            </figure>
-          </section>
-        )}
+          {/* Geographic Context */}
+          {period.geographicContext && (
+            <section className="mt-6">
+              <figure className="overflow-hidden rounded-xl border border-stone-200 dark:border-[#2E3240]">
+                <img
+                  src={period.geographicContext.imageUrl}
+                  alt={period.geographicContext.imageCaption}
+                  className="aspect-[16/9] w-full object-cover"
+                  loading="lazy"
+                />
+                <figcaption className="p-4 space-y-2">
+                  <p className="text-xs font-semibold text-stone-500 dark:text-[#9B938B]">地理與背景</p>
+                  <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.geographicContext.description}</p>
+                  <p className="text-xs text-stone-500 dark:text-[#9B938B]">{period.geographicContext.imageCaption}</p>
+                </figcaption>
+              </figure>
+            </section>
+          )}
 
-        {/* Martyr Story */}
-        {period.martyrStory && (
-          <section className="mt-6 rounded-xl border border-red-900/20 bg-red-950/5 dark:border-red-900/30 dark:bg-red-950/10 overflow-hidden">
-            <div className="px-5 pt-5 pb-1">
-              <p className="mb-1 text-xs font-semibold text-red-700/80 dark:text-red-300/80">殉道見證</p>
-              <p className="text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.martyrStory.person}</p>
-              <p className="mt-0.5 text-xs text-stone-500 dark:text-[#9B938B]">{period.martyrStory.year}</p>
-            </div>
-            <div className="px-5 pb-4 pt-3">
-              <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{period.martyrStory.story}</p>
-            </div>
-            {period.martyrStory.quote && period.martyrStory.quote !== '（殉道記錄中無留存語句）' && period.martyrStory.quote !== '（無留存語句——他的見證在他的平靜中）' && (
-              <div className="mx-5 mb-4 border-l-2 border-red-700/30 pl-4">
-                <p className="text-sm italic leading-7 text-stone-400 dark:text-[#A09890]">「{period.martyrStory.quote}」</p>
+          {/* Martyr Story */}
+          {period.martyrStory && (
+            <section className="mt-6 overflow-hidden rounded-xl border border-red-900/15 bg-red-950/[0.025] dark:border-red-900/20 dark:bg-red-950/5">
+              <div className="px-5 pt-5 pb-1">
+                <p className="mb-1 text-xs font-semibold text-red-700/80 dark:text-red-300/80">殉道見證</p>
+                <p className="text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.martyrStory.person}</p>
+                <p className="mt-0.5 text-xs text-stone-500 dark:text-[#9B938B]">{period.martyrStory.year}</p>
               </div>
-            )}
-            <div className="border-t border-red-900/10 dark:border-red-900/20 mx-0 px-5 py-4">
-              <p className="mb-1 text-xs font-semibold text-red-700/70 dark:text-red-300/70">為什麼這個故事值得記住</p>
-              <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.martyrStory.significance}</p>
-            </div>
-          </section>
-        )}
+              <div className="px-5 pb-4 pt-3">
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{period.martyrStory.story}</p>
+              </div>
+              {period.martyrStory.quote && period.martyrStory.quote !== '（殉道記錄中無留存語句）' && period.martyrStory.quote !== '（無留存語句——他的見證在他的平靜中）' && (
+                <div className="mx-5 mb-4 border-l-2 border-red-700/30 pl-4">
+                  <p className="text-sm italic leading-7 text-stone-400 dark:text-[#A09890]">「{period.martyrStory.quote}」</p>
+                </div>
+              )}
+              <div className="mx-0 border-t border-red-900/10 px-5 py-4 dark:border-red-900/15">
+                <p className="mb-1 text-xs font-semibold text-red-700/70 dark:text-red-300/70">這個選擇為何被記住</p>
+                <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.martyrStory.significance}</p>
+              </div>
+            </section>
+          )}
 
-        {/* Political Context */}
-        {period.politicalContext && (
-          <section className="mt-6 overflow-hidden rounded-xl border border-stone-300/40 bg-stone-100/60 dark:border-[#3A3E4A] dark:bg-[#1C1F27]/60">
-            <div className="px-5 pt-5 pb-3">
-              <p className="mb-1 text-xs font-semibold text-stone-500 dark:text-[#9B938B]">政權背景</p>
-              <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890] whitespace-pre-line">{period.politicalContext}</p>
-            </div>
-          </section>
-        )}
+          {/* Political Context */}
+          {period.politicalContext && (
+            <section className="mt-6 overflow-hidden rounded-xl border border-stone-300/40 bg-stone-100/60 dark:border-[#3A3E4A] dark:bg-[#1C1F27]/60">
+              <div className="px-5 pt-5 pb-3">
+                <p className="mb-1 text-xs font-semibold text-stone-500 dark:text-[#9B938B]">政權背景</p>
+                <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890] whitespace-pre-line">{period.politicalContext}</p>
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Theological Question Chain */}
@@ -164,7 +164,7 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
         </Section>
 
         {/* Balanced Assessment */}
-        <Section id="discern" eyebrow="歷史辨識" title="成果、陰影與今日功課">
+        <Section id="assessment" eyebrow="歷史辨識" title="一個時代的資產、陰影與今日功課">
           <p className="mb-4 text-sm leading-7 text-stone-500 dark:text-[#A09890]">
             同一個時代往往同時孕育信仰成果與制度傷害。理解兩面，才能避免把歷史讀成英雄榜或黑歷史清單。
           </p>
@@ -173,8 +173,8 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
               <p className="mb-1 text-xs font-semibold text-[#4F7358] dark:text-[#8FC79D]">留下的資產</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.contribution}</p>
             </div>
-            <div className="rounded-lg border border-[#C17D3A]/30 bg-[#C17D3A]/5 p-4 dark:border-[#D4935C]/25 dark:bg-[#D4935C]/[0.06]">
-              <p className="mb-1 text-xs font-semibold text-[#8A5A24] dark:text-[#D9A876]">需要面對的陰影</p>
+            <div className="rounded-lg border border-[#B7792B]/25 bg-[#B7792B]/5 p-4 dark:border-[#E0B665]/25 dark:bg-[#E0B665]/5">
+              <p className="mb-1 text-xs font-semibold text-[#74501F] dark:text-[#E0B665]">需要面對的陰影</p>
               <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.eraAssessment.shadow}</p>
             </div>
           </div>
