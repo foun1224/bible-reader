@@ -87,6 +87,16 @@ export default function MainChurchHistoryPeriod({ periodId, onBack }: {
           </section>
         )}
 
+        {/* Political Context */}
+        {period.politicalContext && (
+          <section className="mt-6 rounded-xl border border-stone-300/40 bg-stone-100/60 dark:border-[#3A3E4A] dark:bg-[#1C1F27]/60 overflow-hidden">
+            <div className="px-5 pt-5 pb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400 dark:text-[#6B6460] mb-1">政權背景</p>
+              <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890] whitespace-pre-line">{period.politicalContext}</p>
+            </div>
+          </section>
+        )}
+
         {/* Theological Question Chain */}
         <Section eyebrow="思想演進" title="這個時代的核心神學問題">
           {parentPeriod && (

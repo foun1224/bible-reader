@@ -48,6 +48,7 @@ export interface ChurchHistoryPeriod {
   }[]
   geographicContext?: GeographicContext
   martyrStory?: MartyrStory
+  politicalContext?: string
 }
 
 export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
@@ -108,7 +109,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '早期教會沿著羅馬帝國道路網絡擴散——從耶路撒冷出發，安提阿是外邦宣教基地，以弗所是亞西亞中心，羅馬是殉道的最終舞台。這些城市靠書信和行腳傳道者彼此連繫。坡旅甲的士每拿（今伊茲密爾）距使徒約翰晚年所在的以弗所不過六十公里，是一條真實走過的信仰傳承之路。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Via_Appia_02.jpg',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Via_Appia_Antica_Rome_2006.jpg',
       imageCaption: '羅馬阿庇亞大道（Via Appia）——使徒與傳道者踏過的帝國幹道',
     },
     martyrStory: {
@@ -118,6 +119,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '我服事祂八十六年，祂從未虧待我。我怎能褻瀆拯救我的王？',
       significance: '他是從使徒時代到後使徒時代的活橋梁。他的死，不是意外，而是選擇。他向下一個世代示範：信仰在最後的考驗中是什麼樣子。',
     },
+    politicalContext: '羅馬帝國正值「五賢帝」全盛（96–180 年）：圖拉真、哈德良、安東尼·庇護、馬可·奧勒留輪流統治。基督教在法律上是「不被承認的宗教」（religio illicita），既非合法又非被主動取締。普林尼總督約 112 年寫信問皇帝圖拉真怎麼處理基督徒，圖拉真回覆：「不要主動搜查，但一旦被舉報就審判。」這條模糊的政策意味著：任何一個心懷惡意的鄰居或仇人，隨時可以送你上法庭，而結果完全取決於當地官員的心情。坡旅甲在士每拿被捕，正是因為群眾情緒在年度競技節慶中爆發，有人喊出「抓坡旅甲」——政治保護的缺席讓民間暴力可以轉化為官方執行的死刑。',
   },
   {
     periodId: 'apologists-heresy',
@@ -177,8 +179,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '護教士時代的神學戰場在地中海的知識重鎮展開：亞歷山大（諾斯底主義溫床）、迦太基（北非最繁華羅馬城市，特土良的家鄉）、里昂（177 年血腥屠殺發生地）、羅馬（賈斯丁開學校、辯論、殉道的舞台）。這些城市的信徒，在逼迫中同時用劍與筆回應那個時代的問題。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Carthage_amphitheatre.jpg',
-      imageCaption: '北非迦太基（今突尼西亞）的羅馬競技場遺址——柏珮彼雅殉道的城市',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Carthage_ruins.jpg',
+      imageCaption: '北非迦太基（今突尼西亞）遺址——柏珮彼雅與斐利西大殉道的城市',
     },
     martyrStory: {
       person: '柏珮彼雅與斐利西大（Perpetua & Felicitas）',
@@ -187,6 +189,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '你能叫這個罐子換個名字嗎？同樣，我也不能稱自己不是基督徒。',
       significance: '她的日記是歷史上最早由女性親筆記錄的基督教文獻，讓後人得以直接聽見一個站在死亡邊緣的年輕母親的聲音，而不只是關於她的敘述。',
     },
+    politicalContext: '這個時代跨越了羅馬帝國最殘酷的兩次系統性迫害。德修斯皇帝（249–251 年）首次要求全帝國每個公民前往神廟獻祭並取得「已獻祭證明書」（libellus）——沒有這張紙就喪失公民資格。這是歷史上第一次以文件系統追蹤「不效忠」者。戴克里先皇帝（303–313 年）的「大迫害」更進一步：教堂被強制拆除，聖經被充公焚燒，主教被投入監獄。拒絕交出聖經者被稱為「背叛者」（traditores，英文 traitor 的語源）。然而就在迫害最烈的十年後，君士坦丁大帝 313 年以《米蘭詔令》終止所有宗教迫害，賜還教會財產——教會從法律上的「非法組織」搖身一變為帝國保護的機構，速度之快讓所有人都措手不及。',
   },
   {
     periodId: 'councils-creeds',
@@ -245,8 +248,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '大公會議時代發生在帝國東部的神學城市：尼西亞（今土耳其伊茲尼克）、君士坦丁堡、亞歷山大、安提阿、迦克墩。這些城市既是羅馬帝國的政治重鎮，也是希臘文化的知識中心。神學辯論在皇帝的宮廷建築群中進行，皇帝的政治意志與主教們的神學立場彼此拉扯，重塑了整個信仰的語言。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hagia_Sophia_Mars_2013.jpg',
-      imageCaption: '今伊斯坦堡的聖索非亞大教堂——建於大公會議時代，承載東方教會的信仰與神學語言',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Interior_of_the_Hagia_Sophia.jpg',
+      imageCaption: '今伊斯坦堡的聖索非亞大教堂內景——建於大公會議時代，承載東方教會的信仰與神學語言',
     },
     martyrStory: {
       person: '普里西連（Priscillian of Ávila）',
@@ -255,6 +258,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '（殉道記錄中無留存語句）',
       significance: '他的死是一個警示：信仰得來不易，但當信仰獲得世俗權力之後，它也可能成為壓迫的工具。這個張力從 385 年延伸到中世紀宗教裁判所，再到今天。',
     },
+    politicalContext: '君士坦丁大帝 313 年合法化基督教之後，整個政治局面在一個世代內翻轉。他的兒子君士坦提烏斯二世（337–361 年）支持亞流派，多次流放堅持尼西亞信經的正統主教（亞他那修五度被流放）——皇帝首次直接介入神學爭論，用政治壓力決定誰的神學「正確」。380 年，狄奧多西一世以《帖薩羅尼迦詔令》宣佈基督教為帝國唯一合法宗教，其他一切「邪教」（包括其他形式的基督教）均屬非法。這意味著異端已不只是神學問題，而是刑事罪行。普里西連 385 年在特里爾被處死，正是這個新法律秩序的第一個可怕結果——帝國之前殺基督徒，現在由「基督教帝國」殺另一種基督徒。',
   },
   {
     periodId: 'monasticism',
@@ -314,8 +318,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '修道主義從炎熱的埃及沙漠（尼特利亞、斯刻忒斯曠野）蔓延到寒冷的愛爾蘭海岸，這本身就是神學聲明：神可以在任何極端環境中被尋見。安東尼在東部曠野獨居的故事傳遍帝國，引發了史上第一次宗教「移民潮」——人們逃離城市財富，跑向沙漠尋找神。波尼法修（Boniface）後來將修道精神帶入日耳曼，開闢了歐洲中世紀宣教的新頁。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Monastery_of_Saint_Anthony,_Egypt.jpg',
-      imageCaption: '埃及聖安東尼修道院——世界現存最古老的修道院，坐落在西奈半島的沙漠岩壁之下',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/de/St._Anthony%27s_Monastery_2006.jpg',
+      imageCaption: '埃及聖安東尼修道院——世界現存最古老的修道院，坐落在沙漠岩壁之下',
     },
     martyrStory: {
       person: '波尼法修（Boniface of Fulda）',
@@ -324,6 +328,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '停下！聖經說不要以惡報惡，這一天是我長久期盼的日子。',
       significance: '他的死說明修道主義從來不是逃避世界——它的最高表達是走入最危險的地方，以自己的身體為信仰作見證。',
     },
+    politicalContext: '西羅馬帝國 476 年正式落幕，日耳曼各部族（西哥德、法蘭克、汪達爾）瓜分了西方帝國的版圖。在這個政治真空中，教會——尤其是修道院——成為唯一能提供穩定秩序、識字教育和社會救濟的機構。教宗葛利免一世（590–604 年）開始把羅馬主教的角色從「宗教領袖」擴展為「西方世界的政治協調者」，因為根本沒有其他人有這個能力。波尼法修在日耳曼的傳教，背後有法蘭克王國的政治支持（卡洛林王朝），但他最終進入的弗里西亞是法蘭克勢力覆蓋不到的地方——那裡他只有一本福音書，和以自己身體為信仰擔保的意志。',
   },
   {
     periodId: 'medieval-church',
@@ -383,8 +388,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '中世紀教會的地理版圖是一幅朝聖、十字軍與哥德式大教堂交織的地圖：羅馬（教宗廷）、坎特伯里（英格蘭聖地）、巴黎（第一所大學）、康斯坦茨（決定胡斯命運的大公會議所在地）。胡斯 1415 年被燒死的廣場，今天仍在康斯坦茨，那裡豎立著一塊紀念碑，上面刻著：「真理終將勝利。」',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Constance_Konzilgeba%C3%A4ude.jpg',
-      imageCaption: '德國康斯坦茨的公會議廳（1414–1418 年）——揚·胡斯在此被定罪，後在城外廣場被燒死',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Carl_Friedrich_Lessing_-_Jan_Hus_at_Constance_%28SM_901%29.png',
+      imageCaption: '〈胡斯在康斯坦茨〉，Karl Friedrich Lessing 繪（1842 年）——揚·胡斯被帶到公會議前受審的歷史畫',
     },
     martyrStory: {
       person: '揚·胡斯（Jan Hus）',
@@ -393,6 +398,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '你們今天燒死的是一隻鵝，但一百年後，將有一隻天鵝出現，你們既燒不死也煮不熟他。',
       significance: '他的死提前點燃了宗教改革的導火線——波西米亞爆發了「胡斯戰爭」，震動整個歐洲。他的故事提醒我們：改革者往往先以殉道者的身份死去，才以真理的名義活下去。',
     },
+    politicalContext: '中世紀教會與王權的衝突，在「主教授職權」（Investiture Controversy）上達到頂點。1076 年，教宗額我略七世宣佈絕罰神聖羅馬帝國皇帝亨利四世——絕罰不只是宗教處罰，更意味著帝國所有臣民解除對皇帝的效忠誓言。皇帝被迫在隆冬赤足站在義大利卡諾薩城堡外三天，等待教宗接見。這是歷史上最戲劇性的政教衝突場景之一，俗稱「卡諾薩之辱」（Walk to Canossa）。到了 1414 年康斯坦茨大公會議的時代，教宗制度本身正陷入大分裂（Schism）——同時有兩甚至三位競爭的教宗，各有自己的宮廷與效忠勢力。大公會議試圖以集體決議高於教宗個人的方式解決危機，結果連帶定罪了胡斯。胡斯案揭示了政治腐敗的教會如何使用神學權威打壓改革聲音。',
   },
   {
     periodId: 'reformation',
@@ -452,8 +458,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '宗教改革的地圖是一張被印刷機打破邊界的地圖：威登堡（路德張貼論綱）、蘇黎世（茲文利）、日內瓦（加爾文）、倫敦與牛津（英格蘭改革）。廷代爾在安特衛普（今比利時）流亡翻譯聖經，在那裡被逮捕。宗教改革也是一場印刷革命——路德的《九十五條論綱》兩週內傳遍德國，兩個月內傳遍整個歐洲。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Schlosskirche_Wittenberg2.jpg',
-      imageCaption: '德國威登堡宮廷教堂（Schlosskirche）——路德據傳在此門上張貼《九十五條論綱》',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Wittenberg_Castle_Church_Door%2C_Where_Luther_Posted_His_95_Theses_%289813300413%29.jpg',
+      imageCaption: '德國威登堡宮廷教堂銅門——路德 1517 年在此張貼《九十五條論綱》的地點',
     },
     martyrStory: {
       person: '威廉·廷代爾（William Tyndale）',
@@ -462,6 +468,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '主啊，求你開英格蘭王的眼睛！',
       significance: '他的故事揭示了一個悖論：那些掌權者認為燒死一個人就能壓制真理，結果那個人死後，他的話語反而進入了每一個人的手中。',
     },
+    politicalContext: '宗教改革的政治格局可以用一句拉丁文概括：「cuius regio eius religio（誰的土地，誰的宗教）」——這是 1555 年《奧古斯堡和約》確立的原則。這意味著一個諸侯選擇路德宗，他的臣民就要信路德宗；選擇天主教，就信天主教。個人的信仰自由，在這個框架中幾乎不存在。廷代爾的處境正是這個邏輯的產物：亨利八世的英格蘭雖然因為離婚問題脫離羅馬，但亨利仍然視「翻譯聖經交給普通人」為威脅君主神學權威的行為。廷代爾逃到歐洲大陸，正是因為在英格蘭本土任何支持他的人都可能被處決。\n\n1618–1648 年的「三十年戰爭」是整個宗教改革時代政教衝突的總爆發：新教諸侯聯盟與天主教哈布斯堡帝國之間的戰爭，摧毀了德意志三分之一的人口，城市被燒毀，農村人口銳減。1648 年的《威斯特伐利亞條約》最終結束了「用戰爭決定信仰」的時代，開始了「國家主權」與「宗教寬容」並立的現代國際秩序。在此之前，一個人選擇「錯誤的」信仰，隨時可能被以「異端」之名處死——廷代爾、胡斯、塞爾維特（加爾文燒死的反三位一體論者）都死於這個邏輯。',
   },
   {
     periodId: 'revivals-missions',
@@ -521,8 +528,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '奮興運動與現代宣教時代的地圖，是一張從歐美向全球放射的線條：威廉·克里從英格蘭到印度（塞蘭坡），戴德生從上海深入中國內地，利文斯頓在非洲行走二萬九千英里。1900 年義和團運動期間，中國各地宣教站成為殺戮現場——山西省太原一場屠殺奪走了四十七條人命。信仰的擴張，從來不是在安全的地方發生的。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hudson_Taylor_(1832%E2%80%931905).jpg',
-      imageCaption: '戴德生（James Hudson Taylor，1832–1905）——中國內地會創始人，穿著中國服飾的宣教先驅',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/db/J_Hudson_Taylor_1865.jpg',
+      imageCaption: '戴德生（James Hudson Taylor，1865 年攝）——中國內地會創始人，穿著中國服飾的宣教先驅',
     },
     martyrStory: {
       person: '吉姆·艾略特與四位同伴（Jim Elliot and companions）',
@@ -531,6 +538,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '獻上留不住的，換取不能失去的，這人不是傻瓜。',
       significance: '他們的死不是終點，而是轉捩點。殺人者成了信徒，這個結局讓世人看見：基督信仰的邏輯與世界的邏輯根本不同——死亡不是失敗的證明，而可以是愛的最極致表達。',
     },
+    politicalContext: '十八、十九世紀的宣教運動，與西方帝國主義的擴張在歷史上深度交纏。英國東印度公司的船帶去商業，也帶去宣教士；荷蘭、法國、葡萄牙的殖民地，往往是宣教的通道。這個關係既給宣教帶來了保護傘，也讓福音背負了「文化帝國主義」的包袱——非洲、亞洲的部落首領有時接受受洗，不只是為了信仰，也為了取得政治保護。宣教士自己則處於矛盾中：許多人批評殖民剝削，卻又依賴殖民體系的基礎設施生存。\n\n1900 年的義和團運動是這個矛盾最血腥的爆發點。清朝政府支持義和拳民，以「扶清滅洋」為口號，系統性屠殺外國人和「二毛子」（信洋教的中國基督徒）。山西省太原一場清朝官方主導的屠殺，在一日之內殺死了包括 33 名外國宣教士（含女性和兒童）及 43 名中國信徒在內的 46 條生命。這場殺戮不是反叛亂，而是帝國政府主導的清洗。整個庚子之難中，約有 30,000 名中國基督徒被殺。這告訴我們：在中國接受基督信仰，在 1900 年意味著你可能被你自己的政府殺死，不是因為你做了什麼，而僅僅因為你信什麼。',
   },
   {
     periodId: 'global-christianity',
@@ -590,8 +598,8 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
     ],
     geographicContext: {
       description: '二十世紀的教會地圖是一幅同時有爆炸性增長和系統性迫害並存的地圖。納粹德國（潘霍華）、中國文化大革命（王志明與無數無名信徒）、北韓、蘇丹、中東——這些是迫害的地方。同時，非洲、亞洲、拉丁美洲是教會快速增長的地方。台灣、韓國也從「宣教接受者」轉型為「宣教發送者」。今天的全球基督教，從來不只是歐美的事。',
-      imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Bundesarchiv_Bild_183-R0211-316,_Dietrich_Bonhoeffer.jpg',
-      imageCaption: '潘霍華（Dietrich Bonhoeffer，1906–1945）——德國牧師，納粹抵抗者，1945 年 4 月被處決，距德國投降僅三週',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/London_UK_Sculptures-at-Westminster-Abbey-Westgate-Bonhoeffer-01.jpg',
+      imageCaption: '西敏寺西門「二十世紀殉道者」雕像群（1998 年揭幕）——王志明與潘霍華、馬丁·路德·金恩等人的雕像並列於同一面牆',
     },
     martyrStory: {
       person: '王志明（Wang Zhiming）',
@@ -600,6 +608,7 @@ export const CHURCH_HISTORY_PERIODS: ChurchHistoryPeriod[] = [
       quote: '（無留存語句——他的見證在他的平靜中）',
       significance: '他的故事讓我們看見：二十世紀的殉道不是發生在遙遠的古代，而是在我們父祖輩的時代，在離台灣不遠的地方。今天我們能自由讀聖經、自由聚會，是因為有人為此付出了代價。',
     },
+    politicalContext: '二十世紀出現了人類歷史上對基督教最系統性的三波意識形態迫害：\n\n**納粹德國（1933–1945）**：希特勒的國家社會主義以「日耳曼基督教」（Deutsche Christen）取代聖經神學，要求教會效忠元首高於效忠神。大多數德國教會沉默或妥協；少數人組成「認信教會」（Bekennende Kirche）抵抗，潘霍華正是其中之一。他最終因參與刺殺希特勒的密謀被捕，1945 年 4 月 9 日被絞死於弗洛森堡集中營——距盟軍解放該營地僅兩週。他的死提出了一個問題至今仍被討論：一個基督徒，能不能為了阻止更大的惡，而使用暴力？\n\n**蘇聯共產政權（1917–1991）**：列寧宣佈宗教是「人民的鴉片」，蘇聯政府系統性關閉教堂、逮捕神職人員、在學校禁止宗教教育。斯大林時代（1936–1938 年的「大清洗」）估計有數萬名神職人員被槍決或送入古拉格勞改營。蘇聯解體前，蘇聯治下的基督徒必須在「地下教會」（家庭教會）維持信仰，或在國家控制的「合法」教會中妥協。\n\n**中國文化大革命（1966–1976）**：毛澤東發動文化大革命，宣佈消滅「舊思想、舊文化、舊風俗、舊習慣」。所有教堂被關閉或摧毀，聖經被沒收焚燒，神職人員被公開批鬥，信仰者被強制放棄信仰或被送入勞改隊。王志明是其中一個有名字被記下的人；更多的是無名信徒，他們的遭遇只存在於後來解密的地方檔案和倖存者的口述中。文革結束後，1979 年教會重新開放，人們驚訝地發現：經歷了十年迫害，中國教會不但沒有消失，甚至悄悄成長了。這是二十世紀最令人震驚的宗教現象之一。',
   },
 ]
 
