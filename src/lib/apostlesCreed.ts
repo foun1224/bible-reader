@@ -40,7 +40,7 @@ export const APOSTLES_CREED: ApostlesCreedData = {
   fullText: [
     '我信上帝，全能的父，創造天地的主。',
     '我信我主耶穌基督，上帝的獨生子；',
-    '因聖灵感孕，由童貞女馬利亞所生；',
+    '因聖靈感孕，由童貞女馬利亞所生；',
     '在本丟彼拉多手下受難，被釘於十字架，受死，埋葬；',
     '降在陰間；第三天從死人中復活；',
     '升天，坐在全能父上帝的右邊；',
@@ -122,7 +122,7 @@ export const APOSTLES_CREED: ApostlesCreedData = {
       articleId: 'incarnation',
       number: 3,
       title: '聖靈感孕，童貞女馬利亞所生',
-      text: '因聖灵感孕，由童貞女馬利亞所生；',
+      text: '因聖靈感孕，由童貞女馬利亞所生；',
       latin: 'qui conceptus est de Spiritu Sancto, natus ex Maria Virgine,',
       summary:
         '這一條守護道成肉身的真實：耶穌進入人類歷史的方式，既是上帝的作為，也是真正的出生。',
@@ -155,7 +155,7 @@ export const APOSTLES_CREED: ApostlesCreedData = {
       summary:
         '信經突然變得很「歷史」：出現一個總督的名字。十字架不是寓言，而是在公開政治暴力中發生的事件。',
       affirms:
-        '耶穌真的受苦、真的被釘、真的死、真的被埋葬。救恩锚定在可查核的歷史中，而不是私人神秘經驗。',
+        '耶穌真的受苦、真的被釘、真的死、真的被埋葬。救恩錨定在可查核的歷史中，而不是私人神秘經驗。',
       rejects:
         '拒絕「耶穌只是昏死」或「十字架只是道德榜樣故事」。也拒絕把福音抽離公共世界，變成與不義無關的心靈雞湯。',
       historicalNote:
