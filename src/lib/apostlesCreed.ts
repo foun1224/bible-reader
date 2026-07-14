@@ -31,6 +31,10 @@ export interface ApostlesCreedData {
     howToRead: string
     originNote: string
   }
+  sources: {
+    label: string
+    url: string
+  }[]
   articles: CreedArticle[]
 }
 
@@ -61,6 +65,16 @@ export const APOSTLES_CREED: ApostlesCreedData = {
     originNote:
       '現存完整拉丁文本約在 4–8 世紀間定型（常稱 Textus receptus）；更早的「古羅馬信經」已具相似骨架。名稱「使徒信經」表達其使徒性內容與權威，而非主張十二使徒各寫一條的傳奇故事為史實。',
   },
+  sources: [
+    {
+      label: '梵蒂岡教理：信經與古羅馬洗禮傳統',
+      url: 'https://www.vatican.va/content/catechism/en/part_one/section_two.html',
+    },
+    {
+      label: 'CCEL：使徒信經歷史研究（公版文獻）',
+      url: 'https://www.ccel.org/ccel/h/harnack/creed/cache/creed.pdf',
+    },
+  ],
   articles: [
     {
       articleId: 'father-creator',

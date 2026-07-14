@@ -4,7 +4,7 @@ export default function MainApostlesCreed({ onBack, onOpenArticle }: {
   onBack: () => void
   onOpenArticle: (articleId: string) => void
 }) {
-  const { title, subtitle, fullText, introduction, articles } = APOSTLES_CREED
+  const { title, subtitle, fullText, introduction, sources, articles } = APOSTLES_CREED
 
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
@@ -81,6 +81,24 @@ export default function MainApostlesCreed({ onBack, onOpenArticle }: {
             </button>
           ))}
         </div>
+
+        <section className="mt-8 border-t border-stone-200/70 pt-8 dark:border-[#2E3240]">
+          <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-stone-500 dark:text-[#9B938B]">參考資料</p>
+          <div className="space-y-2">
+            {sources.map(source => (
+              <a
+                key={source.url}
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center justify-between rounded-lg border border-stone-300 px-4 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:text-[#B8B0A6] dark:hover:bg-[#22242C]"
+              >
+                <span>{source.label}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </section>
       </div>
     </main>
   )
