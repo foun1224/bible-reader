@@ -1,4 +1,4 @@
-import { findCreedArticle } from '../lib/apostlesCreed'
+import { APOSTLES_CREED, findCreedArticle } from '../lib/apostlesCreed'
 
 function Section({ id, eyebrow, title, children }: {
   id?: string
@@ -15,12 +15,18 @@ function Section({ id, eyebrow, title, children }: {
   )
 }
 
-export default function MainApostlesCreedArticle({ articleId, onBack }: {
+export default function MainApostlesCreedArticle({ articleId, onBack, onOpenArticle }: {
   articleId: string
   onBack: () => void
+  onOpenArticle?: (articleId: string) => void
 }) {
   const article = findCreedArticle(articleId)
   if (!article) return null
+
+  const articles = APOSTLES_CREED.articles
+  const index = articles.findIndex(a => a.articleId === articleId)
+  const prevArticle = index > 0 ? articles[index - 1] : null
+  const nextArticle = index >= 0 && index < articles.length - 1 ? articles[index + 1] : null
 
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
@@ -35,7 +41,7 @@ export default function MainApostlesCreedArticle({ articleId, onBack }: {
           </button>
           <div>
             <p className="text-xs font-semibold tracking-[0.08em] text-stone-500 dark:text-[#9B938B]">
-              使徒信經 · 第 {article.number} 條
+              使徒信經 · 第 {article.number} / {articles.length} 條
             </p>
             <h1 className="text-lg font-semibold text-stone-700 dark:text-[#E4DDD0]">{article.title}</h1>
           </div>
@@ -120,6 +126,36 @@ export default function MainApostlesCreedArticle({ articleId, onBack }: {
               ))}
             </div>
           </Section>
+        )}
+
+        {/* Prev / Next article */}
+        {onOpenArticle && (prevArticle || nextArticle) && (
+          <nav aria-label="上下條導覽" className="mt-8 border-t border-stone-200/70 pt-6 dark:border-[#2E3240]">
+            <div className="flex gap-2">
+              {prevArticle ? (
+                <button
+                  onClick={() => onOpenArticle(prevArticle.articleId)}
+                  className="flex min-h-11 flex-1 flex-col items-start justify-center rounded-lg border border-stone-300 bg-stone-50 px-4 py-3 text-left transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:hover:bg-[#2A2D36]"
+                >
+                  <span className="text-xs text-stone-400 dark:text-[#9B938B]">← 上一條・第 {prevArticle.number} 條</span>
+                  <span className="mt-0.5 text-sm font-medium text-stone-600 dark:text-[#B8B0A6]">{prevArticle.title}</span>
+                </button>
+              ) : (
+                <div className="flex-1" />
+              )}
+              {nextArticle ? (
+                <button
+                  onClick={() => onOpenArticle(nextArticle.articleId)}
+                  className="flex min-h-11 flex-1 flex-col items-end justify-center rounded-lg border border-stone-300 bg-stone-50 px-4 py-3 text-right transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:bg-[#22242C]/45 dark:hover:bg-[#2A2D36]"
+                >
+                  <span className="text-xs text-stone-400 dark:text-[#9B938B]">下一條・第 {nextArticle.number} 條 →</span>
+                  <span className="mt-0.5 text-sm font-medium text-stone-600 dark:text-[#B8B0A6]">{nextArticle.title}</span>
+                </button>
+              ) : (
+                <div className="flex-1" />
+              )}
+            </div>
+          </nav>
         )}
       </div>
     </main>
