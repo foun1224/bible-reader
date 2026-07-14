@@ -10,6 +10,8 @@ import MainTimeline from './components/MainTimeline'
 import MainTimelineDeepDive from './components/MainTimelineDeepDive'
 import MainChurchHistory from './components/MainChurchHistory'
 import MainChurchHistoryPeriod from './components/MainChurchHistoryPeriod'
+import MainChurchMusicHistory from './components/MainChurchMusicHistory'
+import MainChurchMusicHistoryPeriod from './components/MainChurchMusicHistoryPeriod'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -113,7 +115,7 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail' | 'church-history' | 'church-history-detail'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail' | 'church-history' | 'church-history-detail' | 'church-music-history' | 'church-music-history-detail'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
@@ -121,6 +123,7 @@ function App() {
   const [coursesBookName, setCoursesBookName] = useState<string | null>(null)
   const [timelinePeriodId, setTimelinePeriodId] = useState<string | null>(null)
   const [churchHistoryPeriodId, setChurchHistoryPeriodId] = useState<string | null>(null)
+  const [churchMusicHistoryPeriodId, setChurchMusicHistoryPeriodId] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -941,6 +944,23 @@ function App() {
             onBack={() => setMainView('church-history')}
           />
         )}
+
+        {mainView === 'church-music-history' && (
+          <MainChurchMusicHistory
+            onBack={() => setMainView('scripture')}
+            onOpenPeriod={(periodId) => {
+              setChurchMusicHistoryPeriodId(periodId)
+              setMainView('church-music-history-detail')
+            }}
+          />
+        )}
+
+        {mainView === 'church-music-history-detail' && churchMusicHistoryPeriodId && (
+          <MainChurchMusicHistoryPeriod
+            periodId={churchMusicHistoryPeriodId}
+            onBack={() => setMainView('church-music-history')}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -956,6 +976,7 @@ function App() {
         onTimeline={() => { setMainView('timeline'); setMoreOpen(false); setSidebarOpen(false) }}
         onFeatureGuide={() => setFeatureGuideOpen(true)}
         onChurchHistory={() => { setMainView('church-history'); setMoreOpen(false); setSidebarOpen(false) }}
+        onChurchMusicHistory={() => { setMainView('church-music-history'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
@@ -1095,7 +1116,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail' || mainView === 'church-history' || mainView === 'church-history-detail') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail' || mainView === 'church-history' || mainView === 'church-history-detail' || mainView === 'church-music-history' || mainView === 'church-music-history-detail') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)

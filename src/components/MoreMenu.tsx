@@ -1,4 +1,4 @@
-type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline' | 'help' | 'church'
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline' | 'help' | 'church' | 'music'
 
 function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
   const common = {
@@ -53,6 +53,13 @@ function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
       <path d="M8 17v-4h4v4" />
     </svg>
   )
+  if (icon === 'music') return (
+    <svg {...common}>
+      <path d="M8 15.5a2 2 0 1 1-2.2-2" />
+      <path d="M15 13.5a2 2 0 1 1-2.2-2" />
+      <path d="M10 15.5V5.5l7-1.5v10" />
+    </svg>
+  )
   if (icon === 'history') return (
     <svg {...common}>
       <path d="M4 6.5A7 7 0 1 1 3.5 11" />
@@ -86,6 +93,7 @@ interface Props {
   onTimeline?: () => void
   onFeatureGuide?: () => void
   onChurchHistory?: () => void
+  onChurchMusicHistory?: () => void
   showScriptureTools?: boolean
   showReadingSettings?: boolean
 }
@@ -102,6 +110,7 @@ export default function MoreMenu({
   onTimeline,
   onFeatureGuide,
   onChurchHistory,
+  onChurchMusicHistory,
   showScriptureTools = false,
   showReadingSettings = false,
 }: Props) {
@@ -115,6 +124,7 @@ export default function MoreMenu({
     { label: '線上教材', icon: 'library' as MenuIcon, fn: onCurriculum },
     { label: '聖經時間軸', icon: 'timeline' as MenuIcon, fn: onTimeline },
     { label: '教會歷史', icon: 'church' as MenuIcon, fn: onChurchHistory },
+    { label: '教會音樂歷史', icon: 'music' as MenuIcon, fn: onChurchMusicHistory },
   ].filter(item => Boolean(item.fn))
 
   const guideTools = [
