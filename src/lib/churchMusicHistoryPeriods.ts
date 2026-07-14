@@ -17,6 +17,14 @@ export interface MusicEraAssessment {
   discernment: string
 }
 
+export interface HymnStory {
+  person: string
+  year: string
+  hymn: string
+  story: string
+  significance: string
+}
+
 export interface ChurchMusicHistoryPeriod {
   periodId: string
   title: string
@@ -39,6 +47,7 @@ export interface ChurchMusicHistoryPeriod {
   keyFigures: MusicKeyFigure[]
   representativeWorks: RepresentativeWork[]
   eraAssessment: MusicEraAssessment
+  hymnStory?: HymnStory
   todayReflection: {
     question: string
     prompt: string
@@ -112,6 +121,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       label: 'Oxford Research Archive：早期西方基督教音樂研究',
       url: 'https://ora.ox.ac.uk/objects/uuid:770f3a26-7036-4ffb-bbd7-49b458122b26',
     },
+    hymnStory: {
+      person: '保羅與西拉',
+      year: '約 49 年，腓立比監獄',
+      hymn: '半夜的讚美詩（徒 16:25）',
+      story:
+        '他們剛被剝了衣服、用棍打了「許多棍」，兩腳上了木狗，關在內監。按常理，這是呻吟或沉默的夜晚。但路加記錄的是：「約在半夜，保羅和西拉禱告，唱詩讚美神，眾囚犯也側耳而聽。」他們不是唱給自己壯膽——「眾囚犯也側耳而聽」這句話透露：歌聲成了黑暗中其他囚犯聽見的見證。地震開了監門之後，獄卒問的問題是「我當怎樣行才可以得救？」那一夜歌聲的聽眾，成了腓立比教會最早的成員。',
+      significance:
+        '教會音樂的第一個故事就定下了基調：唱詩不需要條件俱足。不是因為環境好才唱，而是在最壞的環境裡，歌聲宣告苦難沒有最終發言權。',
+    },
     todayReflection: [
       {
         question: '你記得的經文裡，有多少是「唱進心裡」而不是「讀過一次」的？',
@@ -184,6 +202,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       label: '美國國會圖書館：10–16 世紀禮儀聖歌手稿',
       url: 'https://www.loc.gov/collections/tenth-to-sixteenth-century-liturgical-chants/about-this-collection/',
     },
+    hymnStory: {
+      person: '無名的修士們',
+      year: '整個中世紀，歐洲各地修道院',
+      hymn: '每週一百五十篇詩篇的日課',
+      story:
+        '本篤會規第十九章寫著：「我們相信神無所不在，但在唱詩的時刻尤其如此。」修士每天七次放下手中的工作走進禮拜堂——半夜、清晨、日間各時辰——用歌聲唱過整本詩篇，一週一輪，年復一年直到死亡。沒有觀眾，沒有錄音，絕大多數人歷史上連名字都沒留下。歐洲最黑暗混亂的幾個世紀裡，這些歌聲沒有停過：瘟疫、戰亂、帝國崩解，修道院的日課照唱。我們今天能有樂譜、能有保存下來的聖歌傳統，是因為有一群人把「唱詩給神聽」當成了一生的職業。',
+      significance:
+        '這個故事的主角不是天才，而是無名的堅持。教會音樂最深的地基，不是某首名曲，而是千萬次無人聽見、只唱給神的日課。',
+    },
     todayReflection: [
       {
         question: '若敬拜歌曲無法在週一被記得、被低聲再唱，它還算進入門徒生活嗎？',
@@ -254,6 +281,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
     source: {
       label: '美國國會圖書館：中世紀禮儀記譜手稿',
       url: 'https://www.loc.gov/collections/tenth-to-sixteenth-century-liturgical-chants/about-this-collection/',
+    },
+    hymnStory: {
+      person: '賀德佳（Hildegard of Bingen）',
+      year: '1178–1179 年，賓根魯柏山修道院',
+      hymn: '被禁唱的日課',
+      story:
+        '八十歲的賀德佳——女修道院長、神學家、中世紀最多產的可考作曲者之一——在修道院墓地埋葬了一位曾被絕罰、但她確信已與教會和好的貴族青年。美因茲的教會當局命令她掘出屍體，她拒絕，甚至親手抹去墳墓的痕跡讓人無法辨認。當局對修道院下了禁令：不得舉行彌撒，不得唱日課。對一生以歌唱敬拜為呼吸的群體，這是最重的刑罰。賀德佳寫了一封流傳後世的信抗議：音樂是人回憶樂園的方式，是亞當墮落前與天使同唱的殘響——「那些不義地使教會沉默的人，將去到沒有音樂的地方。」禁令在她去世前幾個月解除；1179 年 9 月，她在恢復了歌聲的修道院中安息。',
+      significance:
+        '她用神學為音樂辯護：歌唱不是崇拜的裝飾品，而是人性受造的一部分。使敬拜沉默是嚴重的屬靈暴力——這封信是教會音樂史上最早、也最有力的「音樂神學宣言」之一。',
     },
     todayReflection: [
       {
@@ -328,6 +364,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       label: 'LCMS：Singing the Reformation',
       url: 'https://resources.lcms.org/history/singing-the-reformation/',
     },
+    hymnStory: {
+      person: '馬丁·路德',
+      year: '1527 年前後，威登堡',
+      hymn: '《上主是我堅固保障》（Ein feste Burg）',
+      story:
+        '寫這首歌的路德，是一個被教廷絕罰、被帝國通緝的人——沃木斯詔書宣告任何人都可以殺他而不受罰。1527 年前後是他最黑暗的時期：瘟疫襲擊威登堡，他的兒子病重，他自己陷入嚴重的憂鬱與病痛，改教運動內部分裂。就在這樣的處境裡，他把詩篇四十六篇「神是我們的避難所」鍛造成一首軍歌般的眾讚歌。後來每逢沮喪，他對同工墨蘭頓說：「來，我們唱第四十六篇，讓魔鬼氣死。」這首歌傳遍德國，被獄中的殉道者唱過，被流亡的難民唱過——它成了整個運動的精神堡壘。',
+      significance:
+        '一首詩歌可以是避難所。路德不是在順境中寫下宣告，而是把自己的恐懼按在詩篇上，唱出比感覺更堅固的真理——這正是教會把神學交給會眾歌唱的原因。',
+    },
     todayReflection: [
       {
         question: '若關掉投影，會眾還能唱完幾首「屬於你們」的歌？',
@@ -400,6 +445,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
     source: {
       label: 'Bach Digital：巴赫手稿與作品資料庫',
       url: 'https://www.bach-digital.de/',
+    },
+    hymnStory: {
+      person: '巴哈',
+      year: '1723–1750 年，萊比錫',
+      hymn: '每週一部清唱劇，末頁簽 S.D.G.',
+      story:
+        '巴哈在萊比錫的職位表面光鮮，實際上是市議會的雇員：薪水微薄、雜務繁重，要教拉丁文、管理詩班的頑童，還常與雇主爭執。他十歲成為孤兒，一生埋葬了第一任妻子和十個早夭的孩子。就在這樣的日常裡，他以幾乎每週一部的速度寫出清唱劇——供下主日崇拜用完即束之高閣，沒有出版，沒有版稅，多數作品在他死後沉睡近百年才被孟德爾頌重新發掘。但每一部手稿的開頭他寫 J.J.（Jesu Juva，耶穌，求祢幫助），結尾簽 S.D.G.（Soli Deo Gloria，榮耀唯獨歸神）。他不知道後世會稱這些「用過即棄」的週間作業為人類音樂的頂點。',
+      significance:
+        '最偉大的教會音樂是當「消耗品」寫的——為下週日的會眾，不為不朽。S.D.G. 的意思是：作品的價值不在於誰聽見，而在於獻給誰。',
     },
     todayReflection: [
       {
@@ -478,6 +532,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       label: '美國國會圖書館：黑人靈歌的歷史與聲音',
       url: 'https://www.loc.gov/collections/songs-of-america/articles-and-essays/musical-styles/ritual-and-worship/spirituals/',
     },
+    hymnStory: {
+      person: '賀拉修·斯帕福德（Horatio Spafford）',
+      year: '1873 年，大西洋海上',
+      hymn: '《我心靈得安寧》（It Is Well with My Soul）',
+      story:
+        '芝加哥律師斯帕福德在 1871 年芝加哥大火中失去大部分產業，接著幼子病逝。1873 年他安排全家赴歐洲休養，臨行因公務改期，先讓妻子與四個女兒搭船。11 月 22 日，客輪與鐵殼帆船相撞沉沒，四個女兒全部罹難，妻子獲救後發來的電報只有兩個字：「獨存」（Saved alone）。斯帕福德隨即搭船赴英，途中船長告訴他：現在經過的海域就是你女兒們沉沒之處。傳統記載他就在那片海上寫下：「有時享平安，如江河平又穩；有時遇悲傷，似浪滾——不論何環境，我已蒙主引領，我心靈得安寧，得安寧。」',
+      significance:
+        '這首歌沒有否認悲劇，第一句就把「悲傷如浪滾」唱了出來。信仰的安寧不是感覺不到痛，而是痛到底處仍然有話可以對神說——這正是詩篇的傳統，在十九世紀的一場海難中再次成為血肉。',
+    },
     todayReflection: [
       {
         question: '你最喜歡的「觸動」歌曲，神學上到底說了什麼？',
@@ -548,6 +611,15 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
     source: {
       label: 'Duke Divinity：當代 Praise & Worship 歷史',
       url: 'https://divinity.duke.edu/news/books/history-contemporary-praise-worship',
+    },
+    hymnStory: {
+      person: '呂小敏與中國家庭教會',
+      year: '1990 年至今，河南',
+      hymn: '《迦南詩歌》',
+      story:
+        '1990 年，河南方城縣一個十九歲的農村女孩在聚會中忽然開口唱出一首沒人教過的歌。呂小敏只有小學學歷，不識樂譜，此後三十多年寫（她說是「領受」）了超過一千五百首詩歌——全部先在心裡成形，再請人記譜。這些歌誕生的環境是取締、罰款與拘留的陰影：聚會常在深夜的農舍，詩歌靠手抄本流傳，抄本被沒收就再抄。《迦南詩歌》沒有和聲學、沒有錄音室，卻成為數千萬中國信徒的共同語言——許多在文革後第一代信主的農民，是用這些帶著中原口音的旋律學會禱告的。',
+      significance:
+        '教會音樂史的最新一章不是寫在西方的錄音室，而是寫在受限制環境下的農舍裡。從腓立比監獄的半夜到河南的深夜聚會，這個故事首尾呼應：教會最真實的歌聲，往往來自最沒有條件唱歌的地方。',
     },
     todayReflection: [
       {
