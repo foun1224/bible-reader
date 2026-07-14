@@ -99,6 +99,7 @@ interface ParsedVersePart {
   num: string
   text: string
   book?: string
+  reference?: string
 }
 
 // Split a single-book passage into verse parts. Prefix text is preserved as an unnumbered part.
@@ -137,6 +138,41 @@ function parseVerseText(raw: string, books: Book[] = []): ParsedVersePart[] {
     result.push(...parseVerseSequence(raw.slice(contentStart, contentEnd).trim()))
   })
 
+  return result
+}
+
+// Related passages store each reference after its text, for example
+// "15 ... 24 ...（約翰福音14:15, 23-24）". Move that citation ahead of
+// the passage so it cannot be mistaken for verse text or the next book.
+function parseRelatedVerseText(raw: string, books: Book[] = []): ParsedVersePart[] {
+  const names = [...books]
+    .sort((a, b) => b.name.length - a.name.length)
+    .map(book => book.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  if (names.length === 0) return parseVerseText(raw, books)
+
+  const citationPattern = new RegExp(
+    `[（(]\\s*(${names.join('|')})\\s*(\\d+\\s*[:：][^）)]*)[）)]`,
+    'g',
+  )
+  const citations = [...raw.matchAll(citationPattern)]
+  if (citations.length === 0) return parseVerseText(raw, books)
+
+  const result: ParsedVersePart[] = []
+  let passageStart = 0
+  for (const citation of citations) {
+    const passage = raw.slice(passageStart, citation.index).trim()
+    result.push({
+      book: citation[1],
+      reference: citation[2].replace(/：/g, ':'),
+      num: '',
+      text: '',
+    })
+    if (passage) result.push(...parseVerseSequence(passage))
+    passageStart = (citation.index ?? 0) + citation[0].length
+  }
+
+  const trailing = raw.slice(passageStart).trim()
+  if (trailing) result.push(...parseVerseText(trailing, books))
   return result
 }
 
@@ -409,9 +445,9 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
               {day.relatedVerse && (
                 <Section title="相關經文" muted>
                   <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
-                    {parseVerseText(day.relatedVerse, ckjv?.books ?? []).map(({ num, text, book }, i) => book ? (
+                    {parseRelatedVerseText(day.relatedVerse, ckjv?.books ?? []).map(({ num, text, book, reference }, i) => book ? (
                       <h3 key={`${book}-${i}`} className="pb-1 pt-4 text-xs font-semibold tracking-[0.08em] text-[#4F7358] first:pt-0 dark:text-[#8FC79D]">
-                        {book}
+                        {book}<span className="ml-1.5 font-normal tracking-normal text-stone-400 dark:text-[#817B75]">{reference}</span>
                       </h3>
                     ) : (
                       <p key={`${num}-${i}`} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
