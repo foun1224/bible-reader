@@ -153,8 +153,9 @@ export default function MainChurchMusicHistoryPeriod({ periodId, onBack }: {
           </div>
         </Section>
 
+        <div id="sources" className="scroll-mt-6">
         {period.keyFigures.length > 0 && (
-          <Section id="sources" eyebrow="人物" title="這個時代的關鍵人物">
+          <Section eyebrow="人物" title="這個時代的關鍵人物">
             <div className="space-y-3">
               {period.keyFigures.map(fig => (
                 <div key={fig.name} className="rounded-lg border border-stone-200 bg-stone-50/70 dark:border-[#2E3240] dark:bg-[#22242C]/45 p-4">
@@ -204,6 +205,7 @@ export default function MainChurchMusicHistoryPeriod({ periodId, onBack }: {
           <span>{period.source.label}</span>
           <span aria-hidden="true">↗</span>
         </a>
+        </div>
 
         {period.todayReflection.length > 0 && (
           <Section id="reflection" eyebrow="今日連結" title="從那個時代的歌聲到你的聚會">

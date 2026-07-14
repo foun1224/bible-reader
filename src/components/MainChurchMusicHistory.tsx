@@ -1,19 +1,12 @@
 import { Fragment } from 'react'
 import { CHURCH_MUSIC_HISTORY_PERIODS } from '../lib/churchMusicHistoryPeriods'
 
-const STAGE_COLORS: Record<string, string> = {
-  '聖言成聲': '#56705E',
-  '複音與禮儀': '#587184',
-  '會眾之歌': '#756981',
-  '全球敬拜': '#52766F',
-}
-
 const STAGES = [
   { name: '聖言成聲', color: '#56705E' },
   { name: '複音與禮儀', color: '#587184' },
   { name: '會眾之歌', color: '#756981' },
   { name: '全球敬拜', color: '#52766F' },
-]
+] as const
 
 export default function MainChurchMusicHistory({ onBack, onOpenPeriod }: {
   onBack: () => void
@@ -54,7 +47,7 @@ export default function MainChurchMusicHistory({ onBack, onOpenPeriod }: {
 
         <div className="relative space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-stone-200 dark:before:bg-[#2E3240]">
           {CHURCH_MUSIC_HISTORY_PERIODS.map((period, i) => {
-            const stageColor = STAGE_COLORS[period.stage] ?? '#56705E'
+            const stageColor = STAGES.find(stage => stage.name === period.stage)?.color ?? STAGES[0].color
             const showStage = i === 0 || period.stage !== CHURCH_MUSIC_HISTORY_PERIODS[i - 1].stage
 
             return (
