@@ -43,6 +43,10 @@ export interface ChurchMusicHistoryPeriod {
     question: string
     prompt: string
   }[]
+  source: {
+    label: string
+    url: string
+  }
 }
 
 export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
@@ -103,6 +107,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
         '在部分處境中，對異教音樂形式的警戒後來被簡化成對身體、情感與樂器的全面懷疑，使後世容易把敬虔等同於「越少聲音越好」。',
       discernment:
         '我們的聚會若先追求編曲完整、再回頭找經文填空，是否已經顛倒了初期教會「先有道、才有聲」的秩序？',
+    },
+    source: {
+      label: 'Oxford Research Archive：早期西方基督教音樂研究',
+      url: 'https://ora.ox.ac.uk/objects/uuid:770f3a26-7036-4ffb-bbd7-49b458122b26',
     },
     todayReflection: [
       {
@@ -172,6 +180,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       discernment:
         '我們的敬拜流程是否只服務「主日演出成功」，而缺少可重複、可記憶、能進入週間生活的聲音節奏？',
     },
+    source: {
+      label: '美國國會圖書館：10–16 世紀禮儀聖歌手稿',
+      url: 'https://www.loc.gov/collections/tenth-to-sixteenth-century-liturgical-chants/about-this-collection/',
+    },
     todayReflection: [
       {
         question: '若敬拜歌曲無法在週一被記得、被低聲再唱，它還算進入門徒生活嗎？',
@@ -238,6 +250,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
         '專業詩班與複雜織體可能讓會眾淪為觀眾；多文本堆疊有時犧牲經文可懂度，敬拜淪為宮廷化展示。',
       discernment:
         '當編曲、燈光與聲場都極盡華麗時，會眾還能清楚聽見並回應福音，還是只在消費一場神聖氣氛？',
+    },
+    source: {
+      label: '美國國會圖書館：中世紀禮儀記譜手稿',
+      url: 'https://www.loc.gov/collections/tenth-to-sixteenth-century-liturgical-chants/about-this-collection/',
     },
     todayReflection: [
       {
@@ -308,6 +324,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       discernment:
         '我們的歌單是在訓練會眾宣信，還是在追流行曲風？會眾是否真的「擁有」這些歌，還是只在現場跟著螢幕？',
     },
+    source: {
+      label: 'LCMS：Singing the Reformation',
+      url: 'https://resources.lcms.org/history/singing-the-reformation/',
+    },
     todayReflection: [
       {
         question: '若關掉投影，會眾還能唱完幾首「屬於你們」的歌？',
@@ -376,6 +396,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
         '專業化使「聽聖樂」與「會眾唱」逐漸分家；資源不足的教會可能覺得自己「不夠資格」做出合神心意的音樂。',
       discernment:
         '我們追求的「品質」是為了更清楚地指向基督，還是為了證明自己的品味與實力？',
+    },
+    source: {
+      label: 'Bach Digital：巴赫手稿與作品資料庫',
+      url: 'https://www.bach-digital.de/',
     },
     todayReflection: [
       {
@@ -450,6 +474,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
       discernment:
         '一首歌讓人落淚之後，是否留下更清楚的基督與更具體的順服？若沒有，感動可能只是消費。',
     },
+    source: {
+      label: '美國國會圖書館：黑人靈歌的歷史與聲音',
+      url: 'https://www.loc.gov/collections/songs-of-america/articles-and-essays/musical-styles/ritual-and-worship/spirituals/',
+    },
     todayReflection: [
       {
         question: '你最喜歡的「觸動」歌曲，神學上到底說了什麼？',
@@ -485,7 +513,7 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
     soundPortrait: {
       description:
         '樂隊編制、循環和弦、橋段與情緒曲線成為常見語法；同時傳統聖詩被重新編曲，原民與南半球節奏進入世界教會。線上直播讓「現場感」可以複製，也改變參與的定義。',
-      forms: ['當代敬拜歌', '重新編曲聖詩', '全球本土聖詩', '短反覆禱詞式歌唱', '敬拜 Concért 化製作'],
+      forms: ['當代敬拜歌', '重新編曲聖詩', '全球本土聖詩', '短反覆禱詞式歌唱', '敬拜演唱會化製作'],
     },
     keyFigures: [
       {
@@ -516,6 +544,10 @@ export const CHURCH_MUSIC_HISTORY_PERIODS: ChurchMusicHistoryPeriod[] = [
         '名人化、版權與市場邏輯可能扭曲選歌；情緒曲線被工程化；地方教會若只消費全球熱歌，會喪失自己的神學與歷史記憶。',
       discernment:
         '我們的歌單是在形成一個門徒群體的共同記憶，還是在追蹤上季的串流排行？誰從中得利，誰的聲音缺席？',
+    },
+    source: {
+      label: 'Duke Divinity：當代 Praise & Worship 歷史',
+      url: 'https://divinity.duke.edu/news/books/history-contemporary-praise-worship',
     },
     todayReflection: [
       {

@@ -195,6 +195,16 @@ export default function MainChurchMusicHistoryPeriod({ periodId, onBack }: {
           </Section>
         )}
 
+        <a
+          href={period.source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 flex min-h-11 items-center justify-between rounded-lg border border-stone-300 px-4 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:text-[#B8B0A6] dark:hover:bg-[#22242C]"
+        >
+          <span>{period.source.label}</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+
         {period.todayReflection.length > 0 && (
           <Section id="reflection" eyebrow="今日連結" title="從那個時代的歌聲到你的聚會">
             <div className="space-y-3">
