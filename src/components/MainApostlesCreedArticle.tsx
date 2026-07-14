@@ -1,4 +1,4 @@
-import { findCreedArticle } from '../lib/apostlesCreed'
+import { APOSTLES_CREED, findCreedArticle } from '../lib/apostlesCreed'
 
 function Section({ id, eyebrow, title, children }: {
   id?: string
@@ -15,12 +15,16 @@ function Section({ id, eyebrow, title, children }: {
   )
 }
 
-export default function MainApostlesCreedArticle({ articleId, onBack }: {
+export default function MainApostlesCreedArticle({ articleId, onBack, onOpenArticle }: {
   articleId: string
   onBack: () => void
+  onOpenArticle: (articleId: string) => void
 }) {
   const article = findCreedArticle(articleId)
   if (!article) return null
+  const articleIndex = APOSTLES_CREED.articles.findIndex(item => item.articleId === articleId)
+  const previousArticle = APOSTLES_CREED.articles[articleIndex - 1]
+  const nextArticle = APOSTLES_CREED.articles[articleIndex + 1]
 
   return (
     <main className="flex-1 min-h-0 overflow-y-auto px-5 pb-24 pt-8 sm:px-8 sm:pb-12">
@@ -35,7 +39,7 @@ export default function MainApostlesCreedArticle({ articleId, onBack }: {
           </button>
           <div>
             <p className="text-xs font-semibold tracking-[0.08em] text-stone-500 dark:text-[#9B938B]">
-              使徒信經 · 第 {article.number} 條
+              使徒信經 · 第 {article.number} / {APOSTLES_CREED.articles.length} 條
             </p>
             <h1 className="text-lg font-semibold text-stone-700 dark:text-[#E4DDD0]">{article.title}</h1>
           </div>
@@ -121,6 +125,27 @@ export default function MainApostlesCreedArticle({ articleId, onBack }: {
             </div>
           </Section>
         )}
+
+        <nav aria-label="信經條目導覽" className="mt-8 grid grid-cols-2 gap-3 border-t border-stone-200/70 pt-6 dark:border-[#2E3240]">
+          {previousArticle ? (
+            <button
+              type="button"
+              onClick={() => onOpenArticle(previousArticle.articleId)}
+              className="min-h-11 rounded-lg border border-stone-300 px-4 py-3 text-left text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 active:bg-stone-200 dark:border-[#3A3E4A] dark:text-[#B8B0A6] dark:hover:bg-[#22242C]"
+            >
+              ← 上一條
+            </button>
+          ) : <span aria-hidden="true" />}
+          {nextArticle ? (
+            <button
+              type="button"
+              onClick={() => onOpenArticle(nextArticle.articleId)}
+              className="min-h-11 rounded-lg border border-[#4F7358]/25 bg-[#4F7358]/5 px-4 py-3 text-right text-sm font-semibold text-[#4F7358] transition-colors hover:bg-[#4F7358]/10 active:bg-[#4F7358]/15 dark:border-[#7AAF87]/25 dark:bg-[#7AAF87]/5 dark:text-[#8FC79D]"
+            >
+              下一條 →
+            </button>
+          ) : <span aria-hidden="true" />}
+        </nav>
       </div>
     </main>
   )
