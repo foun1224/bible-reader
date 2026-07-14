@@ -1,4 +1,4 @@
-type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline' | 'help' | 'church' | 'music' | 'creed'
+type MenuIcon = 'search' | 'settings' | 'book' | 'history' | 'list' | 'library' | 'timeline' | 'help' | 'church' | 'music' | 'creed' | 'prayer'
 
 function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
   const common = {
@@ -66,6 +66,13 @@ function MenuIconGlyph({ icon }: { icon: MenuIcon }) {
       <path d="M8 7h4M8 10h4M8 13h2" />
     </svg>
   )
+  if (icon === 'prayer') return (
+    <svg {...common}>
+      <path d="M10 3v10" />
+      <path d="M7 6c0-1.5 1.3-3 3-3s3 1.5 3 3c0 2-3 3.5-3 5" />
+      <circle cx="10" cy="16" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )
   if (icon === 'history') return (
     <svg {...common}>
       <path d="M4 6.5A7 7 0 1 1 3.5 11" />
@@ -101,6 +108,7 @@ interface Props {
   onChurchHistory?: () => void
   onChurchMusicHistory?: () => void
   onApostlesCreed?: () => void
+  onLordsPrayer?: () => void
   showScriptureTools?: boolean
   showReadingSettings?: boolean
 }
@@ -119,6 +127,7 @@ export default function MoreMenu({
   onChurchHistory,
   onChurchMusicHistory,
   onApostlesCreed,
+  onLordsPrayer,
   showScriptureTools = false,
   showReadingSettings = false,
 }: Props) {
@@ -134,6 +143,7 @@ export default function MoreMenu({
     { label: '教會歷史', icon: 'church' as MenuIcon, fn: onChurchHistory },
     { label: '教會音樂歷史', icon: 'music' as MenuIcon, fn: onChurchMusicHistory },
     { label: '使徒信經', icon: 'creed' as MenuIcon, fn: onApostlesCreed },
+    { label: '主禱文', icon: 'prayer' as MenuIcon, fn: onLordsPrayer },
   ].filter(item => Boolean(item.fn))
 
   const guideTools = [

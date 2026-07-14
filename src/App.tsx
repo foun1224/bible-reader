@@ -14,6 +14,8 @@ import MainChurchMusicHistory from './components/MainChurchMusicHistory'
 import MainChurchMusicHistoryPeriod from './components/MainChurchMusicHistoryPeriod'
 import MainApostlesCreed from './components/MainApostlesCreed'
 import MainApostlesCreedArticle from './components/MainApostlesCreedArticle'
+import MainLordsPrayer from './components/MainLordsPrayer'
+import MainLordsPrayerPetition from './components/MainLordsPrayerPetition'
 import ReadingReview from './components/ReadingReview'
 import CompletionBanner from './components/CompletionBanner'
 import SearchModal from './components/SearchModal'
@@ -117,7 +119,7 @@ function App() {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
-  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail' | 'church-history' | 'church-history-detail' | 'church-music-history' | 'church-music-history-detail' | 'apostles-creed' | 'apostles-creed-article'>(() => {
+  const [mainView, setMainView] = useState<'scripture' | 'devotional' | 'book-background' | 'book-courses' | 'curriculum' | 'timeline' | 'timeline-detail' | 'church-history' | 'church-history-detail' | 'church-music-history' | 'church-music-history-detail' | 'apostles-creed' | 'apostles-creed-article' | 'lords-prayer' | 'lords-prayer-petition'>(() => {
     const saved = localStorage.getItem(DEFAULT_VIEW_KEY)
     return saved === 'devotional' ? 'devotional' : 'scripture'
   })
@@ -127,6 +129,7 @@ function App() {
   const [churchHistoryPeriodId, setChurchHistoryPeriodId] = useState<string | null>(null)
   const [churchMusicHistoryPeriodId, setChurchMusicHistoryPeriodId] = useState<string | null>(null)
   const [apostlesCreedArticleId, setApostlesCreedArticleId] = useState<string | null>(null)
+  const [lordsPrayerPetitionId, setLordsPrayerPetitionId] = useState<string | null>(null)
 
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions())
   const [streak, setStreak] = useState<StreakData>(() => loadStreak())
@@ -982,6 +985,24 @@ function App() {
             onOpenArticle={setApostlesCreedArticleId}
           />
         )}
+
+        {mainView === 'lords-prayer' && (
+          <MainLordsPrayer
+            onBack={() => setMainView('scripture')}
+            onOpenPetition={(petitionId) => {
+              setLordsPrayerPetitionId(petitionId)
+              setMainView('lords-prayer-petition')
+            }}
+          />
+        )}
+
+        {mainView === 'lords-prayer-petition' && lordsPrayerPetitionId && (
+          <MainLordsPrayerPetition
+            petitionId={lordsPrayerPetitionId}
+            onBack={() => setMainView('lords-prayer')}
+            onOpenPetition={setLordsPrayerPetitionId}
+          />
+        )}
       </div>
 
       {/* More menu */}
@@ -999,6 +1020,7 @@ function App() {
         onChurchHistory={() => { setMainView('church-history'); setMoreOpen(false); setSidebarOpen(false) }}
         onChurchMusicHistory={() => { setMainView('church-music-history'); setMoreOpen(false); setSidebarOpen(false) }}
         onApostlesCreed={() => { setMainView('apostles-creed'); setMoreOpen(false); setSidebarOpen(false) }}
+        onLordsPrayer={() => { setMainView('lords-prayer'); setMoreOpen(false); setSidebarOpen(false) }}
         showScriptureTools={mainView === 'scripture'}
         showReadingSettings={mainView === 'devotional'}
       />
@@ -1138,7 +1160,7 @@ function App() {
       {/* Bottom nav */}
       {!isImmersive && (
         <BottomNav
-          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail' || mainView === 'church-history' || mainView === 'church-history-detail' || mainView === 'church-music-history' || mainView === 'church-music-history-detail' || mainView === 'apostles-creed' || mainView === 'apostles-creed-article') ? 'scripture' : mainView}
+          mainView={(mainView === 'book-background' || mainView === 'book-courses' || mainView === 'curriculum' || mainView === 'timeline' || mainView === 'timeline-detail' || mainView === 'church-history' || mainView === 'church-history-detail' || mainView === 'church-music-history' || mainView === 'church-music-history-detail' || mainView === 'apostles-creed' || mainView === 'apostles-creed-article' || mainView === 'lords-prayer' || mainView === 'lords-prayer-petition') ? 'scripture' : mainView}
           onMainViewChange={(view) => {
             setMainView(view)
             setSidebarOpen(false)
