@@ -979,6 +979,7 @@ function App() {
           <MainApostlesCreedArticle
             articleId={apostlesCreedArticleId}
             onBack={() => setMainView('apostles-creed')}
+            onOpenArticle={setApostlesCreedArticleId}
           />
         )}
       </div>
