@@ -95,16 +95,78 @@ function findBookByRef(ref: string, books: Book[]): Book | null {
   return null
 }
 
-// Split "15:39 中文... 16:1 中文... 2 中文..." into [{num, text}, ...]
-// Lookahead [一-鿿（【] ensures only verse refs are matched (CKJV body text uses Chinese numerals).
-function parseVerseText(raw: string): Array<{num: string; text: string}> {
-  const parts = raw.split(/(?<!\d)(\d+(?::\d+)?)\s+(?=[一-鿿（【])/)
-  // split with capture group → ['prefix', 'num', 'text', 'num', 'text', ...]
-  const result: Array<{num: string; text: string}> = []
-  for (let i = 1; i < parts.length; i += 2) {
-    result.push({ num: parts[i], text: parts[i + 1]?.trim() ?? '' })
+/** CKJV book titles, longest-first for greedy matching (e.g. 約翰一書 before 約翰). */
+const BIBLE_BOOK_NAMES = [
+  '帖撒羅尼迦前書', '帖撒羅尼迦後書', '哥林多前書', '哥林多後書',
+  '提摩太前書', '提摩太後書', '彼得前書', '彼得後書',
+  '約翰一書', '約翰二書', '約翰三書',
+  '撒母耳記上', '撒母耳記下', '列王紀上', '列王紀下', '歷代志上', '歷代志下',
+  '耶利米哀歌', '馬太福音', '馬可福音', '路加福音', '約翰福音', '使徒行傳',
+  '創世記', '出埃及記', '利未記', '民數記', '申命記', '約書亞記', '士師記', '路得記',
+  '以斯拉記', '尼希米記', '以斯帖記', '約伯記', '以賽亞書', '耶利米書', '以西結書', '但以理書',
+  '何西阿書', '阿摩司書', '俄巴底亞書', '約拿書', '彌迦書', '那鴻書', '哈巴谷書', '西番雅書',
+  '哈該書', '撒迦利亞書', '瑪拉基書', '羅馬書', '加拉太書', '以弗所書', '腓立比書', '歌羅西書',
+  '提多書', '腓利門書', '希伯來書', '雅各書', '猶大書', '啟示錄', '約珥書',
+  '傳道書', '箴言', '雅歌', '詩篇',
+].sort((a, b) => b.length - a.length)
+
+const BIBLE_BOOK_ALT = BIBLE_BOOK_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+
+export type ParsedDevotionalVerse = {
+  num: string
+  text: string
+  book?: string
+}
+
+/**
+ * Split harmony / multi-book verse blobs into [{num, text, book?}].
+ * Handles both:
+ * - Gospel harmony: 「馬太福音8:18 … 路加福音9:57 …」
+ * - Related citations: 「12 …。(詩篇92:12) 25 …」
+ * Lookahead [一-鿿「（【『] keeps verse refs distinct from Chinese body numerals.
+ */
+function parseVerseText(raw: string): ParsedDevotionalVerse[] {
+  if (!raw.trim()) return []
+
+  const re = new RegExp(
+    `(?:(${BIBLE_BOOK_ALT}))?\\s*(\\d+(?::\\d+)?)\\s+(?=[一-鿿「（【『])`,
+    'g',
+  )
+  const matches = [...raw.matchAll(re)]
+  if (matches.length === 0) return [{ num: '', text: raw.trim() }]
+
+  const result: ParsedDevotionalVerse[] = []
+  let currentBook: string | undefined
+
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i]
+    if (m[1]) currentBook = m[1]
+    const num = m[2]
+    const start = (m.index ?? 0) + m[0].length
+    const end = i + 1 < matches.length ? (matches[i + 1].index ?? raw.length) : raw.length
+    let text = raw.slice(start, end).trim()
+
+    // Trailing bare book name (rare, but clean if present)
+    for (const b of BIBLE_BOOK_NAMES) {
+      if (text.endsWith(b)) {
+        text = text.slice(0, -b.length).trim()
+        if (!currentBook) currentBook = b
+        break
+      }
+    }
+
+    // Trailing （詩篇92:12） / (馬太福音10:39) style citations
+    const paren = text.match(new RegExp(`[（(]((?:${BIBLE_BOOK_ALT})[^）)]*)[）)]\\s*$`))
+    if (paren && paren.index !== undefined) {
+      text = text.slice(0, paren.index).trim()
+      const bm = paren[1].match(new RegExp(`^(${BIBLE_BOOK_ALT})`))
+      if (bm) currentBook = bm[1]
+    }
+
+    result.push({ num, text, book: currentBook })
   }
-  return result.length > 0 ? result : [{ num: '', text: raw }]
+
+  return result
 }
 
 function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?: string }; tag: string }) {
@@ -313,31 +375,43 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
                   <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
                   {day.verseText && (
                     <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
-                      {parseVerseText(day.verseText).map(({ num, text }, i) => {
+                      {parseVerseText(day.verseText).map(({ num, text, book }, i, arr) => {
                         const hl = getVerseHL(num)
+                        const prevBook = i > 0 ? arr[i - 1].book : undefined
+                        const showBook = Boolean(book && book !== prevBook)
                         return (
-                          <p
-                            key={i}
-                            onPointerDown={() => startLongPress(num, text)}
-                            onPointerUp={cancelLongPress}
-                            onPointerLeave={cancelLongPress}
-                            className={`${fontSize} text-stone-700 dark:text-[#E4DDD0] select-none cursor-default rounded px-1 -mx-1 transition-colors ${hl ? DEV_COLOR_BG[hl] : ''}`}
-                            style={{ lineHeight: lineSpacing === 'loose' ? '2.4' : '1.9' }}
-                          >
-                            {num && (
-                              <sup
-                                className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
-                                  verseNumStyle === 'hide' ? 'opacity-0'
-                                  : verseNumStyle === 'fade' ? 'opacity-20'
-                                  : 'opacity-60'
+                          <div key={`${book ?? ''}-${num}-${i}`}>
+                            {showBook && (
+                              <p
+                                className={`text-[11px] font-semibold tracking-wide text-[#4F7358]/85 dark:text-[#7AAF87]/85 ${
+                                  i === 0 ? 'mb-1' : 'mt-3 mb-1'
                                 }`}
-                                style={{ fontSize: '9px', fontWeight: 400 }}
                               >
-                                {num}
-                              </sup>
+                                {book}
+                              </p>
                             )}
-                            {text}
-                          </p>
+                            <p
+                              onPointerDown={() => startLongPress(num, text)}
+                              onPointerUp={cancelLongPress}
+                              onPointerLeave={cancelLongPress}
+                              className={`${fontSize} text-stone-700 dark:text-[#E4DDD0] select-none cursor-default rounded px-1 -mx-1 transition-colors ${hl ? DEV_COLOR_BG[hl] : ''}`}
+                              style={{ lineHeight: lineSpacing === 'loose' ? '2.4' : '1.9' }}
+                            >
+                              {num && (
+                                <sup
+                                  className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
+                                    verseNumStyle === 'hide' ? 'opacity-0'
+                                    : verseNumStyle === 'fade' ? 'opacity-20'
+                                    : 'opacity-60'
+                                  }`}
+                                  style={{ fontSize: '9px', fontWeight: 400 }}
+                                >
+                                  {num}
+                                </sup>
+                              )}
+                              {text}
+                            </p>
+                          </div>
                         )
                       })}
                     </div>
@@ -366,23 +440,38 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
               {day.relatedVerse && (
                 <Section title="相關經文" muted>
                   <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
-                    {parseVerseText(day.relatedVerse).map(({ num, text }, i) => (
-                      <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
-                        {num && (
-                          <sup
-                            className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
-                              verseNumStyle === 'hide' ? 'opacity-0'
-                              : verseNumStyle === 'fade' ? 'opacity-20'
-                              : 'opacity-60'
-                            }`}
-                            style={{ fontSize: '9px', fontWeight: 400 }}
-                          >
-                            {num}
-                          </sup>
-                        )}
-                        {text}
-                      </p>
-                    ))}
+                    {parseVerseText(day.relatedVerse).map(({ num, text, book }, i, arr) => {
+                      const prevBook = i > 0 ? arr[i - 1].book : undefined
+                      const showBook = Boolean(book && book !== prevBook)
+                      return (
+                        <div key={`${book ?? ''}-${num}-${i}`}>
+                          {showBook && (
+                            <p
+                              className={`text-[11px] font-semibold tracking-wide text-stone-400 dark:text-[#6B6460] ${
+                                i === 0 ? 'mb-1' : 'mt-3 mb-1'
+                              }`}
+                            >
+                              {book}
+                            </p>
+                          )}
+                          <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+                            {num && (
+                              <sup
+                                className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
+                                  verseNumStyle === 'hide' ? 'opacity-0'
+                                  : verseNumStyle === 'fade' ? 'opacity-20'
+                                  : 'opacity-60'
+                                }`}
+                                style={{ fontSize: '9px', fontWeight: 400 }}
+                              >
+                                {num}
+                              </sup>
+                            )}
+                            {text}
+                          </p>
+                        </div>
+                      )
+                    })}
                   </div>
                 </Section>
               )}
