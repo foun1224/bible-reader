@@ -95,16 +95,49 @@ function findBookByRef(ref: string, books: Book[]): Book | null {
   return null
 }
 
-// Split "15:39 中文... 16:1 中文... 2 中文..." into [{num, text}, ...]
-// Lookahead [一-鿿（【] ensures only verse refs are matched (CKJV body text uses Chinese numerals).
-function parseVerseText(raw: string): Array<{num: string; text: string}> {
+interface ParsedVersePart {
+  num: string
+  text: string
+  book?: string
+}
+
+// Split a single-book passage into verse parts. Prefix text is preserved as an unnumbered part.
+function parseVerseSequence(raw: string): ParsedVersePart[] {
   const parts = raw.split(/(?<!\d)(\d+(?::\d+)?)\s+(?=[一-鿿（【])/)
-  // split with capture group → ['prefix', 'num', 'text', 'num', 'text', ...]
-  const result: Array<{num: string; text: string}> = []
+  const result: ParsedVersePart[] = []
+  const prefix = parts[0]?.trim()
+  if (prefix) result.push({ num: '', text: prefix })
   for (let i = 1; i < parts.length; i += 2) {
     result.push({ num: parts[i], text: parts[i + 1]?.trim() ?? '' })
   }
   return result.length > 0 ? result : [{ num: '', text: raw }]
+}
+
+// Book labels in Gospel harmonies must be separated before verse splitting;
+// otherwise the next book name becomes the previous verse's trailing text.
+function parseVerseText(raw: string, books: Book[] = []): ParsedVersePart[] {
+  const names = [...books]
+    .sort((a, b) => b.name.length - a.name.length)
+    .map(book => book.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  if (names.length === 0) return parseVerseSequence(raw)
+
+  const bookPattern = new RegExp(`(${names.join('|')})(?=\\s*\\d+\\s*[:：])`, 'g')
+  const markers = [...raw.matchAll(bookPattern)]
+  if (markers.length === 0) return parseVerseSequence(raw)
+
+  const result: ParsedVersePart[] = []
+  const prefix = raw.slice(0, markers[0].index).trim()
+  if (prefix) result.push(...parseVerseSequence(prefix))
+
+  markers.forEach((marker, index) => {
+    const book = marker[1]
+    const contentStart = (marker.index ?? 0) + marker[0].length
+    const contentEnd = markers[index + 1]?.index ?? raw.length
+    result.push({ book, num: '', text: '' })
+    result.push(...parseVerseSequence(raw.slice(contentStart, contentEnd).trim()))
+  })
+
+  return result
 }
 
 function SuppLink({ item, tag }: { item: { title: string; excerpt: string; url?: string }; tag: string }) {
@@ -313,7 +346,17 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
                   <h1 className="text-2xl font-semibold leading-tight text-stone-700 dark:text-[#E4DDD0] sm:text-3xl">{day.ref}</h1>
                   {day.verseText && (
                     <div className="mt-4 border-l-2 border-[#4F7358]/60 pl-4 space-y-1">
-                      {parseVerseText(day.verseText).map(({ num, text }, i) => {
+                      {parseVerseText(day.verseText, ckjv?.books ?? []).map(({ num, text, book }, i) => {
+                        if (book) {
+                          return (
+                            <h2
+                              key={`${book}-${i}`}
+                              className="pb-1 pt-5 text-sm font-semibold tracking-[0.08em] text-[#4F7358] first:pt-1 dark:text-[#8FC79D]"
+                            >
+                              {book}
+                            </h2>
+                          )
+                        }
                         const hl = getVerseHL(num)
                         return (
                           <p
@@ -366,8 +409,12 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
               {day.relatedVerse && (
                 <Section title="相關經文" muted>
                   <div className="border-l border-stone-200 dark:border-[#2E3240] pl-4 space-y-1">
-                    {parseVerseText(day.relatedVerse).map(({ num, text }, i) => (
-                      <p key={num || i} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
+                    {parseVerseText(day.relatedVerse, ckjv?.books ?? []).map(({ num, text, book }, i) => book ? (
+                      <h3 key={`${book}-${i}`} className="pb-1 pt-4 text-xs font-semibold tracking-[0.08em] text-[#4F7358] first:pt-0 dark:text-[#8FC79D]">
+                        {book}
+                      </h3>
+                    ) : (
+                      <p key={`${num}-${i}`} className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">
                         {num && (
                           <sup
                             className={`text-[#4F7358] dark:text-[#7AAF87] select-none mr-0.5 transition-opacity duration-150 ${
