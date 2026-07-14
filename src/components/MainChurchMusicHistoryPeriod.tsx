@@ -93,6 +93,24 @@ export default function MainChurchMusicHistoryPeriod({ periodId, onBack }: {
           </section>
         </div>
 
+        {/* Hymn Story */}
+        {period.hymnStory && (
+          <section className="mt-6 overflow-hidden rounded-xl border border-[#4F7358]/20 bg-[#4F7358]/[0.04] dark:border-[#7AAF87]/20 dark:bg-[#7AAF87]/[0.05]">
+            <div className="px-5 pt-5 pb-1">
+              <p className="mb-1 text-xs font-semibold text-[#4F7358] dark:text-[#8FC79D]">一首詩歌的故事</p>
+              <p className="text-sm font-semibold text-stone-700 dark:text-[#E4DDD0]">{period.hymnStory.hymn}</p>
+              <p className="mt-0.5 text-xs text-stone-500 dark:text-[#9B938B]">{period.hymnStory.person}・{period.hymnStory.year}</p>
+            </div>
+            <div className="px-5 pb-4 pt-3">
+              <p className="text-sm leading-8 text-stone-500 dark:text-[#A09890]">{period.hymnStory.story}</p>
+            </div>
+            <div className="mx-0 border-t border-[#4F7358]/15 px-5 py-4 dark:border-[#7AAF87]/15">
+              <p className="mb-1 text-xs font-semibold text-[#4F7358]/80 dark:text-[#8FC79D]/80">這首歌為何被記住</p>
+              <p className="text-sm leading-7 text-stone-500 dark:text-[#A09890]">{period.hymnStory.significance}</p>
+            </div>
+          </section>
+        )}
+
         <Section id="ideas" eyebrow="問題演進" title="這個時代的核心音樂問題">
           {parentPeriod && (
             <div className="mb-3 flex items-start gap-2 text-xs text-stone-500 dark:text-[#9B938B]">
