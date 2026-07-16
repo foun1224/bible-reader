@@ -507,7 +507,7 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
                           src={src}
                           alt="經文亮光插圖"
                           loading="lazy"
-                          className="max-h-72 w-auto max-w-full rounded-lg border border-stone-200 dark:border-[#2E3240]"
+                          className="max-h-72 w-auto max-w-full rounded-lg border border-stone-200 bg-white p-1 dark:border-[#2E3240]"
                         />
                       ))}
                     </div>
