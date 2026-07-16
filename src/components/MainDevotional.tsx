@@ -14,6 +14,7 @@ interface DevotionalDay {
   meditation: string[]
   responses: string[]
   hints: string[]
+  hintImages?: string[]
   prayer: string
   relatedVerse?: string
   lights?: SuppItem[]
@@ -498,6 +499,19 @@ export default function MainDevotional({ ckjv, onNavigate, fontSize, verseNumSty
 
               {day.hints.length > 0 && (
                 <Section title="經文亮光" muted>
+                  {day.hintImages && day.hintImages.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-3">
+                      {day.hintImages.map(src => (
+                        <img
+                          key={src}
+                          src={src}
+                          alt="經文亮光插圖"
+                          loading="lazy"
+                          className="max-h-72 w-auto max-w-full rounded-lg border border-stone-200 dark:border-[#2E3240]"
+                        />
+                      ))}
+                    </div>
+                  )}
                   <div className="space-y-3 text-sm leading-7 sm:text-base">
                     {day.hints.map((p, i) => <p key={i}>{p}</p>)}
                   </div>

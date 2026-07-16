@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio'
-import { writeFileSync } from 'fs'
+import { writeFileSync, readFileSync, existsSync } from 'fs'
 
 const BASE = 'https://letsfollowjesus.org/main/daily/'
 const DELAY = 500 // ms between requests to be polite
@@ -46,17 +46,41 @@ async function fetchDay(mmdd) {
       responses.push($(el).text().replace(/\s+/g, ' ').trim())
     })
 
-    // scripture insight (經文亮光) - preserve paragraphs
+    // scripture insight (經文亮光) - preserve paragraphs.
+    // The body often opens with a bare text node (sometimes wrapping an inline
+    // image) BEFORE the first <p>, so walking only <p> drops the lead paragraph.
+    // Walk top-level nodes instead: non-<p> content accumulates into a buffer
+    // that flushes as its own paragraph whenever a <p> (or the end) is reached.
     const hints = []
-    $('#verse_hint_body p').each((_, el) => {
-      const t = $(el).text().replace(/\s+/g, ' ').trim()
+    let buffer = ''
+    const flush = () => {
+      const t = buffer.replace(/\s+/g, ' ').trim()
       if (t) hints.push(t)
+      buffer = ''
+    }
+    $('#verse_hint_body').contents().each((_, node) => {
+      if (node.type === 'comment') return
+      if (node.type === 'tag' && node.name === 'p') {
+        flush()
+        const t = $(node).text().replace(/\s+/g, ' ').trim()
+        if (t) hints.push(t)
+      } else {
+        buffer += $(node).text()
+      }
     })
-    // fallback if no <p> tags
+    flush()
+    // fallback if the walk produced nothing
     if (hints.length === 0) {
       const t = $('#verse_hint_body').text().replace(/\s+/g, ' ').trim()
       if (t) hints.push(t)
     }
+
+    // content images inside the insight body (e.g. maps), as absolute URLs
+    const hintImages = []
+    $('#verse_hint_body img').each((_, el) => {
+      const src = $(el).attr('src')
+      if (src) hintImages.push(new URL(src, url).href)
+    })
 
     // prayer (禱告文)
     const prayer = $('#pray_body').text().replace(/\s+/g, ' ').trim()
@@ -66,7 +90,7 @@ async function fetchDay(mmdd) {
     const titleMatch = titleEl.match(/(\d+月\d+日.*?)$/)
     const title = titleMatch ? titleMatch[1].trim() : ''
 
-    return { mmdd, ref, title, verseText, meditation, responses, hints, prayer }
+    return { mmdd, ref, title, verseText, meditation, responses, hints, hintImages, prayer }
   } catch (e) {
     console.error(`  Error ${mmdd}: ${e.message}`)
     return null
@@ -74,7 +98,11 @@ async function fetchDay(mmdd) {
 }
 
 async function main() {
-  const result = {}
+  // Merge into the existing plan: other scripts enrich this file with
+  // relatedVerse / lights / hymn / messages / testimonies — a full overwrite
+  // would wipe them. Base fields refresh; enrichment fields survive.
+  const OUT = 'public/devotional-plan.json'
+  const result = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf-8')) : {}
   let count = 0
   let failed = 0
 
@@ -93,7 +121,7 @@ async function main() {
     process.stdout.write(`  ${mmdd}... `)
     const data = await fetchDay(mmdd)
     if (data) {
-      result[mmdd] = data
+      result[mmdd] = { ...result[mmdd], ...data }
       console.log(`✓ ${data.ref}`)
       count++
     } else {
@@ -103,13 +131,9 @@ async function main() {
     await sleep(DELAY)
   }
 
-  writeFileSync(
-    'public/devotional-plan.json',
-    JSON.stringify(result, null, 2),
-    'utf-8'
-  )
+  writeFileSync(OUT, JSON.stringify(result, null, 2), 'utf-8')
   console.log(`\nDone: ${count} days saved, ${failed} failed.`)
-  console.log('Output: public/devotional-plan.json')
+  console.log(`Output: ${OUT}`)
 }
 
 main()
