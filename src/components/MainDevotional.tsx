@@ -151,8 +151,10 @@ function parseRelatedVerseText(raw: string, books: Book[] = []): ParsedVersePart
     .map(book => book.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
   if (names.length === 0) return parseVerseText(raw, books)
 
+  // Verse part is optional: whole-chapter citations like （詩篇23） carry no
+  // colon — requiring one lumped such passages into the next citation's block.
   const citationPattern = new RegExp(
-    `[（(]\\s*(${names.join('|')})\\s*(\\d+\\s*[:：][^）)]*)[）)]`,
+    `[（(]\\s*(${names.join('|')})\\s*(\\d+(?:\\s*[:：][^）)]*)?)[）)]`,
     'g',
   )
   const citations = [...raw.matchAll(citationPattern)]
