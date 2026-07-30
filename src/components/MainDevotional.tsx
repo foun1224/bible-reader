@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { BibleData, Book, Chapter } from '../types'
+import { findCitations } from '../lib/scriptureRef'
 
 interface SuppItem {
   title: string
@@ -145,19 +146,9 @@ function parseVerseText(raw: string, books: Book[] = []): ParsedVersePart[] {
 // Related passages store each reference after its text, for example
 // "15 ... 24 ...（約翰福音14:15, 23-24）". Move that citation ahead of
 // the passage so it cannot be mistaken for verse text or the next book.
+// Citation shapes are defined once in lib/scriptureRef.ts.
 function parseRelatedVerseText(raw: string, books: Book[] = []): ParsedVersePart[] {
-  const names = [...books]
-    .sort((a, b) => b.name.length - a.name.length)
-    .map(book => book.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-  if (names.length === 0) return parseVerseText(raw, books)
-
-  // Verse part is optional: whole-chapter citations like （詩篇23） carry no
-  // colon — requiring one lumped such passages into the next citation's block.
-  const citationPattern = new RegExp(
-    `[（(]\\s*(${names.join('|')})\\s*(\\d+(?:\\s*[:：][^）)]*)?)[）)]`,
-    'g',
-  )
-  const citations = [...raw.matchAll(citationPattern)]
+  const citations = findCitations(raw, books.map(b => b.name))
   if (citations.length === 0) return parseVerseText(raw, books)
 
   const result: ParsedVersePart[] = []
@@ -165,13 +156,13 @@ function parseRelatedVerseText(raw: string, books: Book[] = []): ParsedVersePart
   for (const citation of citations) {
     const passage = raw.slice(passageStart, citation.index).trim()
     result.push({
-      book: citation[1],
-      reference: citation[2].replace(/：/g, ':'),
+      book: citation.book,
+      reference: citation.reference,
       num: '',
       text: '',
     })
     if (passage) result.push(...parseVerseSequence(passage))
-    passageStart = (citation.index ?? 0) + citation[0].length
+    passageStart = citation.index + citation.length
   }
 
   const trailing = raw.slice(passageStart).trim()
